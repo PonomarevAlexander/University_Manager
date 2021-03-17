@@ -7,20 +7,20 @@ public class Group {
 
     private int id;
     private String name;
-    private Teacher cheef;
+    private Teacher headOfGroup;
     private List<Student> studentList;
     private Timetable timetable;
 
-    public Group(String name, Teacher cheef) {
+    public Group(String name, Teacher headOfGroup) {
         this.name = name;
-        this.cheef = cheef;
+        this.headOfGroup = headOfGroup;
         this.studentList = new ArrayList<>();
     }
 
     public Group(int id, String name, Teacher cheef, List<Student> studentList, Timetable timetable) {
         this.id = id;
         this.name = name;
-        this.cheef = cheef;
+        this.headOfGroup = cheef;
         this.studentList = studentList;
         this.timetable = timetable;
     }
@@ -40,7 +40,7 @@ public class Group {
         return name;
     }
     public Teacher getCheef() {
-        return cheef;
+        return headOfGroup;
     }
     public List<Student> getStudentList() {
         return studentList;
@@ -55,7 +55,7 @@ public class Group {
         this.name = name;
     }
     public void setCheef(Teacher cheef) {
-        this.cheef = cheef;
+        this.headOfGroup = cheef;
     }
     public void setStudentList(List<Student> studentList) {
         this.studentList = studentList;
