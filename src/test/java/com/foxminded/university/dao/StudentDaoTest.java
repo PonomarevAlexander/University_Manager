@@ -17,22 +17,31 @@ class StudentDaoTest {
 	
 	private StudentDao studentDao;
 	
+	private static final String TEST_NAME_1 = "testName1";
+	private static final String TEST_NAME_2 = "testName2";
+	private static final String TEST_NAME_3 = "testName3";
+	private static final String TEST_NAME_4 = "testName4";
+	private static final String TEST_LAST_NAME_1 = "testLastName1";
+	private static final String TEST_LAST_NAME_4 = "testLastName4";
+	private static final String TEST_SCHEMA = "classpath:test_schema.sql";
+	private static final String TEST_DATA = "classpath:test_data.sql";
+	
 	@BeforeEach
 	void init() {
 		DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-			      .addScript("classpath:test_schema.sql")
-			      .addScript("classpath:test_data.sql")
+			      .addScript(TEST_SCHEMA)
+			      .addScript(TEST_DATA)
 			      .build();
 		this.studentDao = new StudentDao(dataSource);
 	}
 	
 	@Test
 	void testAdd() {
-		studentDao.add(new Student("testName4", "testLastName4", 100));
+		studentDao.add(new Student(TEST_NAME_4, TEST_LAST_NAME_4, 100));
 		Student actual = studentDao.get(4);
 		assertEquals(4, actual.getId());
-		assertEquals("testName4", actual.getName());
-		assertEquals("testLastName4", actual.getLastName());
+		assertEquals(TEST_NAME_4, actual.getName());
+		assertEquals(TEST_LAST_NAME_4, actual.getLastName());
 		assertEquals(100, actual.getAge());
 		assertTrue(actual.getGroup() == null);
 	}
@@ -42,8 +51,8 @@ class StudentDaoTest {
 		Student actual = new Student();
 		actual = studentDao.get(1);
 		assertEquals(1, actual.getId());
-		assertEquals("testName1", actual.getName());
-		assertEquals("testLastName1", actual.getLastName());
+		assertEquals(TEST_NAME_1, actual.getName());
+		assertEquals(TEST_LAST_NAME_1, actual.getLastName());
 		assertEquals(11, actual.getAge());
 	}
 	
@@ -52,26 +61,26 @@ class StudentDaoTest {
 		List<Student> actual = new ArrayList<>();
 		actual = studentDao.getAll();
 		assertEquals(3, actual.size());
-		assertEquals("testName1", actual.get(0).getName());
-		assertEquals("testName2", actual.get(1).getName());
-		assertEquals("testName3", actual.get(2).getName());
+		assertEquals(TEST_NAME_1, actual.get(0).getName());
+		assertEquals(TEST_NAME_2, actual.get(1).getName());
+		assertEquals(TEST_NAME_3, actual.get(2).getName());
 	}
 	
 	@Test
 	void testUpdate() {
 		Student initial = studentDao.get(1);
-		assertEquals("testName1", initial.getName());
-		assertEquals("testLastName1", initial.getLastName());
+		assertEquals(TEST_NAME_1, initial.getName());
+		assertEquals(TEST_LAST_NAME_1, initial.getLastName());
 		assertEquals(11, initial.getAge());
 		
-		initial.setName("testName4");
-		initial.setLastName("testLastName4");
+		initial.setName(TEST_NAME_4);
+		initial.setLastName(TEST_LAST_NAME_4);
 		initial.setAge(44);
 		studentDao.update(initial);
 		
 		Student actual = studentDao.get(1);
-		assertEquals("testName4", actual.getName());
-		assertEquals("testLastName4", actual.getLastName());
+		assertEquals(TEST_NAME_4, actual.getName());
+		assertEquals(TEST_LAST_NAME_4, actual.getLastName());
 		assertEquals(44, actual.getAge());
 		assertEquals(1, actual.getId());
 	}
@@ -86,4 +95,13 @@ class StudentDaoTest {
 		assertEquals(2, actualList.size());
 	}
 	
+	@Test
+	void testgetStudentRelatedGroup() {
+		List<Student> studentsList = studentDao.getStudentRelatedGroup(1);
+		
+		assertEquals(1, studentsList.get(0).getId());
+		assertEquals(2, studentsList.get(1).getId());
+		assertEquals(TEST_NAME_1, studentsList.get(0).getName());
+		assertEquals(TEST_NAME_2, studentsList.get(1).getName());
+	}
 }
