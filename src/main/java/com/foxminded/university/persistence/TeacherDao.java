@@ -1,4 +1,4 @@
-package com.foxminded.university.dao;
+package com.foxminded.university.persistence;
 
 import java.util.List;
 import javax.sql.DataSource;

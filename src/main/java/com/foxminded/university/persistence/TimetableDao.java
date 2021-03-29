@@ -1,4 +1,4 @@
-package com.foxminded.university.dao;
+package com.foxminded.university.persistence;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

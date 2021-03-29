@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.foxminded.university.domain.models.Lesson;
+import com.foxminded.university.persistence.LessonDao;
 
 class LessonDaoTest {
 

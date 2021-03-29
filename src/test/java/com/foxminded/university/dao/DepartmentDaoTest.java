@@ -9,6 +9,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.foxminded.university.domain.models.Department;
+import com.foxminded.university.persistence.DepartmentDao;
 
 class DepartmentDaoTest {
 
