@@ -25,15 +25,6 @@ public class StudentDao implements Dao<Student> {
     private static final String COLUMN_AGE = "age";
     private static final String COLUMN_ID = "id";
 
-    private final RowMapper<Student> studentRowMapper = (resultSet, rowNum) -> {
-        Student student = new Student();
-        student.setId(resultSet.getInt(COLUMN_ID));
-        student.setName(resultSet.getString(COLUMN_NAME));
-        student.setLastName(resultSet.getString(COLUMN_LAST_NAME));
-        student.setAge(resultSet.getInt(COLUMN_AGE));
-        return student;
-    };
-
     @Autowired
     public StudentDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -46,12 +37,12 @@ public class StudentDao implements Dao<Student> {
 
     @Override
     public Student get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, studentRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Student> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, studentRowMapper);
+        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
     }
 
     @Override
@@ -65,10 +56,22 @@ public class StudentDao implements Dao<Student> {
     }
 
     public List<Student> getStudentRelatedGroup(int groupId) {
-        return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, studentRowMapper, groupId);
+        return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
     }
 
     public void setGroupToStudent(int studentId, int groupId) {
         jdbcTemplate.update(QUERY_UPDATE_GROUP_ID, groupId, studentId);
     }
+    
+    private RowMapper<Student> getRowMapper() {
+        return (resultSet, rowNum) -> {
+            Student student = new Student();
+            student.setId(resultSet.getInt(COLUMN_ID));
+            student.setName(resultSet.getString(COLUMN_NAME));
+            student.setLastName(resultSet.getString(COLUMN_LAST_NAME));
+            student.setAge(resultSet.getInt(COLUMN_AGE));
+            return student;
+        };
+    }
+
 }

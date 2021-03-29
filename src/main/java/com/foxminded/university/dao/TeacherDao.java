@@ -12,14 +12,7 @@ import com.foxminded.university.models.Teacher;
 public class TeacherDao implements Dao<Teacher> {
 
     private JdbcTemplate jdbcTemplate;
-    private final RowMapper<Teacher> teacherRowMapper = (resultSet, rowNum) -> {
-        Teacher teacher = new Teacher();
-        teacher.setId(resultSet.getInt(COLUMN_ID));
-        teacher.setName(resultSet.getString(COLUMN_NAME));
-        teacher.setLastName(resultSet.getString(COLUMN_LAST_NAME));
-        return teacher;
-    };
-
+    
     private static final String QUERY_ADD = "insert into teachers(name, last_name) values(?, ?)";
     private static final String QUERY_GET_BY_ID = "select * from teachers where id=?";
     private static final String QUERY_GET_ALL = "select * from teachers";
@@ -42,12 +35,12 @@ public class TeacherDao implements Dao<Teacher> {
 
     @Override
     public Teacher get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, teacherRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Teacher> getAll() {
-        return jdbcTemplate.query(QUERY_GET_ALL, teacherRowMapper);
+        return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
     }
 
     @Override
@@ -61,6 +54,17 @@ public class TeacherDao implements Dao<Teacher> {
     }
     
     public Teacher getTeacherByLessonId(int lessonId) {
-        return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, teacherRowMapper, lessonId);
+        return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, getRowMapper(), lessonId);
     }
+    
+    private RowMapper<Teacher> getRowMapper() {
+        return (resultSet, rowNum) -> {
+            Teacher teacher = new Teacher();
+            teacher.setId(resultSet.getInt(COLUMN_ID));
+            teacher.setName(resultSet.getString(COLUMN_NAME));
+            teacher.setLastName(resultSet.getString(COLUMN_LAST_NAME));
+            return teacher;
+        };
+    }
+
 }

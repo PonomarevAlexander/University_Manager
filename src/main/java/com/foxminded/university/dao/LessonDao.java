@@ -15,14 +15,6 @@ public class LessonDao implements Dao<Lesson> {
 
     private JdbcTemplate jdbcTemplate;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final RowMapper<Lesson> lessonRowMapper = (resultSet, rowNum) -> {
-        Lesson lesson = new Lesson();
-        lesson.setId(resultSet.getInt(COLUMN_ID));
-        lesson.setName(resultSet.getString(COLUMN_NAME));
-        lesson.setStartTime(LocalDateTime.parse(resultSet.getString(COLUMN_START_TIME), FORMATTER));
-        lesson.setLessonDurationSecond(resultSet.getInt(COLUMN_DURATION));
-        return lesson;
-    };
     private static final String QUERY_INSERT = "insert into lessons(name, start_time, duration) values(?,?,?)";
     private static final String QUERY_INSERT_LESSON_TO_TIMETABLE = "insert into timetables_lessons(lesson_id, timetable_id) values(?, ?)";
     private static final String QUERY_GET_BY_ID = "select * from lessons where id=?";
@@ -48,12 +40,12 @@ public class LessonDao implements Dao<Lesson> {
 
     @Override
     public Lesson get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, lessonRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Lesson> getAll() {
-        return jdbcTemplate.query(QUERY_GET_ALL, lessonRowMapper);
+        return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
     }
 
     @Override
@@ -72,6 +64,18 @@ public class LessonDao implements Dao<Lesson> {
     }
     
     public List<Lesson> getLessonsOfTimetable(int timetableId) {
-        return jdbcTemplate.query(QUERY_GET_LESSONS_OF_TIMETABLE, lessonRowMapper, timetableId);
+        return jdbcTemplate.query(QUERY_GET_LESSONS_OF_TIMETABLE, getRowMapper(), timetableId);
     }
+    
+    private RowMapper<Lesson> getRowMapper() {
+        return (resultSet, rowNum) -> {
+            Lesson lesson = new Lesson();
+            lesson.setId(resultSet.getInt(COLUMN_ID));
+            lesson.setName(resultSet.getString(COLUMN_NAME));
+            lesson.setStartTime(LocalDateTime.parse(resultSet.getString(COLUMN_START_TIME), FORMATTER));
+            lesson.setLessonDurationSecond(resultSet.getInt(COLUMN_DURATION));
+            return lesson;
+        };
+    }
+
 }

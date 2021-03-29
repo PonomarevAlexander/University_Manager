@@ -15,12 +15,6 @@ import com.foxminded.university.models.Department;
 public class DepartmentDao implements Dao<Department> {
     
     private JdbcTemplate jdbcTemplate;
-    private final RowMapper<Department> departmentRowMapper = (resultSet, rowNum) -> {
-        Department department = new Department();
-        department.setId(resultSet.getInt("id"));
-        department.setName(resultSet.getString("name"));
-        return department;
-    };
     private static final String QUERY_INSERT = "insert into departments(name) values(?)";
     private static final String QUERY_SELECT_BY_ID = "select * from departments where id=?";
     private static final String QUERY_SELECT_ALL = "select * from departments";
@@ -39,12 +33,12 @@ public class DepartmentDao implements Dao<Department> {
 
     @Override
     public Department get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, departmentRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Department> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, departmentRowMapper);
+        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
     }
 
     @Override
@@ -56,4 +50,14 @@ public class DepartmentDao implements Dao<Department> {
     public void remove(int id) {
         jdbcTemplate.update(QUERY_DELETE, id);
     }
+    
+    private RowMapper<Department> getRowMapper() { 
+        return (resultSet, rowNum) -> {
+            Department department = new Department();
+            department.setId(resultSet.getInt("id"));
+            department.setName(resultSet.getString("name"));
+            return department;
+        };
+    }
+
 }
