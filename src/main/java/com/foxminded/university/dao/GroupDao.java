@@ -22,13 +22,6 @@ public class GroupDao implements Dao<Group> {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
 
-    private final RowMapper<Group> groupRowMapper = (resultSet, rowNum) -> {
-        Group group = new Group();
-        group.setId(resultSet.getInt(COLUMN_ID));
-        group.setName(resultSet.getString(COLUMN_NAME));
-        return group;
-    };
-
     @Autowired
     public GroupDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -41,12 +34,12 @@ public class GroupDao implements Dao<Group> {
 
     @Override
     public Group get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, groupRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Group> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, groupRowMapper);
+        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
     }
 
     @Override
@@ -60,6 +53,16 @@ public class GroupDao implements Dao<Group> {
     }
 
     public Group getStudentGroup(int studentId) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, groupRowMapper, studentId);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, getRowMapper(), studentId);
     }
+    
+    private RowMapper<Group> getRowMapper() {
+        return (resultSet, rowNum) -> {
+            Group group = new Group();
+            group.setId(resultSet.getInt(COLUMN_ID));
+            group.setName(resultSet.getString(COLUMN_NAME));
+            return group;
+        };
+    }
+
 }

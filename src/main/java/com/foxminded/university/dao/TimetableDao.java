@@ -14,13 +14,8 @@ import com.foxminded.university.models.Timetable;
 public class TimetableDao implements Dao<Timetable> {
 
     private JdbcTemplate jdbcTemplate;
+    
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final RowMapper<Timetable> timetableRowMapper = (resultSet, rowNum) -> {
-        Timetable timetable = new Timetable();
-        timetable.setId(resultSet.getInt(COLUMN_ID));
-        timetable.setCreationDate(LocalDateTime.parse(resultSet.getString(COLUMN_CREATION_DATE), FORMATTER));
-        return timetable;
-    };
     private static final String QUERY_INSERT = "insert into timetables(creation_date) values(?)";
     private static final String QUERY_SELECT_BY_ID = "select * from timetables where id=?";
     private static final String QUERY_SELECT_ALL = "select * from timetables";
@@ -42,12 +37,12 @@ public class TimetableDao implements Dao<Timetable> {
 
     @Override
     public Timetable get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, timetableRowMapper, id);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
     }
 
     @Override
     public List<Timetable> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, timetableRowMapper);
+        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
     }
 
     @Override
@@ -61,6 +56,16 @@ public class TimetableDao implements Dao<Timetable> {
     }
     
     public Timetable getTimetableRelatedTeacher(int teacherId) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_TEACHER, timetableRowMapper, teacherId);
+        return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_TEACHER, getRowMapper(), teacherId);
     }
+    
+    private RowMapper<Timetable> getRowMapper() {
+        return (resultSet, rowNum) -> {
+            Timetable timetable = new Timetable();
+            timetable.setId(resultSet.getInt(COLUMN_ID));
+            timetable.setCreationDate(LocalDateTime.parse(resultSet.getString(COLUMN_CREATION_DATE), FORMATTER));
+            return timetable;
+        };
+    }
+
 }
