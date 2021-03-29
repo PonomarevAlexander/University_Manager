@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.models.Lesson;
+
+import com.foxminded.university.domain.models.Lesson;
 
 @Repository
 public class LessonDao implements Dao<Lesson> {

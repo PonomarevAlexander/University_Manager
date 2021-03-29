@@ -1,4 +1,4 @@
-package com.foxminded.university.models;
+package com.foxminded.university.domain.models;
 
 import java.time.LocalDateTime;
 import java.util.List;

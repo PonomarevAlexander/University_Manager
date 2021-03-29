@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.models.Timetable;
+
+import com.foxminded.university.domain.models.Timetable;
 
 @Repository
 public class TimetableDao implements Dao<Timetable> {

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.foxminded.university.models.Teacher;
+import com.foxminded.university.domain.models.Teacher;
 
 class TeacherDaoTest {
 

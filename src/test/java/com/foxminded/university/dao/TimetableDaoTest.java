@@ -9,7 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import com.foxminded.university.models.Timetable;
+
+import com.foxminded.university.domain.models.Timetable;
 
 class TimetableDaoTest {
 

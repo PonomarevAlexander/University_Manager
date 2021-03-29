@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import com.foxminded.university.models.Department;
+import com.foxminded.university.domain.models.Department;
 
 @Repository
 public class DepartmentDao implements Dao<Department> {

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.foxminded.university.models.Lesson;
+import com.foxminded.university.domain.models.Lesson;
 
 class LessonDaoTest {
 
