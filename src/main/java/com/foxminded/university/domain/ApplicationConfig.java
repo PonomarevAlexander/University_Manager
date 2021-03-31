@@ -1,4 +1,4 @@
-package com.foxminded.university.persistence;
+package com.foxminded.university.domain;
 
 import javax.sql.DataSource;
 
@@ -10,9 +10,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @Configuration
-@ComponentScan("com.foxminded.university.dao")
+@ComponentScan("com.foxminded.university")
 @PropertySource("classpath:db_config.properties")
-public class PersistenceConfig {
+public class ApplicationConfig {
     
     @Value("${database.url}")
     private String url;
