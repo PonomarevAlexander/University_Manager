@@ -21,6 +21,7 @@ public class TimetableDao implements Dao<Timetable> {
     private static final String QUERY_SELECT_BY_ID = "select * from timetables where id=?";
     private static final String QUERY_SELECT_ALL = "select * from timetables";
     private static final String QUERY_SELECT_TIMETABLE_BY_TEACHER = "select t.* from timetables t left join timetables_teachers tt on t.id=tt.timetable_id where tt.teacher_id=?";
+    private static final String QUERY_SELECT_TIMETABLE_BY_GROUP = "select t.* from timetables t left join timetables_groups tg on t.id=tg.timetable_id where group_id=?";
     private static final String QUERY_UPDATE = "update timetables set creation_date=?";
     private static final String QUERY_DELETE_BY_ID = "delete from timetables where id=?";
     private static final String COLUMN_ID = "id";
@@ -58,6 +59,10 @@ public class TimetableDao implements Dao<Timetable> {
     
     public Timetable getTimetableRelatedTeacher(int teacherId) {
         return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_TEACHER, getRowMapper(), teacherId);
+    }
+    
+    public Timetable getTimetableRelatedGroup(int groupId) {
+        return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_GROUP, getRowMapper(), groupId);
     }
     
     private RowMapper<Timetable> getRowMapper() {

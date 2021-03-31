@@ -18,6 +18,7 @@ public class TeacherDao implements Dao<Teacher> {
     private static final String QUERY_GET_BY_ID = "select * from teachers where id=?";
     private static final String QUERY_GET_ALL = "select * from teachers";
     private static final String QUERY_GET_TEACHER_BY_LESSON = "select t.* from teachers t left join teachers_lessons tl on t.id=tl.teachers_id where tl.lesson_id=?";
+    private static final String QUERY_GET_TEACHER_BY_GROUP = "select t.* from teachers t left join groups_teachers gt on t.id=gt.teacher_id where gt.group_id=?";
     private static final String QUERY_UPDATE = "update teachers set name=?, last_name=? where id=?";
     private static final String QUERY_DELETE = "delete from teachers where id=?";
     private static final String COLUMN_ID = "id";
@@ -56,6 +57,10 @@ public class TeacherDao implements Dao<Teacher> {
     
     public Teacher getTeacherByLessonId(int lessonId) {
         return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, getRowMapper(), lessonId);
+    }
+    
+    public Teacher getGroupTeacher(int groupId) {
+        return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_GROUP, getRowMapper(), groupId);
     }
     
     private RowMapper<Teacher> getRowMapper() {
