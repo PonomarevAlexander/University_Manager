@@ -5,9 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Student;
 import com.foxminded.university.domain.models.Teacher;

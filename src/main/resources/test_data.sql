@@ -6,13 +6,13 @@ insert into students(name, last_name, age) values('studentName1', 'studentLastNa
 insert into students(name, last_name, age) values('studentName2', 'studentLastName2', 22);
 insert into students(name, last_name, age) values('studentName3', 'studentLastName3', 33);
 
-insert into teachers(name, last_name) values('testName1', 'testLastName1');
-insert into teachers(name, last_name) values('testName2', 'testLastName2');
-insert into teachers(name, last_name) values('testName3', 'testLastName3');
+insert into teachers(name, last_name) values('teacherName1', 'teacherLastName1');
+insert into teachers(name, last_name) values('teacherName2', 'teacherLastName2');
+insert into teachers(name, last_name) values('teacherName3', 'teacherLastName3');
 
-insert into lessons(name, start_time, duration) values('testName1', '2021-01-11 11:11:11', 5400);
-insert into lessons(name, start_time, duration) values('testName2', '2021-02-12 12:12:12', 5400);
-insert into lessons(name, start_time, duration) values('testName3', '2021-03-13 13:13:13', 5400);
+insert into lessons(name, start_time, duration) values('math', '2021-01-11 11:11:11', 5400);
+insert into lessons(name, start_time, duration) values('english', '2021-02-12 12:12:12', 5400);
+insert into lessons(name, start_time, duration) values('mechanics', '2021-03-13 13:13:13', 5400);
 
 insert into timetables(creation_date) values('2021-01-11 11:11:11');
 insert into timetables(creation_date) values('2021-02-12 12:12:12');
@@ -29,6 +29,10 @@ insert into timetables_lessons(timetable_id, lesson_id) values(2, 3);
 insert into timetables_groups(timetable_id, group_id) values(1, 1);
 insert into timetables_groups(timetable_id, group_id) values(2, 2);
 insert into timetables_groups(timetable_id, group_id) values(3, 3);
+
+insert into timetables_teachers(timetable_id, teacher_id) values(1, 1);
+insert into timetables_teachers(timetable_id, teacher_id) values(2, 2);
+insert into timetables_teachers(timetable_id, teacher_id) values(3, 3);
 
 insert into departments(name) values('department1');
 insert into departments(name) values('department2');

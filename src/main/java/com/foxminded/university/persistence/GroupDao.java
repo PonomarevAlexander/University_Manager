@@ -84,4 +84,9 @@ public class GroupDao implements Dao<Group> {
         };
     }
 
+    public Group getGroupByLesson(int id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
