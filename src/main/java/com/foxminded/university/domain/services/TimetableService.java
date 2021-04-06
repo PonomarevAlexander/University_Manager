@@ -1,10 +1,8 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Timetable;
 import com.foxminded.university.persistence.GroupDao;
@@ -54,7 +52,8 @@ public class TimetableService implements Service<Timetable> {
         lessons.forEach(lesson -> {
             lesson.setTeacher(
                     teacherDao.getTeacherByLessonId(lesson.getId()));
-            lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
+            lesson.setGroup(
+                    groupDao.getGroupByLesson(lesson.getId()));
         });
         timetable.setSchedule(lessons);
         return timetable;
@@ -68,7 +67,8 @@ public class TimetableService implements Service<Timetable> {
             lessons.forEach(lesson -> {
                 lesson.setTeacher(
                         teacherDao.getTeacherByLessonId(lesson.getId()));
-                lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
+                lesson.setGroup(
+                        groupDao.getGroupByLesson(lesson.getId()));
             });
             timetable.setSchedule(lessons);
         });
@@ -87,5 +87,4 @@ public class TimetableService implements Service<Timetable> {
     public void remove(int id) {
         timetableDao.remove(id);
     }
-
 }

@@ -24,8 +24,11 @@ class TimetableDaoTest {
 
     @BeforeEach
     void init() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
 
         timetableDao = new TimetableDao(dataSource);
     }

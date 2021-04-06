@@ -3,11 +3,9 @@ package com.foxminded.university.domain.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Teacher;
 import com.foxminded.university.domain.models.Timetable;
@@ -28,6 +25,12 @@ import com.foxminded.university.persistence.TimetableDao;
 
 @ExtendWith(MockitoExtension.class)
 class TimetableServiceTest {
+    
+    private TimetableService timetableService;
+    private GroupDao groupDao;
+    private TimetableDao timetableDao;
+    private TeacherDao teacherDao;
+    private LessonDao lessonDao;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
@@ -55,12 +58,6 @@ class TimetableServiceTest {
     
     @InjectMocks
     TimetableService mockedTimetableService;
-    
-    private TimetableService timetableService;
-    private GroupDao groupDao;
-    private TimetableDao timetableDao;
-    private TeacherDao teacherDao;
-    private LessonDao lessonDao;
     
     @BeforeEach
     void setup() {

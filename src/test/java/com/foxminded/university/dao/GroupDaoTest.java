@@ -1,13 +1,13 @@
 package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.persistence.GroupDao;
 
@@ -23,8 +23,11 @@ class GroupDaoTest {
 
     @BeforeEach
     void init() {
-        DataSource testDataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-                .addScript(TEST_SCHEMA).addScript(TEST_DATA).build();
+        DataSource testDataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
 
         groupDao = new GroupDao(testDataSource);
     }

@@ -2,6 +2,7 @@ package com.foxminded.university.domain.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,12 @@ import com.foxminded.university.persistence.TimetableDao;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceTest {
+
+    private GroupService groupService;
+    private StudentDao studentDao;
+    private GroupDao groupDao;
+    private TimetableDao timetableDao;
+    private TeacherDao teacherDao;
 
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
     private static final String TEST_DATA = "classpath:test_data.sql";
@@ -61,16 +68,14 @@ class GroupServiceTest {
     @InjectMocks
     GroupService mockedGroupService;
 
-    GroupService groupService;
-    StudentDao studentDao;
-    GroupDao groupDao;
-    TimetableDao timetableDao;
-    TeacherDao teacherDao;
     
     @BeforeEach
     void setup() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
         
         this.studentDao = new StudentDao(dataSource);
         this.groupDao = new GroupDao(dataSource);
@@ -177,9 +182,5 @@ class GroupServiceTest {
         
         assertEquals(3, initial.size());
         assertEquals(2, actual.size());
-    }
-    
-    
-    
-    
+    }    
 }

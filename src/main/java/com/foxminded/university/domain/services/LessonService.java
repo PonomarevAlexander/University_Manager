@@ -1,14 +1,11 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.LessonDao;
 import com.foxminded.university.persistence.TeacherDao;
-import com.foxminded.university.persistence.TimetableDao;
 
 public class LessonService implements Service<Lesson> {
     

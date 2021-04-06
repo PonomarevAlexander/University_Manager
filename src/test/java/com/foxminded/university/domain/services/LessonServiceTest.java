@@ -27,6 +27,11 @@ import com.foxminded.university.persistence.TimetableDao;
 @ExtendWith(MockitoExtension.class)
 class LessonServiceTest {
 
+    private GroupDao groupDao;
+    private TeacherDao teacherDao;
+    private LessonDao lessonDao;
+    private LessonService lessonService;
+    
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
     private static final String TEST_DATA = "classpath:test_data.sql";
@@ -34,13 +39,6 @@ class LessonServiceTest {
     private static final String TEST_NAME_4 = "biology";
     private static final String TEST_NAME_1 = "math";
     private static final String TEST_TIME_1 = "2021-01-11 11:11:11";
-    
-    
-    private GroupDao groupDao;
-    private TeacherDao teacherDao;
-    private LessonDao lessonDao;
-    private LessonService lessonService;
-    
     
     @Mock
     GroupDao mockedGroupDao;

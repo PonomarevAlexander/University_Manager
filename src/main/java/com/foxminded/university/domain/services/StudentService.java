@@ -75,10 +75,13 @@ public class StudentService implements Service<Student> {
         studentsList.forEach(student -> {
             Group group = groupDao.getStudentGroup(student.getId());
             Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
-            timetable.setSchedule(lessonDao.getLessonsOfTimetable(timetable.getId()));
-            group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
+            timetable.setSchedule(
+                    lessonDao.getLessonsOfTimetable(timetable.getId()));
+            group.setStudentList(
+                    studentDao.getStudentRelatedGroup(group.getId()));
             group.setTimetable(timetable);
-            group.setCheef(teacherDao.getGroupTeacher(group.getId()));
+            group.setCheef(
+                    teacherDao.getGroupTeacher(group.getId()));
             student.setGroup(group);
         });
         return studentsList;

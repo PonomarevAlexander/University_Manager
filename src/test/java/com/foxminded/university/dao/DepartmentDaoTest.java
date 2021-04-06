@@ -24,7 +24,8 @@ class DepartmentDaoTest {
         DataSource testDataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+                .addScript(TEST_DATA)
+                .build();
 
         departmentDao = new DepartmentDao(testDataSource);
     }

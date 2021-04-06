@@ -1,6 +1,7 @@
 package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import com.foxminded.university.domain.models.Student;
 import com.foxminded.university.persistence.StudentDao;
 
@@ -27,8 +27,12 @@ class StudentDaoTest {
 
     @BeforeEach
     void init() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
+        
         this.studentDao = new StudentDao(dataSource);
     }
 

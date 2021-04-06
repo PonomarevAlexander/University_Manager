@@ -18,19 +18,22 @@ class TeacherDaoTest {
 
     TeacherDao teacherDao;
 
-    private static final String TEST_NAME_1 = "testName1";
-    private static final String TEST_NAME_2 = "testName2";
-    private static final String TEST_NAME_4 = "testName4";
-    private static final String TEST_LAST_NAME_1 = "testLastName1";
-    private static final String TEST_LAST_NAME_2 = "testLastName2";
-    private static final String TEST_LAST_NAME_4 = "testLastName4";
+    private static final String TEST_NAME_1 = "teacherName1";
+    private static final String TEST_NAME_2 = "teacherName2";
+    private static final String TEST_NAME_4 = "teacherName14";
+    private static final String TEST_LAST_NAME_1 = "teacherLastName1";
+    private static final String TEST_LAST_NAME_2 = "teacherLastName2";
+    private static final String TEST_LAST_NAME_4 = "teacherLastName4";
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
     private static final String TEST_DATA = "classpath:test_data.sql";
 
     @BeforeEach
     void init() {
-        DataSource testDataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-                .addScript(TEST_SCHEMA).addScript(TEST_DATA).build();
+        DataSource testDataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
 
         teacherDao = new TeacherDao(testDataSource);
     }

@@ -20,15 +20,16 @@ import com.foxminded.university.persistence.TeacherDao;
 @ExtendWith(MockitoExtension.class)
 class DepartmentServiceTest {
     
+    private GroupDao groupDao;
+    private TeacherDao teacherDao;
+    private DepartmentDao departmentDao;
+    private DepartmentService departmentService;
+    
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
     private static final String TEST_DATA = "classpath:test_data.sql";
     private static final String TEST_NAME_1 = "department1";
     private static final String TEST_NAME_4 = "department4";
     private static final String TEST_NAME_3 = "department3";
-    private GroupDao groupDao;
-    private TeacherDao teacherDao;
-    private DepartmentDao departmentDao;
-    private DepartmentService departmentService;
     
     @Mock
     TeacherDao mockedTeacherDao;

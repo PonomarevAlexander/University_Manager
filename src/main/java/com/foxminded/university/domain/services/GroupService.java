@@ -2,12 +2,14 @@ package com.foxminded.university.domain.services;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.StudentDao;
 import com.foxminded.university.persistence.TeacherDao;
 import com.foxminded.university.persistence.TimetableDao;
 
+@Component
 public class GroupService implements Service<Group> {
     
     private StudentDao studentDao;
@@ -80,5 +82,4 @@ public class GroupService implements Service<Group> {
         groupDao.remove(id);
         
     }
-
 }

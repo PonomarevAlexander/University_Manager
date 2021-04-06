@@ -20,10 +20,14 @@ public class GroupDao implements Dao<Group> {
     private JdbcTemplate jdbcTemplate;
 
     private static final String QUERY_INSERT = "insert into groups(name) values(?)";
+    private static final String QUERY_INSERT_DEPARTMENT = "insert into groups(department_id) values(?) where groups.id=? on conflict do nonthing";
     private static final String QUERY_SELECT_BY_ID = "select * from groups where id=?";
     private static final String QUERY_SELECT_ALL = "select * from groups";
     private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students_groups sg on g.id=sg.group_id where sg.student_id=?";
+    private static final String QUERY_SELECT_GROUP_BY_LESSON = "select g.* from groups g left join lessons l on l.group_id=g.id where l.id=?";
+    private static final String QUERY_SELECT_GROUP_BY_DEPARTMENT = "select * from groups where groups.department_id=?";
     private static final String QUERY_UPDATE = "update groups set name=? where id=?";
+    private static final String QUERY_UPDATE_DEPARTMENT = "update groups set department_id=? where groups.id=?";
     private static final String QUERY_DELETE = "delete from groups where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
@@ -64,6 +68,22 @@ public class GroupDao implements Dao<Group> {
         return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, getRowMapper(), studentId);
     }
     
+    public Group getGroupByLesson(int lessonId) {
+        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_LESSON, getRowMapper(), lessonId);
+    }
+    
+    public List<Group> getGroupsByDepartment(int departmentId) {
+        return jdbcTemplate.query(QUERY_SELECT_GROUP_BY_DEPARTMENT, getRowMapper(), departmentId);
+    }
+    
+    public void setDepartmentToGroup(int departmentId, int groupId) {
+        jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, groupId);
+    }
+    
+    public void updateGroupDepartment(int departmentId, int groupId) {
+        jdbcTemplate.update(QUERY_UPDATE_DEPARTMENT, departmentId, groupId);
+    }
+    
     private RowMapper<Group> getRowMapper() {
         return (resultSet, rowNum) -> {
             Group group = new Group();
@@ -83,10 +103,4 @@ public class GroupDao implements Dao<Group> {
             }
         };
     }
-
-    public Group getGroupByLesson(int id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -23,6 +23,12 @@ import com.foxminded.university.persistence.TimetableDao;
 
 @ExtendWith(MockitoExtension.class)
 class TeacherServiceTest {
+    
+    private TeacherService teacherService;
+    private TimetableDao timetableDao;
+    private TeacherDao teacherDao;
+    private LessonDao lessonDao;
+    
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
     private static final String TEST_DATA = "classpath:test_data.sql";
     private static final String TEST_NAME_1 = "teacherName1";
@@ -51,20 +57,16 @@ class TeacherServiceTest {
     @Mock
     List<Teacher> mockedTeacherList;
     
-    
     @InjectMocks
     TeacherService mockedTeacherService;
     
-    TeacherService teacherService;
-    TimetableDao timetableDao;
-    TeacherDao teacherDao;
-    LessonDao lessonDao;
-    
     @BeforeEach
     void setup() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
                 .addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+                .addScript(TEST_DATA)
+                .build();
         
         this.timetableDao = new TimetableDao(dataSource);
         this.teacherDao = new TeacherDao(dataSource);
