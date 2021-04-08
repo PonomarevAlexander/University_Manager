@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.models.Group;
+import com.foxminded.university.domain.models.Student;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.StudentDao;
 import com.foxminded.university.persistence.TeacherDao;
@@ -64,6 +65,10 @@ public class GroupService implements Service<Group> {
     
     public void changeDepartment(Group group, int departmentId) {
         groupDao.updateGroupDepartment(departmentId, group.getId());
+    }
+    
+    public List<Student> getStudentsOfGroup(Group group) {
+        return studentDao.getStudentRelatedGroup(group.getId());
     }
     
     @Autowired

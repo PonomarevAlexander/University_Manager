@@ -15,21 +15,6 @@ public class DepartmentService implements Service<Department> {
     private TeacherDao teacherDao;
     private DepartmentDao departmentDao;
 
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    @Autowired
-    public void setDepartmentDao(DepartmentDao departmentDao) {
-        this.departmentDao = departmentDao;
-    }
-
     @Override
     public void add(Department department) {
         int departmentId = departmentDao.add(department);
@@ -73,6 +58,21 @@ public class DepartmentService implements Service<Department> {
     @Override
     public void remove(int id) {
         departmentDao.remove(id);
+    }
+    
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
+        this.teacherDao = teacherDao;
+    }
+
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
+
+    @Autowired
+    public void setDepartmentDao(DepartmentDao departmentDao) {
+        this.departmentDao = departmentDao;
     }
 
 }

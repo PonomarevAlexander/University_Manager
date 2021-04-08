@@ -3,7 +3,9 @@ package com.foxminded.university.domain.services;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Lesson;
+import com.foxminded.university.domain.models.Teacher;
 import com.foxminded.university.domain.models.Timetable;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.LessonDao;
@@ -17,26 +19,6 @@ public class TimetableService implements Service<Timetable> {
     private LessonDao lessonDao;
     private TeacherDao teacherDao;
     private GroupDao groupDao;
-
-    @Autowired
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
-
-    @Autowired
-    public void setLessonDao(LessonDao lessonDao) {
-        this.lessonDao = lessonDao;
-    }
-    
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
 
     @Override
     public void add(Timetable timetable) {
@@ -86,5 +68,33 @@ public class TimetableService implements Service<Timetable> {
     @Override
     public void remove(int id) {
         timetableDao.remove(id);
+    }
+    
+    public Timetable getTimetablesByTeacher(Teacher teacher) {
+        return timetableDao.getTimetableRelatedTeacher(teacher.getId()); 
+    }
+    
+    public Timetable getTimetableByGroup(Group group) {
+        return timetableDao.getTimetableRelatedGroup(group.getId());
+    }
+    
+    @Autowired
+    public void setTimetableDao(TimetableDao timetableDao) {
+        this.timetableDao = timetableDao;
+    }
+
+    @Autowired
+    public void setLessonDao(LessonDao lessonDao) {
+        this.lessonDao = lessonDao;
+    }
+    
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
+        this.teacherDao = teacherDao;
+    }
+
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
     }
 }

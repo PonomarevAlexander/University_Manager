@@ -3,6 +3,7 @@ package com.foxminded.university.domain.services;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.foxminded.university.domain.models.Lesson;
+import com.foxminded.university.domain.models.Timetable;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.LessonDao;
 import com.foxminded.university.persistence.TeacherDao;
@@ -13,21 +14,6 @@ public class LessonService implements Service<Lesson> {
     private LessonDao lessonDao;
     private TeacherDao teacherDao;
     
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setLessonDao(LessonDao lessonDao) {
-        this.lessonDao = lessonDao;
-    }
-    
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
     @Override
     public void add(Lesson lesson) {
         lessonDao.add(lesson);
@@ -63,5 +49,24 @@ public class LessonService implements Service<Lesson> {
     @Override
     public void remove(int id) {
         lessonDao.remove(id);
+    }
+    
+    public List<Lesson> getLessonsByTimetable(Timetable timetable) {
+        return lessonDao.getLessonsOfTimetable(timetable.getId());
+    }
+    
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
+        this.teacherDao = teacherDao;
+    }
+
+    @Autowired
+    public void setLessonDao(LessonDao lessonDao) {
+        this.lessonDao = lessonDao;
+    }
+    
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
     }
 }

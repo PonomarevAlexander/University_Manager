@@ -26,6 +26,7 @@ public class GroupDao implements Dao<Group> {
     private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students_groups sg on g.id=sg.group_id where sg.student_id=?";
     private static final String QUERY_SELECT_GROUP_BY_LESSON = "select g.* from groups g left join lessons l on l.group_id=g.id where l.id=?";
     private static final String QUERY_SELECT_GROUP_BY_DEPARTMENT = "select * from groups where groups.department_id=?";
+    private static final String QUERY_SELECT_GROUP_BY_TEACHER = "select * from groups where head=?";
     private static final String QUERY_UPDATE = "update groups set name=? where id=?";
     private static final String QUERY_UPDATE_DEPARTMENT = "update groups set department_id=? where groups.id=?";
     private static final String QUERY_DELETE = "delete from groups where id=?";
@@ -82,6 +83,10 @@ public class GroupDao implements Dao<Group> {
     
     public void updateGroupDepartment(int departmentId, int groupId) {
         jdbcTemplate.update(QUERY_UPDATE_DEPARTMENT, departmentId, groupId);
+    }
+    
+    public Group getGroupRelatedTeacher(int teacherId) {
+        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
     }
     
     private RowMapper<Group> getRowMapper() {

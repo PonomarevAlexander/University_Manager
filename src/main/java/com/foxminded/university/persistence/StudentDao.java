@@ -80,7 +80,7 @@ public class StudentDao implements Dao<Student> {
     public void removeStudentFromGroup(int studentId) {
         jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
     }
-
+    
     private RowMapper<Student> getRowMapper() {
         return (resultSet, rowNum) -> {
             Student student = new Student();
