@@ -20,32 +20,6 @@ public class StudentService implements Service<Student> {
     private TimetableDao timetableDao;
     private TeacherDao teacherDao;
     private LessonDao lessonDao;
-    
-    
-    @Autowired
-    public void setStudentDao(StudentDao studentDao) {
-        this.studentDao = studentDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    @Autowired
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
-
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setLessonDao(LessonDao lessonDao) {
-        this.lessonDao = lessonDao;
-    }
 
     @Override
     public void add(Student student) {
@@ -97,5 +71,38 @@ public class StudentService implements Service<Student> {
     @Override
     public void remove(int id) {
         studentDao.remove(id);
+    }
+    
+    public void assignToGroup(Student student, int targetGroup) {
+        studentDao.assignStudentToGroup(student.getId(), targetGroup);
+    }
+    
+    public void removeFromGroup(Student student) {
+        studentDao.removeStudentFromGroup(student.getId());
+    }
+
+    @Autowired
+    public void setStudentDao(StudentDao studentDao) {
+        this.studentDao = studentDao;
+    }
+
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
+
+    @Autowired
+    public void setTimetableDao(TimetableDao timetableDao) {
+        this.timetableDao = timetableDao;
+    }
+
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
+        this.teacherDao = teacherDao;
+    }
+
+    @Autowired
+    public void setLessonDao(LessonDao lessonDao) {
+        this.lessonDao = lessonDao;
     }
 }

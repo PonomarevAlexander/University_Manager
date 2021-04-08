@@ -27,6 +27,7 @@ public class StudentDao implements Dao<Student> {
     private static final String QUERY_UPDATE = "update students set name=?, last_name=?, age=? where id=?";
     private static final String QUERY_UPDATE_STUDENT_GROUP = "update students_groups set group_id=? where student_id=?";
     private static final String QUERY_DELETE_BY_ID = "delete from students where id=?";
+    private static final String QUERY_DELETE_FROM_GROUP = "update students_groups set group_id=null where student_id=?";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_LAST_NAME = "last_name";
     private static final String COLUMN_AGE = "age";
@@ -74,6 +75,10 @@ public class StudentDao implements Dao<Student> {
     
     public void updateStudentRelatedGroup(int studentId, int groupId) {
         jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
+    }
+    
+    public void removeStudentFromGroup(int studentId) {
+        jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
     }
 
     private RowMapper<Student> getRowMapper() {
