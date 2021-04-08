@@ -17,26 +17,6 @@ public class GroupService implements Service<Group> {
     private TimetableDao timetableDao;
     private TeacherDao teacherDao;
     
-    @Autowired
-    public void setStudentDao(StudentDao studentDao) {
-        this.studentDao = studentDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    @Autowired
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
-
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
     @Override
     public void add(Group group) {
         int groupId = groupDao.add(group);
@@ -80,6 +60,29 @@ public class GroupService implements Service<Group> {
     @Override
     public void remove(int id) {
         groupDao.remove(id);
-        
+    }
+    
+    public void changeDepartment(Group group, int departmentId) {
+        groupDao.updateGroupDepartment(departmentId, group.getId());
+    }
+    
+    @Autowired
+    public void setStudentDao(StudentDao studentDao) {
+        this.studentDao = studentDao;
+    }
+
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
+
+    @Autowired
+    public void setTimetableDao(TimetableDao timetableDao) {
+        this.timetableDao = timetableDao;
+    }
+
+    @Autowired
+    public void setTeacherDao(TeacherDao teacherDao) {
+        this.teacherDao = teacherDao;
     }
 }
