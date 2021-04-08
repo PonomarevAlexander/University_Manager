@@ -23,6 +23,13 @@ public class TeacherService implements Service<Teacher> {
     private GroupDao groupDao;
 
     @Override
+    public void add(Teacher teacher) {
+        int receivedId = teacherDao.add(teacher);
+        timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(),
+                receivedId);
+    }
+    
+    @Override
     public Teacher getById(int id) {
         Teacher teacher = teacherDao.get(id);
         Timetable timetable = timetableDao.getTimetableRelatedTeacher(teacher.getId());
@@ -80,11 +87,14 @@ public class TeacherService implements Service<Teacher> {
         this.lessonDao = lessonDao;
     }
 
-    @Override
-    public void add(Teacher teacher) {
-        int receivedId = teacherDao.add(teacher);
-        timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(),
-                receivedId);
+    @Autowired
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
     }
 
+    @Autowired
+    public void setStudentDao(StudentDao studentDao) {
+        this.studentDao = studentDao;
+    }
+    
 }
