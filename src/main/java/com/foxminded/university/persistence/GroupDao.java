@@ -21,9 +21,11 @@ public class GroupDao implements Dao<Group> {
 
     private static final String QUERY_INSERT = "insert into groups(name) values(?)";
     private static final String QUERY_INSERT_DEPARTMENT = "insert into groups(department_id) values(?) where groups.id=? on conflict do nonthing";
+    private static final String QUERY_INSERT_TEACHER_AS_GROUPHEAD = "insert into groups(head) values(?) where id=?";
+    private static final String QUERY_UPDATE_GROUPHEAD = "update groups set head=? where id=?";
     private static final String QUERY_SELECT_BY_ID = "select * from groups where id=?";
     private static final String QUERY_SELECT_ALL = "select * from groups";
-    private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students_groups sg on g.id=sg.group_id where sg.student_id=?";
+    private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students s on g.id=s.group_id where s.id=?";
     private static final String QUERY_SELECT_GROUP_BY_LESSON = "select g.* from groups g left join lessons l on l.group_id=g.id where l.id=?";
     private static final String QUERY_SELECT_GROUP_BY_DEPARTMENT = "select * from groups where groups.department_id=?";
     private static final String QUERY_SELECT_GROUP_BY_TEACHER = "select * from groups where head=?";
@@ -87,6 +89,14 @@ public class GroupDao implements Dao<Group> {
     
     public Group getGroupRelatedTeacher(int teacherId) {
         return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
+    }
+    
+    public void setTeacherToGroupHead(int teacherId, int groupId) {
+        jdbcTemplate.update(QUERY_INSERT_TEACHER_AS_GROUPHEAD, teacherId, groupId);
+    }
+    
+    public void updateGroupHead(int teacherId, int groupId) {
+        jdbcTemplate.update(QUERY_UPDATE_GROUPHEAD, teacherId, groupId);
     }
     
     private RowMapper<Group> getRowMapper() {
