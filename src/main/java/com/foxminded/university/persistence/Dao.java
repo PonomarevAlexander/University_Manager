@@ -1,10 +1,10 @@
-package com.foxminded.university.dao;
+package com.foxminded.university.persistence;
 
 import java.util.List;
 
 public interface Dao<T> {
 
-    void add(T entity);
+    int add(T entity);
 
     T get(int id);
 

@@ -1,14 +1,15 @@
 package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import com.foxminded.university.domain.models.Group;
+import com.foxminded.university.persistence.GroupDao;
 
 class GroupDaoTest {
 
@@ -22,8 +23,11 @@ class GroupDaoTest {
 
     @BeforeEach
     void init() {
-        DataSource testDataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
-                .addScript(TEST_SCHEMA).addScript(TEST_DATA).build();
+        DataSource testDataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
 
         groupDao = new GroupDao(testDataSource);
     }
@@ -69,8 +73,27 @@ class GroupDaoTest {
 
     @Test
     void testGetGroupOfStudent() {
-        Group actual = groupDao.getStudentGroup(3);
+        Group actual = groupDao.getGroupByStudent(3);
         assertEquals(2, actual.getId());
         assertEquals(TEST_NAME_2, actual.getName());
+    }
+    
+    @Test
+    void testGetGroupByLesson() {
+        Group actual = groupDao.getGroupByLesson(1);
+        assertEquals(1, actual.getId());
+    }
+    
+    @Test
+    void testGetGroupByDepartment() {
+        List<Group> actual = groupDao.getGroupsByDepartment(1);
+        assertEquals(1, actual.get(0).getId());
+        assertEquals(2, actual.get(1).getId());
+    }
+    
+    @Test
+    void testGetGroupByTeacher() {
+        Group actual = groupDao.getGroupByTeacher(3);
+        assertEquals(3, actual.getId());
     }
 }

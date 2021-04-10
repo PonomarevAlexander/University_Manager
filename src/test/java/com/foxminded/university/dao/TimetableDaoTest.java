@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.foxminded.university.domain.models.Timetable;
+import com.foxminded.university.persistence.TimetableDao;
 
 class TimetableDaoTest {
 
@@ -23,8 +24,11 @@ class TimetableDaoTest {
 
     @BeforeEach
     void init() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript(TEST_SCHEMA)
-                .addScript(TEST_DATA).build();
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript(TEST_SCHEMA)
+                .addScript(TEST_DATA)
+                .build();
 
         timetableDao = new TimetableDao(dataSource);
     }
