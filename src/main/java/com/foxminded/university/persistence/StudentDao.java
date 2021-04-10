@@ -20,14 +20,13 @@ public class StudentDao implements Dao<Student> {
     private JdbcTemplate jdbcTemplate;
 
     private static final String QUERY_INSERT = "INSERT INTO students(name, last_name, age) VALUES(?, ?, ?)";
-    private static final String QUERY_INSERT_GROUP_ID = "insert into students_groups(student_id, group_id) values(?,?)";
     private static final String QUERY_SELECT_BY_ID = "select * from students where id=?";
     private static final String QUERY_SELECT_ALL = "Select * from students";
-    private static final String QUERY_SELECT_STUDENTS_RELATED_GROUP = "select s.* from students s left join students_groups sg on s.id=sg.student_id where sg.group_id=?";
+    private static final String QUERY_SELECT_STUDENTS_RELATED_GROUP = "select * from students where group_id=?";
     private static final String QUERY_UPDATE = "update students set name=?, last_name=?, age=? where id=?";
-    private static final String QUERY_UPDATE_STUDENT_GROUP = "update students_groups set group_id=? where student_id=?";
+    private static final String QUERY_UPDATE_STUDENT_GROUP = "update students set group_id=? where id=?";
     private static final String QUERY_DELETE_BY_ID = "delete from students where id=?";
-    private static final String QUERY_DELETE_FROM_GROUP = "update students_groups set group_id=null where student_id=?";
+    private static final String QUERY_DELETE_FROM_GROUP = "update students set group_id=null where id=?";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_LAST_NAME = "last_name";
     private static final String COLUMN_AGE = "age";
@@ -69,11 +68,7 @@ public class StudentDao implements Dao<Student> {
         return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
     }
 
-    public void assignStudentToGroup(int studentId, int groupId) {
-        jdbcTemplate.update(QUERY_INSERT_GROUP_ID, studentId, groupId);
-    }
-    
-    public void updateStudentRelatedGroup(int studentId, int groupId) {
+    public void setStudentToGroup(int studentId, int groupId) {
         jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
     }
     

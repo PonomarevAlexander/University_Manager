@@ -120,7 +120,7 @@ class GroupServiceTest {
         
         mockedGroupService.add(newGroup);
         verify(mockedGroupDao).add(newGroup);
-        verify(mockedTeacherDao).assignTeacherToGroup(groupTeacher.getId(), newGroup.getId());
+        verify(mockedGroupDao).updateGroupHead(groupTeacher.getId(), newGroup.getId());
         verify(mockedTimetableDao).setTimetableToGroup(timetable.getId(), newGroup.getId());
     }
     

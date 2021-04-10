@@ -24,20 +24,22 @@ public class StudentService implements Service<Student> {
     @Override
     public void add(Student student) {
         student.setId(studentDao.add(student));
-        studentDao.assignStudentToGroup(student.getId(),
-                student.getGroup().getId());
+        studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
     }
 
     @Override
     public Student getById(int id) {
         Student student = studentDao.get(id);
-        Group group = groupDao.getStudentGroup(id);
+        Group group = groupDao.getGroupByStudent(id);
         Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
         
-        timetable.setSchedule(lessonDao.getLessonsOfTimetable(timetable.getId()));
-        group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
+        timetable.setSchedule(
+                lessonDao.getLessonsOfTimetable(timetable.getId()));
+        group.setStudentList(
+                studentDao.getStudentRelatedGroup(group.getId()));
         group.setTimetable(timetable);
-        group.setCheef(teacherDao.getGroupTeacher(group.getId()));
+        group.setCheef(
+                teacherDao.getGroupTeacher(group.getId()));
         student.setGroup(group);
         
         return student;
@@ -47,7 +49,7 @@ public class StudentService implements Service<Student> {
     public List<Student> getAll() {
         List<Student> studentsList = studentDao.getAll();
         studentsList.forEach(student -> {
-            Group group = groupDao.getStudentGroup(student.getId());
+            Group group = groupDao.getGroupByStudent(student.getId());
             Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
             timetable.setSchedule(
                     lessonDao.getLessonsOfTimetable(timetable.getId()));
@@ -64,7 +66,7 @@ public class StudentService implements Service<Student> {
     @Override
     public void update(Student student) {
         studentDao.update(student);
-        studentDao.updateStudentRelatedGroup(student.getId(),
+        studentDao.setStudentToGroup(student.getId(),
                 student.getGroup().getId());
     }
 
@@ -74,7 +76,7 @@ public class StudentService implements Service<Student> {
     }
     
     public void assignToGroup(Student student, int targetGroup) {
-        studentDao.assignStudentToGroup(student.getId(), targetGroup);
+        studentDao.setStudentToGroup(student.getId(), targetGroup);
     }
     
     public void removeFromGroup(Student student) {

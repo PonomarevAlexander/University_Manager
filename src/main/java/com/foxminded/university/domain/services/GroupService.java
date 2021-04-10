@@ -21,9 +21,9 @@ public class GroupService implements Service<Group> {
     @Override
     public void add(Group group) {
         int groupId = groupDao.add(group);
-        teacherDao.assignTeacherToGroup(group.getCheef().getId(), groupId);
+        groupDao.updateGroupHead(group.getCheef().getId(), groupId);
         group.getStudentList().forEach(student ->
-            studentDao.assignStudentToGroup(student.getId(), groupId));
+            studentDao.setStudentToGroup(student.getId(), groupId));
         timetableDao.setTimetableToGroup(group.getTimetable().getId(), groupId);
     }
 
@@ -51,10 +51,10 @@ public class GroupService implements Service<Group> {
     @Override
     public void update(Group group) {
         groupDao.update(group);
-        teacherDao.updateGroupTeacher(group.getCheef().getId(),
+        groupDao.updateGroupHead(group.getCheef().getId(),
                 group.getId());
         group.getStudentList().forEach(student -> 
-                studentDao.updateStudentRelatedGroup(student.getId(), group.getId()));
+                studentDao.setStudentToGroup(student.getId(), group.getId()));
         timetableDao.updateTimetableRelatedGroup(group.getTimetable().getId(), group.getId());
     }
 
@@ -63,7 +63,7 @@ public class GroupService implements Service<Group> {
         groupDao.remove(id);
     }
     
-    public void changeDepartment(Group group, int departmentId) {
+    public void changeDepartmentForGroup(Group group, int departmentId) {
         groupDao.updateGroupDepartment(departmentId, group.getId());
     }
     

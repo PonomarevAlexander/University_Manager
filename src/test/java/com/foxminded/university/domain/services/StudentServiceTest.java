@@ -120,7 +120,7 @@ class StudentServiceTest {
         mockedStudentService.add(student);
         
         verify(mockedStudentDao).add(student);
-        verify(mockedStudentDao).assignStudentToGroup(student.getId(),
+        verify(mockedStudentDao).setStudentToGroup(student.getId(),
                 student.getGroup().getId());
     }
     
@@ -134,7 +134,7 @@ class StudentServiceTest {
         mockedStudentService.add(student);
         
         inOrder.verify(mockedStudentDao).add(student);        
-        inOrder.verify(mockedStudentDao).assignStudentToGroup(student.getId(),
+        inOrder.verify(mockedStudentDao).setStudentToGroup(student.getId(),
                 student.getGroup().getId());        
     }
 
@@ -153,13 +153,13 @@ class StudentServiceTest {
     @Test
     void testTimesInvokeGetById() {
         when(mockedStudentDao.get(anyInt())).thenReturn(mockedStudent);
-        when(mockedGroupDao.getStudentGroup(anyInt())).thenReturn(mockedGroup);
+        when(mockedGroupDao.getGroupByStudent(anyInt())).thenReturn(mockedGroup);
         when(mockedTimetableDao.getTimetableRelatedGroup(anyInt())).thenReturn(mockedTimeTable);
         
         mockedStudentService.getById(1);
         
         verify(mockedStudentDao).get(anyInt());
-        verify(mockedGroupDao).getStudentGroup(anyInt());
+        verify(mockedGroupDao).getGroupByStudent(anyInt());
         verify(mockedTimetableDao).getTimetableRelatedGroup(anyInt());
         verify(mockedLessonDao).getLessonsOfTimetable(anyInt());
         verify(mockedStudentDao).getStudentRelatedGroup(anyInt());
@@ -169,7 +169,7 @@ class StudentServiceTest {
     @Test
     void testOrderInvokeGetById() {
         when(mockedStudentDao.get(anyInt())).thenReturn(mockedStudent);
-        when(mockedGroupDao.getStudentGroup(anyInt())).thenReturn(mockedGroup);
+        when(mockedGroupDao.getGroupByStudent(anyInt())).thenReturn(mockedGroup);
         when(mockedTimetableDao.getTimetableRelatedGroup(anyInt())).thenReturn(mockedTimeTable);
         InOrder inOrder = inOrder(mockedStudentDao, mockedGroupDao, mockedTimetableDao,
                 mockedTeacherDao, mockedLessonDao);
@@ -177,7 +177,7 @@ class StudentServiceTest {
         mockedStudentService.getById(anyInt());
         
         inOrder.verify(mockedStudentDao).get(anyInt());
-        inOrder.verify(mockedGroupDao).getStudentGroup(anyInt());
+        inOrder.verify(mockedGroupDao).getGroupByStudent(anyInt());
         inOrder.verify(mockedTimetableDao).getTimetableRelatedGroup(anyInt());
         inOrder.verify(mockedLessonDao).getLessonsOfTimetable(anyInt());
         inOrder.verify(mockedStudentDao).getStudentRelatedGroup(anyInt());
@@ -218,7 +218,7 @@ class StudentServiceTest {
         mockedStudentService.update(mockedStudent);
         
         verify(mockedStudentDao).update(mockedStudent);
-        verify(mockedStudentDao).updateStudentRelatedGroup(mockedStudent.getId(),
+        verify(mockedStudentDao).setStudentToGroup(mockedStudent.getId(),
                 mockedStudent.getGroup().getId());
     }
     
@@ -230,7 +230,7 @@ class StudentServiceTest {
         mockedStudentService.update(mockedStudent);
         
         inOrder.verify(mockedStudentDao).update(mockedStudent);
-        inOrder.verify(mockedStudentDao).updateStudentRelatedGroup(mockedStudent.getId(),
+        inOrder.verify(mockedStudentDao).setStudentToGroup(mockedStudent.getId(),
                 mockedStudent.getGroup().getId());
     }
     

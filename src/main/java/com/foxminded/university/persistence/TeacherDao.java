@@ -20,16 +20,14 @@ public class TeacherDao implements Dao<Teacher> {
     private JdbcTemplate jdbcTemplate;
     
     private static final String QUERY_INSERT = "insert into teachers(name, last_name) values(?, ?)";
-    private static final String QUERY_INSERT_GROUP = "insert into groups_teachers(group_id, teacher_id) values(?, ?)";
     private static final String QUERY_INSERT_DEPARTMENT = "insert into teachers(department_id) values(?) where id=?";
     private static final String QUERY_GET_BY_ID = "select * from teachers where id=?";
     private static final String QUERY_GET_ALL = "select * from teachers";
     private static final String QUERY_GET_TEACHER_BY_LESSON = "select t.* from teachers t left join lessons l on t.id=l.teacher_id where l.id=?";
     private static final String QUERY_GET_TEACHER_BY_DEPARTMENT = "select * from teachers t where t.department_id=?";
-    private static final String QUERY_GET_TEACHER_BY_GROUP = "select t.* from teachers t left join groups_teachers gt on t.id=gt.teacher_id where gt.group_id=?";
+    private static final String QUERY_GET_TEACHER_BY_GROUP = "select t.* from teachers t left join groups g on t.id=g.head where g.id=?";
     private static final String QUERY_UPDATE = "update teachers set name=?, last_name=? where id=?";
     private static final String QUERY_DEPARTMEN = "update teachers set department_id=? where id=?";
-    private static final String QUERY_UPDATE_TEACHERS_GROUPS = "update groups_teachers set teacher_id=? where group_id=?";
     private static final String QUERY_DELETE = "delete from teachers where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
@@ -73,14 +71,6 @@ public class TeacherDao implements Dao<Teacher> {
     
     public Teacher getGroupTeacher(int groupId) {
         return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_GROUP, getRowMapper(), groupId);
-    }
-    
-    public void assignTeacherToGroup(int teacherId, int groupId) {
-        jdbcTemplate.update(QUERY_INSERT_GROUP, groupId, teacherId);
-    }
-    
-    public void updateGroupTeacher(int teacherId, int groupId) {
-        jdbcTemplate.update(QUERY_UPDATE_TEACHERS_GROUPS, teacherId, groupId);
     }
     
     public void setDepartmentToTeacher(int departmentId, int teacherId) {

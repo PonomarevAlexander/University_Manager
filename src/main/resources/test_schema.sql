@@ -7,7 +7,7 @@ create table departments(
 	id serial primary key,
 	name varchar(255) not null);
 
-	create table teachers(
+create table teachers(
 	id serial primary key,
 	name varchar(255) not null,
 	last_name varchar(255) not null,
@@ -23,7 +23,8 @@ create table students(
 	id serial primary key,
 	name varchar(255) not null,
 	last_name varchar(255),
-	age integer);
+	age integer,
+	group_id integer references groups(id) on delete set null on update cascade);
 	
 create table lessons(
 	id serial primary key,
@@ -36,10 +37,6 @@ create table lessons(
 create table timetables(
 	id serial primary key,
 	creation_date varchar(20) not null);
-	
-create table students_groups(
-	student_id integer references students(id) on delete set null on update cascade,
-	group_id integer references groups(id) on delete set null on update cascade);
 	
 create table timetables_lessons(
 	timetable_id integer references timetables(id) on delete cascade on update cascade,
@@ -57,6 +54,3 @@ create table timetables_teachers(
 	timetable_id integer references timetables(id) on delete cascade on update cascade,
 	teacher_id integer references teachers(id) on delete cascade on update cascade);
 	
-create table groups_teachers(
-	group_id integer references groups(id) on delete cascade on update cascade,
-	teacher_id integer references teachers(id) on delete cascade on update cascade);

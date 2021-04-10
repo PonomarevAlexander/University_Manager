@@ -21,8 +21,6 @@ public class GroupDao implements Dao<Group> {
 
     private static final String QUERY_INSERT = "insert into groups(name) values(?)";
     private static final String QUERY_INSERT_DEPARTMENT = "insert into groups(department_id) values(?) where groups.id=? on conflict do nonthing";
-    private static final String QUERY_INSERT_TEACHER_AS_GROUPHEAD = "insert into groups(head) values(?) where id=?";
-    private static final String QUERY_UPDATE_GROUPHEAD = "update groups set head=? where id=?";
     private static final String QUERY_SELECT_BY_ID = "select * from groups where id=?";
     private static final String QUERY_SELECT_ALL = "select * from groups";
     private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students s on g.id=s.group_id where s.id=?";
@@ -31,6 +29,7 @@ public class GroupDao implements Dao<Group> {
     private static final String QUERY_SELECT_GROUP_BY_TEACHER = "select * from groups where head=?";
     private static final String QUERY_UPDATE = "update groups set name=? where id=?";
     private static final String QUERY_UPDATE_DEPARTMENT = "update groups set department_id=? where groups.id=?";
+    private static final String QUERY_UPDATE_GROUPHEAD = "update groups set head=? where id=?";
     private static final String QUERY_DELETE = "delete from groups where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
@@ -67,7 +66,7 @@ public class GroupDao implements Dao<Group> {
         jdbcTemplate.update(QUERY_DELETE, id);
     }
 
-    public Group getStudentGroup(int studentId) {
+    public Group getGroupByStudent(int studentId) {
         return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, getRowMapper(), studentId);
     }
     
@@ -79,20 +78,16 @@ public class GroupDao implements Dao<Group> {
         return jdbcTemplate.query(QUERY_SELECT_GROUP_BY_DEPARTMENT, getRowMapper(), departmentId);
     }
     
+    public Group getGroupByTeacher(int teacherId) {
+        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
+    }
+    
     public void setDepartmentToGroup(int departmentId, int groupId) {
         jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, groupId);
     }
     
     public void updateGroupDepartment(int departmentId, int groupId) {
         jdbcTemplate.update(QUERY_UPDATE_DEPARTMENT, departmentId, groupId);
-    }
-    
-    public Group getGroupRelatedTeacher(int teacherId) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
-    }
-    
-    public void setTeacherToGroupHead(int teacherId, int groupId) {
-        jdbcTemplate.update(QUERY_INSERT_TEACHER_AS_GROUPHEAD, teacherId, groupId);
     }
     
     public void updateGroupHead(int teacherId, int groupId) {

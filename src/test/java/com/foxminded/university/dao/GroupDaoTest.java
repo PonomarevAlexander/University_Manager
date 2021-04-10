@@ -73,8 +73,27 @@ class GroupDaoTest {
 
     @Test
     void testGetGroupOfStudent() {
-        Group actual = groupDao.getStudentGroup(3);
+        Group actual = groupDao.getGroupByStudent(3);
         assertEquals(2, actual.getId());
         assertEquals(TEST_NAME_2, actual.getName());
+    }
+    
+    @Test
+    void testGetGroupByLesson() {
+        Group actual = groupDao.getGroupByLesson(1);
+        assertEquals(1, actual.getId());
+    }
+    
+    @Test
+    void testGetGroupByDepartment() {
+        List<Group> actual = groupDao.getGroupsByDepartment(1);
+        assertEquals(1, actual.get(0).getId());
+        assertEquals(2, actual.get(1).getId());
+    }
+    
+    @Test
+    void testGetGroupByTeacher() {
+        Group actual = groupDao.getGroupByTeacher(3);
+        assertEquals(3, actual.getId());
     }
 }
