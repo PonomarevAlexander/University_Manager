@@ -33,3 +33,7 @@ insert into timetables_lessons(timetable_id, lesson_id) values(2, 3);
 insert into timetables_teachers(timetable_id, teacher_id) values(1, 1);
 insert into timetables_teachers(timetable_id, teacher_id) values(2, 2);
 insert into timetables_teachers(timetable_id, teacher_id) values(3, 3);
+
+insert into timetables_groups(timetable_id, group_id) values(1, 1);
+insert into timetables_groups(timetable_id, group_id) values(2, 2);
+insert into timetables_groups(timetable_id, group_id) values(3, 3);

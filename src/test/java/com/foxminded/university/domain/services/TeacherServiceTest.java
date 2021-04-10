@@ -37,28 +37,28 @@ class TeacherServiceTest {
     private static final String TEST_LAST_NAME_4 = "teacherLastName4";
     
     @Mock
-    TimetableDao mockedTimetableDao;
+    private TimetableDao mockedTimetableDao;
     
     @Mock
-    TeacherDao mockedTeacherDao;
+    private TeacherDao mockedTeacherDao;
     
     @Mock
-    LessonDao mockedLessonDao;
+    private LessonDao mockedLessonDao;
     
     @Mock
-    Timetable mockedTimetable;
+    private Timetable mockedTimetable;
     
     @Mock
-    Teacher mockedTeacher;
+    private Teacher mockedTeacher;
     
     @Mock
-    Iterator<Teacher> mockedIterator;
+    private Iterator<Teacher> mockedIterator;
     
     @Mock
-    List<Teacher> mockedTeacherList;
+    private List<Teacher> mockedTeacherList;
     
     @InjectMocks
-    TeacherService mockedTeacherService;
+    private TeacherService mockedTeacherService;
     
     @BeforeEach
     void setup() {

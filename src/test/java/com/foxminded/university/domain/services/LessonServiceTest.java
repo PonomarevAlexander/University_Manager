@@ -41,29 +41,28 @@ class LessonServiceTest {
     private static final String TEST_TIME_1 = "2021-01-11 11:11:11";
     
     @Mock
-    GroupDao mockedGroupDao;
+    private GroupDao mockedGroupDao;
     
     @Mock
-    TimetableDao mockedTimetableDao;
+    private TimetableDao mockedTimetableDao;
     
     @Mock
-    TeacherDao mockedTeacherDao;
+    private TeacherDao mockedTeacherDao;
     
     @Mock
-    LessonDao mockedLessonDao;
+    private LessonDao mockedLessonDao;
     
     @Mock
-    Timetable mockedTimeTable;
+    private Timetable mockedTimeTable;
     
     @Mock
-    Teacher mockedTeacher;
+    private Teacher mockedTeacher;
     
     @Mock
-    Lesson mockedLesson;
+    private Lesson mockedLesson;
     
     @InjectMocks
-    LessonService mockedLessonService;
-    
+    private LessonService mockedLessonService;
     
     @BeforeEach
     void setup() {

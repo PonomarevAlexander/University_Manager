@@ -3,7 +3,6 @@ package com.foxminded.university.domain.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,40 +42,34 @@ class StudentServiceTest {
     private static final String TEST_GROUP_NAME = "testGroup4";
     
     @Mock
-    StudentDao mockedStudentDao;
+    private StudentDao mockedStudentDao;
     
     @Mock
-    GroupDao mockedGroupDao;
+    private GroupDao mockedGroupDao;
     
     @Mock
-    TimetableDao mockedTimetableDao;
+    private TimetableDao mockedTimetableDao;
     
     @Mock
-    TeacherDao mockedTeacherDao;
+    private TeacherDao mockedTeacherDao;
     
     @Mock
-    LessonDao mockedLessonDao;
+    private LessonDao mockedLessonDao;
     
     @Mock
-    Student mockedStudent;
+    private Student mockedStudent;
     
     @Mock
-    Group mockedGroup;
+    private Group mockedGroup;
     
     @Mock
-    Timetable mockedTimeTable;
+    private Timetable mockedTimeTable;
     
     @Mock
-    Teacher mockedTeacher;
-    
-    @Mock
-    Iterator<Student> mockedIterator;
-    
-    @Mock
-    List<Student> mockedStudentList;
+    private Teacher mockedTeacher;
     
     @InjectMocks
-    StudentService mockedStudentService;
+    private StudentService mockedStudentService;
     
     @BeforeEach
     void setup() {

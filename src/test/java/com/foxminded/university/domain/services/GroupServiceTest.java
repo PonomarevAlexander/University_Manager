@@ -39,34 +39,34 @@ class GroupServiceTest {
     private static final String TEST_GROUP_NAME_4 = "group4";
     
     @Mock
-    StudentDao mockedStudentDao;
+    private StudentDao mockedStudentDao;
     
     @Mock
-    GroupDao mockedGroupDao;
+    private GroupDao mockedGroupDao;
     
     @Mock
-    TimetableDao mockedTimetableDao;
+    private TimetableDao mockedTimetableDao;
     
     @Mock
-    TeacherDao mockedTeacherDao;
+    private TeacherDao mockedTeacherDao;
     
     @Mock
-    Student mockedStudent;
+    private Student mockedStudent;
     
     @Mock
-    Group mockedGroup;
+    private Group mockedGroup;
     
     @Mock
-    Timetable mockedTimeTable;
+    private Timetable mockedTimeTable;
     
     @Mock
-    Teacher mockedTeacher;
+    private Teacher mockedTeacher;
     
     @Mock
-    List<Student> mockedStudentList;
+    private List<Student> mockedStudentList;
     
     @InjectMocks
-    GroupService mockedGroupService;
+    private GroupService mockedGroupService;
 
     
     @BeforeEach

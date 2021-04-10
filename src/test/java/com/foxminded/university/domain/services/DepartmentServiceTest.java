@@ -32,16 +32,16 @@ class DepartmentServiceTest {
     private static final String TEST_NAME_3 = "department3";
     
     @Mock
-    TeacherDao mockedTeacherDao;
+    private TeacherDao mockedTeacherDao;
     
     @Mock
-    GroupDao mockedGroupDao;
+    private GroupDao mockedGroupDao;
     
     @Mock
-    DepartmentDao mockedDepartmentDao;
+    private DepartmentDao mockedDepartmentDao;
     
     @InjectMocks
-    DepartmentService mockedDepartmentService;
+    private DepartmentService mockedDepartmentService;
     
     @BeforeEach
     void setup() {

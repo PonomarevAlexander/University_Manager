@@ -28,7 +28,7 @@ public class TimetableDao implements Dao<Timetable> {
     private static final String QUERY_SELECT_BY_ID = "select * from timetables where id=?";
     private static final String QUERY_SELECT_ALL = "select * from timetables";
     private static final String QUERY_SELECT_TIMETABLE_BY_TEACHER = "select t.* from timetables t left join timetables_teachers tt on t.id=tt.timetable_id where tt.teacher_id=?";
-    private static final String QUERY_SELECT_TIMETABLE_BY_GROUP = "select t.* from timetables t left join timetables_groups tg on t.id=tg.timetable_id where group_id=?";
+    private static final String QUERY_SELECT_TIMETABLE_BY_GROUP = "select t.* from timetables t left join timetables_groups tg on t.id=tg.timetable_id where tg.group_id=?";
     private static final String QUERY_UPDATE = "update timetables set creation_date=?";
     private static final String QUERY_UPDATE_TIMETABLES_GROUPS = "update timetables_groups set timetable_id=? where group_id=?";
     private static final String QUERY_UPDATE_TIMETABLES_TEACHERS = "update timetables_teachers set timetable_id=? where teacher_id=?";
