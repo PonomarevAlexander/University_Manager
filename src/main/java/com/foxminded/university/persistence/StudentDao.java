@@ -7,11 +7,16 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
+import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
 import com.foxminded.university.domain.models.Student;
 
 @Repository
@@ -38,42 +43,74 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public int add(Student student) {
+    public int add(Student student) throws EntityCreatingFailureException {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(student), holder);
-        return (int) holder.getKey().longValue();
+        if (holder.getKey().longValue() != 0) {
+            return (int) holder.getKey().longValue();
+        } else {
+            throw new EntityCreatingFailureException("student was not created");
+        }
     }
 
     @Override
-    public Student get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+    public Student get(int id) throws EntityGettingFailureException {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format("Student by id=%d not found", id));
+        }
     }
 
     @Override
-    public List<Student> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+    public List<Student> getAll() throws EntityGettingFailureException {
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException("students not found");
+        }
     }
 
     @Override
-    public void update(Student entity) {
-        jdbcTemplate.update(QUERY_UPDATE, entity.getName(), entity.getLastName(), entity.getAge(), entity.getId());
+    public void update(Student student) throws EntityUpdatingFailureException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format("updating fail! student(id=%d) not found or not exist", student.getId()));
+        }
     }
 
     @Override
-    public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+    public void remove(int id) throws EntityRemovingFailureException {
+        try {
+            jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityRemovingFailureException("student removing fail, student(id=%d) not found or already was deleted");
+        }
     }
 
-    public List<Student> getStudentRelatedGroup(int groupId) {
-        return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
+    public List<Student> getStudentRelatedGroup(int groupId) throws EntityGettingFailureException {
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format("group(id=%d) not found or given group doesn't have students", groupId));
+        }
     }
 
-    public void setStudentToGroup(int studentId, int groupId) {
-        jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
+    public void setStudentToGroup(int studentId, int groupId) throws EntityUpdatingFailureException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format("set student to group fail! student(id=%d) or group(id=%d) not found", studentId, groupId));
+        }
     }
     
-    public void removeStudentFromGroup(int studentId) {
-        jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
+    public void removeStudentFromGroup(int studentId) throws EntityUpdatingFailureException {
+        try {
+            jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityRemovingFailureException(String.format("removing student from group fail! student(id=%d) not found", studentId));
+        }
     }
     
     private RowMapper<Student> getRowMapper() {
