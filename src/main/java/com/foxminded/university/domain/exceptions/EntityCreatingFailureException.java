@@ -1,7 +1,7 @@
 package com.foxminded.university.domain.exceptions;
 
 @SuppressWarnings("serial")
-public class EntityCreatingFailureException extends RuntimeException {
+public class EntityCreatingFailureException extends DaoException {
     
     public EntityCreatingFailureException(String message, Throwable cause) {
         super(message, cause);

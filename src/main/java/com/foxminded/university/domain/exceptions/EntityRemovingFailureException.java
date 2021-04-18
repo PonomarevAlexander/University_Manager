@@ -1,17 +1,17 @@
 package com.foxminded.university.domain.exceptions;
 
 @SuppressWarnings("serial")
-public class EntityRemovingException extends RuntimeException {
+public class EntityRemovingFailureException extends DaoException {
 
-    public EntityRemovingException() {
+    public EntityRemovingFailureException() {
         super();
     }
 
-    public EntityRemovingException(String message) {
+    public EntityRemovingFailureException(String message) {
         super(message);
     }
     
-    public EntityRemovingException(String message, Throwable cause) {
+    public EntityRemovingFailureException(String message, Throwable cause) {
         super(message, cause);
     }
 }

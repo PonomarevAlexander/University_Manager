@@ -1,7 +1,7 @@
 package com.foxminded.university.domain.exceptions;
 
 @SuppressWarnings("serial")
-public class EntityUpdatingFailureException extends RuntimeException {
+public class EntityUpdatingFailureException extends DaoException {
 
     public EntityUpdatingFailureException() {
         super();
