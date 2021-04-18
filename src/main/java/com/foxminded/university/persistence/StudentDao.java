@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
 import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
 import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
@@ -36,6 +38,11 @@ public class StudentDao implements Dao<Student> {
     private static final String COLUMN_LAST_NAME = "last_name";
     private static final String COLUMN_AGE = "age";
     private static final String COLUMN_ID = "id";
+    private static final String OR = " or ";
+    private static final String EXCEPTION_GROUP_NOT_FOUND = "group with id=%d not found";
+    private static final String EXCEPTION_STUDENT_NOT_FOUND = "student with id=%d not found";
+    private static final String EXCEPTION_ALL_STUDENTS_NOT_FOUND = "nothing to get. Database has no students yet";
+    private static final String EXCEPTION_STUDENT_CREATE = "could not create a new student(%s %s)";
 
     @Autowired
     public StudentDao(DataSource dataSource) {
@@ -43,73 +50,73 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public int add(Student student) throws EntityCreatingFailureException {
+    public int add(Student student) throws DaoException {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(student), holder);
-        if (holder.getKey().longValue() != 0) {
-            return (int) holder.getKey().longValue();
+        if (holder.getKey().intValue() != 0) {
+            return holder.getKey().intValue();
         } else {
-            throw new EntityCreatingFailureException("student was not created");
+            throw new EntityCreatingFailureException(String.format(EXCEPTION_STUDENT_CREATE, student.getName(), student.getLastName()));
         }
     }
 
     @Override
-    public Student get(int id) throws EntityGettingFailureException {
+    public Student get(int id) throws DaoException {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format("Student by id=%d not found", id));
+            throw new EntityGettingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
         }
     }
 
     @Override
-    public List<Student> getAll() throws EntityGettingFailureException {
+    public List<Student> getAll() throws DaoException {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException("students not found");
+            throw new EntityGettingFailureException(EXCEPTION_ALL_STUDENTS_NOT_FOUND);
         }
     }
 
     @Override
-    public void update(Student student) throws EntityUpdatingFailureException {
+    public void update(Student student) throws DaoException {
         try {
             jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format("updating fail! student(id=%d) not found or not exist", student.getId()));
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
         }
     }
 
     @Override
-    public void remove(int id) throws EntityRemovingFailureException {
+    public void remove(int id) throws DaoException {
         try {
             jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingFailureException("student removing fail, student(id=%d) not found or already was deleted");
+            throw new EntityRemovingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
         }
     }
 
-    public List<Student> getStudentRelatedGroup(int groupId) throws EntityGettingFailureException {
+    public List<Student> getStudentRelatedGroup(int groupId) throws DaoException {
         try {
             return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format("group(id=%d) not found or given group doesn't have students", groupId));
+            throw new EntityGettingFailureException(String.format(EXCEPTION_GROUP_NOT_FOUND, groupId));
         }
     }
 
-    public void setStudentToGroup(int studentId, int groupId) throws EntityUpdatingFailureException {
+    public void setStudentToGroup(int studentId, int groupId) throws DaoException {
         try {
             jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format("set student to group fail! student(id=%d) or group(id=%d) not found", studentId, groupId));
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
         }
     }
     
-    public void removeStudentFromGroup(int studentId) throws EntityUpdatingFailureException {
+    public void removeStudentFromGroup(int studentId) throws DaoException {
         try {
             jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingFailureException(String.format("removing student from group fail! student(id=%d) not found", studentId));
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
         }
     }
     

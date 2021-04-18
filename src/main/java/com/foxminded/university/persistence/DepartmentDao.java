@@ -7,11 +7,18 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
+import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
 import com.foxminded.university.domain.models.Department;
 
 @Repository
@@ -23,6 +30,11 @@ public class DepartmentDao implements Dao<Department> {
     private static final String QUERY_SELECT_ALL = "select * from departments";
     private static final String QUERY_UPDATE = "update departments set name=? where id=?";
     private static final String QUERY_DELETE = "delete from departments where id=?";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String EXCEPTION_STUDENT_CREATE = "could not create a new department(%s)";
+    private static final String EXCEPTION_DEPARTMENT_NOT_FOUND = "group department id=%d not found";
+    private static final String EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND = "nothing to get. Database has no department yet";
 
     @Autowired
     public DepartmentDao(DataSource dataSource) {
@@ -30,37 +42,58 @@ public class DepartmentDao implements Dao<Department> {
     }
     
     @Override
-    public int add(Department department) {
+    public int add(Department department) throws DaoException {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(department), holder);
-        return(int) holder.getKey().longValue();
+        int obtainedKey = holder.getKey().intValue();
+        if (obtainedKey != 0) {
+            return obtainedKey;
+        } else {
+            throw new EntityCreatingFailureException(EXCEPTION_STUDENT_CREATE);
+        }
+    } 
+        
+    @Override
+    public Department get(int id) throws DaoException {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, id));
+        }
     }
 
     @Override
-    public Department get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+    public List<Department> getAll() throws DaoException {
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND));
+        }
     }
 
     @Override
-    public List<Department> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+    public void update(Department department) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE, department.getName(), department.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+        }
     }
 
     @Override
-    public void update(Department department) {
-        jdbcTemplate.update(QUERY_UPDATE, department.getName(), department.getId());
-    }
-
-    @Override
-    public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE, id);
+    public void remove(int id) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_DELETE, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityRemovingFailureException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+        }
     }
     
     private RowMapper<Department> getRowMapper() { 
         return (resultSet, rowNum) -> {
             Department department = new Department();
-            department.setId(resultSet.getInt("id"));
-            department.setName(resultSet.getString("name"));
+            department.setId(resultSet.getInt(COLUMN_ID));
+            department.setName(resultSet.getString(COLUMN_NAME));
             return department;
         };
     }

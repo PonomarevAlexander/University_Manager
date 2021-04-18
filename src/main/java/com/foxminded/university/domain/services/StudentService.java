@@ -1,15 +1,11 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
-import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
-import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Student;
 import com.foxminded.university.domain.models.Timetable;
@@ -30,19 +26,19 @@ public class StudentService implements Service<Student> {
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentService.class);
 
     @Override
-    public void add(Student student) throws EntityCreatingFailureException {
-        LOGGER.debug("creating new student");
+    public void add(Student student) throws DaoException {
+        LOGGER.debug("creating new student(name={}, last name={})", student.getName(), student.getLastName());
         try {
             student.setId(studentDao.add(student));
             studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
             LOGGER.debug("new student with id={} was created", student.getId());
-        } catch (EntityCreatingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
 
     @Override
-    public Student getById(int id) throws EntityGettingFailureException {
+    public Student getById(int id) throws DaoException {
         LOGGER.debug("getting student by id={}", id);
         try {
             Student student = studentDao.get(id);
@@ -59,13 +55,13 @@ public class StudentService implements Service<Student> {
             student.setGroup(group);
             LOGGER.debug("student with id={} was prepared and returned", student.getId());
             return student;
-        } catch (EntityGettingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
 
     @Override
-    public List<Student> getAll() throws EntityGettingFailureException {
+    public List<Student> getAll() throws DaoException {
         LOGGER.debug("getting all students");
         try {
             List<Student> studentsList = studentDao.getAll();
@@ -83,51 +79,51 @@ public class StudentService implements Service<Student> {
             });
             LOGGER.debug("students list(size={}) was prepared and returned", studentsList.size());
             return studentsList;
-        } catch (EntityGettingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
 
     @Override
-    public void update(Student student) throws EntityUpdatingFailureException {
+    public void update(Student student) throws DaoException {
         LOGGER.debug("updating student");
         try {
             studentDao.update(student);
             studentDao.setStudentToGroup(student.getId(),
                     student.getGroup().getId());
             LOGGER.debug("student with id={} successfully updated", student.getId());
-        } catch (EntityUpdatingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
 
     @Override
-    public void remove(int id) throws EntityRemovingFailureException {
+    public void remove(int id) throws DaoException {
         LOGGER.debug("removing student");
         try {
             studentDao.remove(id);
             LOGGER.debug("student with id={} has been deleted", id);
-        } catch (EntityRemovingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
     
-    public void assignToGroup(Student student, int targetGroup) throws EntityUpdatingFailureException {
+    public void assignToGroup(Student student, int targetGroup) throws DaoException {
         LOGGER.debug("seting student(id={}) to group(id={})", student.getId(), targetGroup);
         try {
             studentDao.setStudentToGroup(student.getId(), targetGroup);
             LOGGER.debug("student with id={} successfully assigned to group with id={}", student.getId(), targetGroup);
-        } catch (EntityUpdatingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
     
-    public void removeFromGroup(Student student) throws EntityUpdatingFailureException {
+    public void removeFromGroup(Student student) throws DaoException {
         LOGGER.debug("removing student from group");
         try {
             studentDao.removeStudentFromGroup(student.getId());
             LOGGER.debug("student with id={} was removed from group with id={}", student.getId(), student.getGroup().getId());
-        } catch (EntityUpdatingFailureException ex) {
+        } catch (DaoException ex) {
             throw ex;
         }
     }
