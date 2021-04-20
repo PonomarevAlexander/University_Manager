@@ -9,11 +9,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
+import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
 import com.foxminded.university.domain.models.Timetable;
 
 @Repository
@@ -35,6 +41,12 @@ public class TimetableDao implements Dao<Timetable> {
     private static final String QUERY_DELETE_BY_ID = "delete from timetables where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_CREATION_DATE = "creation_date";
+    private static final String EXCEPTION_TEACHER_NOT_FOUND = "teacher with id=%d not found";
+    private static final String EXCEPTION_ALL_TIMETABLE_NOT_FOUND = "nothing to get. Database has no timetables yet";
+    private static final String EXCEPTION_TIMETABLE_NOT_FOUND = "timetable with id=%d not found";
+    private static final String EXCEPTION_GROUP_NOT_FOUND = "group with id=%d not found";
+    private static final String EXCEPTION_TIMETABLE_CREATE = "could not create a new timetable";
+    private static final String OR = " or ";
 
     @Autowired
     public TimetableDao(DataSource dataSource) {
@@ -42,54 +54,99 @@ public class TimetableDao implements Dao<Timetable> {
     }
 
     @Override
-    public int add(Timetable timetable) {
+    public int add(Timetable timetable) throws DaoException {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(timetable), holder);
-        return (int) holder.getKey().longValue();
+        int obtainedId = holder.getKey().intValue();
+        if (obtainedId != 0) {
+            return obtainedId;
+        } else {
+            throw new EntityCreatingFailureException(String.format(EXCEPTION_TIMETABLE_CREATE));
+        }
     }
 
     @Override
-    public Timetable get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+    public Timetable get(int id) throws DaoException {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND, id), ex);
+        }
     }
 
     @Override
-    public List<Timetable> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+    public List<Timetable> getAll() throws DaoException {
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_ALL_TIMETABLE_NOT_FOUND), ex);
+        }
     }
 
     @Override
-    public void update(Timetable timetable) {
-        jdbcTemplate.update(QUERY_UPDATE, timetable.getCreationDate().format(FORMATTER));
+    public void update(Timetable timetable) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE, timetable.getCreationDate().format(FORMATTER));
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND, timetable.getId()), ex);
+        }
     }
 
     @Override
-    public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+    public void remove(int id) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityRemovingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND, id), ex);
+        }
     }
     
-    public Timetable getTimetableRelatedTeacher(int teacherId) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_TEACHER, getRowMapper(), teacherId);
+    public Timetable getTimetableRelatedTeacher(int teacherId) throws DaoException {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_TEACHER, getRowMapper(), teacherId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacherId), ex);
+        }
     }
     
-    public void setTimetableToTeacher(int timetableId, int teacherId) {
-        jdbcTemplate.update(QUERY_INSERT_TIMETABLE_TO_TEACHER, timetableId, teacherId);
+    public void setTimetableToTeacher(int timetableId, int teacherId) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_INSERT_TIMETABLE_TO_TEACHER, timetableId, teacherId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND + OR + EXCEPTION_TEACHER_NOT_FOUND, timetableId, teacherId), ex);
+        }
     }
     
-    public Timetable getTimetableRelatedGroup(int groupId) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_GROUP, getRowMapper(), groupId);
+    public Timetable getTimetableRelatedGroup(int groupId) throws DaoException {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_TIMETABLE_BY_GROUP, getRowMapper(), groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityGettingFailureException(String.format(EXCEPTION_GROUP_NOT_FOUND,  groupId), ex);
+        }
     }
     
-    public void setTimetableToGroup(int timetableId, int groupId) {
-        jdbcTemplate.update(QUERY_INSERT_TIMETABLE_TO_GROUP, timetableId, groupId);
+    public void setTimetableToGroup(int timetableId, int groupId) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_INSERT_TIMETABLE_TO_GROUP, timetableId, groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, timetableId, groupId), ex);
+        }
     }
     
-    public void updateTimetableRelatedGroup(int timetableId, int groupId) {
-        jdbcTemplate.update(QUERY_UPDATE_TIMETABLES_GROUPS, timetableId, groupId);
+    public void updateTimetableRelatedGroup(int timetableId, int groupId) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE_TIMETABLES_GROUPS, timetableId, groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, timetableId, groupId), ex);
+        }
     }
     
-    public void updateTimetableRelatedTeacher(int timetableId, int teacherId) {
-        jdbcTemplate.update(QUERY_UPDATE_TIMETABLES_TEACHERS, timetableId, teacherId);
+    public void updateTimetableRelatedTeacher(int timetableId, int teacherId) throws DaoException {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE_TIMETABLES_TEACHERS, timetableId, teacherId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND + OR + EXCEPTION_TEACHER_NOT_FOUND, timetableId, teacherId), ex);
+        }
     }
     
     private RowMapper<Timetable> getRowMapper() {

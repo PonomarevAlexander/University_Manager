@@ -1,8 +1,12 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Teacher;
@@ -14,70 +18,136 @@ import com.foxminded.university.persistence.TimetableDao;
 
 @Component
 public class TimetableService implements Service<Timetable> {
-    
+
     private TimetableDao timetableDao;
     private LessonDao lessonDao;
     private TeacherDao teacherDao;
     private GroupDao groupDao;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimetableService.class);
+    private static final String VALID_MESSAGE_OK = "OK";
+    private static final String VALID_MESSAGE_CREATION_TIME = "validation failed! timetable creation date is null";
+    private static final String VALID_MESSAGE_SCHEDULE = "validation failed! timetable schedule is null";
+
     @Override
-    public void add(Timetable timetable) {
-        int timetableId = timetableDao.add(timetable);
-        timetable.getSchedule().forEach(lesson -> 
-            lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
-    }
-    
-    @Override
-    public Timetable getById(int id) {
-        Timetable timetable = timetableDao.get(id);
-        List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
-        lessons.forEach(lesson -> {
-            lesson.setTeacher(
-                    teacherDao.getTeacherByLessonId(lesson.getId()));
-            lesson.setGroup(
-                    groupDao.getGroupByLesson(lesson.getId()));
-        });
-        timetable.setSchedule(lessons);
-        return timetable;
+    public void add(Timetable timetable) throws DaoException, ServiceException {
+        LOGGER.debug("creating new timetable");
+        String message = validateEntity(timetable);
+        if (message.equals(VALID_MESSAGE_OK)) {
+            try {
+                int timetableId = timetableDao.add(timetable);
+                timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
+                LOGGER.debug("timetable with was created");
+            } catch (DaoException ex) {
+                throw ex;
+            }
+        } else {
+            throw new ServiceException(message);
+        }
     }
 
     @Override
-    public List<Timetable> getAll() {
-        List<Timetable> timetablesList = timetableDao.getAll();
-        timetablesList.forEach(timetable -> {
+    public Timetable getById(int id) throws DaoException {
+        LOGGER.debug("obtaining a lesson by id={}", id);
+        try {
+            Timetable timetable = timetableDao.get(id);
             List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
             lessons.forEach(lesson -> {
-                lesson.setTeacher(
-                        teacherDao.getTeacherByLessonId(lesson.getId()));
-                lesson.setGroup(
-                        groupDao.getGroupByLesson(lesson.getId()));
+                lesson.setTeacher(teacherDao.getTeacherByLessonId(lesson.getId()));
+                lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
             });
             timetable.setSchedule(lessons);
-        });
-        return timetablesList;
+            LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
+            return timetable;
+        } catch (DaoException ex) {
+            throw ex;
+        }
     }
 
     @Override
-    public void update(Timetable timetable) {
-        timetableDao.update(timetable);
-        
-        timetable.getSchedule().forEach(lesson -> 
-            lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
+    public List<Timetable> getAll() throws DaoException {
+        LOGGER.debug("obtaining list of all lessons");
+        try {
+            List<Timetable> timetablesList = timetableDao.getAll();
+            timetablesList.forEach(timetable -> {
+                List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
+                lessons.forEach(lesson -> {
+                    lesson.setTeacher(teacherDao.getTeacherByLessonId(lesson.getId()));
+                    lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
+                });
+                timetable.setSchedule(lessons);
+            });
+            LOGGER.debug("all timetables obtained and returned");
+            return timetablesList;
+        } catch (DaoException ex) {
+            throw ex;
+        }
     }
 
     @Override
-    public void remove(int id) {
-        timetableDao.remove(id);
+    public void update(Timetable timetable) throws DaoException, ServiceException {
+        LOGGER.debug("updating timetable with id={}", timetable.getId());
+        String message = validateEntity(timetable);
+        if (message.equals(VALID_MESSAGE_OK)) {
+            try {
+                timetableDao.update(timetable);
+                timetable.getSchedule()
+                        .forEach(lesson -> lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
+                LOGGER.debug("timetable with id={} was updated", timetable.getId());
+            } catch (DaoException ex) {
+                throw ex;
+            }
+        } else {
+            throw new ServiceException(message);
+        }
     }
-    
-    public Timetable getTimetablesByTeacher(Teacher teacher) {
-        return timetableDao.getTimetableRelatedTeacher(teacher.getId()); 
+
+    @Override
+    public void remove(int id) throws DaoException {
+        LOGGER.debug("removing timetable with id={}", id);
+        try {
+            timetableDao.remove(id);
+            LOGGER.debug("timetable with id={} was removed", id);
+        } catch (DaoException ex) {
+            throw ex;
+        }
     }
-    
+
+    public Timetable getTimetablesByTeacher(Teacher teacher) throws DaoException {
+        LOGGER.debug("obtaining timetable by teacher(id={})", teacher.getId());
+        try {
+            Timetable timetable = timetableDao.getTimetableRelatedTeacher(teacher.getId());
+            LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
+            return timetable;
+        } catch (DaoException ex) {
+            throw ex;
+        }
+    }
+
     public Timetable getTimetableByGroup(Group group) {
-        return timetableDao.getTimetableRelatedGroup(group.getId());
+        LOGGER.debug("obtaining timetable by group(id={})", group.getId());
+        try {
+            Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
+            LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
+            return timetable;
+        } catch (DaoException ex) {
+            throw ex;
+        }
     }
-    
+
+    public String validateEntity(Timetable timetable) {
+        LOGGER.debug("begin validation");
+        String message = VALID_MESSAGE_OK;
+        if (timetable.getCreationDate() == null) {
+            message = VALID_MESSAGE_CREATION_TIME;
+        }
+        if (timetable.getSchedule() == null) {
+            message = VALID_MESSAGE_SCHEDULE;
+        }
+        LOGGER.debug("validation passed");
+        return message;
+    }
+
     @Autowired
     public void setTimetableDao(TimetableDao timetableDao) {
         this.timetableDao = timetableDao;
@@ -87,7 +157,7 @@ public class TimetableService implements Service<Timetable> {
     public void setLessonDao(LessonDao lessonDao) {
         this.lessonDao = lessonDao;
     }
-    
+
     @Autowired
     public void setTeacherDao(TeacherDao teacherDao) {
         this.teacherDao = teacherDao;
