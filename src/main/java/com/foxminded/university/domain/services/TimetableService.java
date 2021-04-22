@@ -25,24 +25,20 @@ public class TimetableService implements Service<Timetable> {
     private GroupDao groupDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimetableService.class);
-    private static final String VALID_MESSAGE_OK = "OK";
-    private static final String VALID_MESSAGE_CREATION_TIME = "validation failed! timetable creation date is null";
-    private static final String VALID_MESSAGE_SCHEDULE = "validation failed! timetable schedule is null";
+    private static final String EXCEPTION_NOT_VALID_CREATION_DATE = "validation failed! timetable creation date is null";
+    private static final String EXCEPTION_NOT_VALID_SCHEDULE = "validation failed! timetable schedule is null";
 
     @Override
     public void add(Timetable timetable) throws DaoException, ServiceException {
         LOGGER.debug("creating new timetable");
-        String message = validateEntity(timetable);
-        if (message.equals(VALID_MESSAGE_OK)) {
-            try {
+        try {
+            if (validateEntity(timetable)) {
                 int timetableId = timetableDao.add(timetable);
                 timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
                 LOGGER.debug("timetable with was created");
-            } catch (DaoException ex) {
-                throw ex;
             }
-        } else {
-            throw new ServiceException(message);
+        } catch (DaoException | ServiceException ex) {
+            throw ex;
         }
     }
 
@@ -87,19 +83,17 @@ public class TimetableService implements Service<Timetable> {
     @Override
     public void update(Timetable timetable) throws DaoException, ServiceException {
         LOGGER.debug("updating timetable with id={}", timetable.getId());
-        String message = validateEntity(timetable);
-        if (message.equals(VALID_MESSAGE_OK)) {
-            try {
+        try {
+            if (validateEntity(timetable)) {
                 timetableDao.update(timetable);
                 timetable.getSchedule()
                         .forEach(lesson -> lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
                 LOGGER.debug("timetable with id={} was updated", timetable.getId());
-            } catch (DaoException ex) {
-                throw ex;
             }
-        } else {
-            throw new ServiceException(message);
+        } catch (DaoException | ServiceException ex) {
+            throw ex;
         }
+
     }
 
     @Override
@@ -124,7 +118,7 @@ public class TimetableService implements Service<Timetable> {
         }
     }
 
-    public Timetable getTimetableByGroup(Group group) {
+    public Timetable getTimetableByGroup(Group group) throws DaoException {
         LOGGER.debug("obtaining timetable by group(id={})", group.getId());
         try {
             Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
@@ -135,17 +129,17 @@ public class TimetableService implements Service<Timetable> {
         }
     }
 
-    public String validateEntity(Timetable timetable) {
+    @Override
+    public boolean validateEntity(Timetable timetable) throws ServiceException {
         LOGGER.debug("begin validation");
-        String message = VALID_MESSAGE_OK;
         if (timetable.getCreationDate() == null) {
-            message = VALID_MESSAGE_CREATION_TIME;
+            throw new ServiceException(EXCEPTION_NOT_VALID_CREATION_DATE);
         }
         if (timetable.getSchedule() == null) {
-            message = VALID_MESSAGE_SCHEDULE;
+            throw new ServiceException(EXCEPTION_NOT_VALID_SCHEDULE);
         }
         LOGGER.debug("validation passed");
-        return message;
+        return true;
     }
 
     @Autowired

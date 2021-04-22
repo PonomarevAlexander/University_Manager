@@ -18,38 +18,31 @@ import com.foxminded.university.persistence.TimetableDao;
 
 @Component
 public class TeacherService implements Service<Teacher> {
-    
+
     private TeacherDao teacherDao;
     private TimetableDao timetableDao;
     private LessonDao lessonDao;
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TeacherService.class);
-    private static final String VALID_MESSAGE_OK = "OK";
-    private static final String VALID_MESSAGE_NAME = "validation failed! teacher name is null";
-    private static final String VALID_MESSAGE_LAST_NAME = "validation failed! teacher last name is null";
+    private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! teacher name is null";
+    private static final String EXCEPTION_NOT_VALID_LAST_NAME = "validation failed! teacher last name is null";
 
     @Override
     public void add(Teacher teacher) throws DaoException, ServiceException {
         LOGGER.debug("creating a new teacher with name={}, last name={}", teacher.getName(), teacher.getLastName());
-        String message = validateEntity(teacher);
-        if (message.equals(VALID_MESSAGE_OK)) {
-            try {
+        try {
+            if (validateEntity(teacher)) {
                 int receivedId = teacherDao.add(teacher);
                 if (teacher.getTimetable() != null) {
                     timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(), receivedId);
-                    LOGGER.debug("new teacher({} {}) was created! Timetable(id={}) was assigned to the teacher",
-                            teacher.getName(), teacher.getLastName(), teacher.getTimetable().getId());
-                } else {
-                    LOGGER.debug("new teacher({} {}) was created! Timetable did not assigned", teacher.getName(), teacher.getLastName());
                 }
-            } catch (DaoException ex) {
-                throw ex;
+                LOGGER.debug("new teacher({} {}) was created", teacher.getName(), teacher.getLastName());
             }
-        } else {
-            throw new ServiceException(message);
+        } catch (DaoException | ServiceException ex) {
+            throw ex;
         }
     }
-    
+
     @Override
     public Teacher getById(int id) throws DaoException {
         LOGGER.debug("obtaining a teacher by id={}", id);
@@ -64,7 +57,7 @@ public class TeacherService implements Service<Teacher> {
         } catch (DaoException ex) {
             throw ex;
         }
-        
+
     }
 
     @Override
@@ -86,19 +79,18 @@ public class TeacherService implements Service<Teacher> {
     }
 
     @Override
-    public void update(Teacher teacher) {
+    public void update(Teacher teacher) throws DaoException, ServiceException {
         LOGGER.debug("updating teacher with id={}", teacher.getId());
-        String message = validateEntity(teacher);
-        if (message.equals(VALID_MESSAGE_OK)) {
-            try {
+        try {
+            if (validateEntity(teacher)) {
                 teacherDao.update(teacher);
-                timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
+                if (teacher.getTimetable() != null) {
+                    timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
+                }
                 LOGGER.debug("teacher with id={} was updated", teacher.getId());
-            } catch (DaoException ex) {
-                throw ex;
             }
-        } else {
-            throw new ServiceException(message);
+        } catch (DaoException ex) {
+            throw ex;
         }
     }
 
@@ -112,20 +104,19 @@ public class TeacherService implements Service<Teacher> {
             throw ex;
         }
     }
-    
-    public String validateEntity(Teacher teacher) {
+
+    public boolean validateEntity(Teacher teacher) throws ServiceException {
         LOGGER.debug("begin validation");
-        String message = VALID_MESSAGE_OK;
         if (teacher.getName() == null) {
-            message = VALID_MESSAGE_NAME;
+            throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
         }
         if (teacher.getLastName() == null) {
-            message = VALID_MESSAGE_LAST_NAME;
+            throw new ServiceException(EXCEPTION_NOT_VALID_LAST_NAME);
         }
         LOGGER.debug("validation passed");
-        return message;
+        return true;
     }
-    
+
     @Autowired
     public void setTeacherDao(TeacherDao teacherDao) {
         this.teacherDao = teacherDao;
