@@ -31,15 +31,14 @@ public class GroupService implements Service<Group> {
     public void add(Group group) throws DaoException, ServiceException {
         LOGGER.debug("creating new group with name={}", group.getName());
         try {
-            if (validateEntity(group)) {
-                int groupId = groupDao.add(group);
-                groupDao.updateGroupHead(group.getCheef().getId(), groupId);
-                group.getStudentList().forEach(student -> studentDao.setStudentToGroup(student.getId(), groupId));
-                if (group.getTimetable() != null) {
-                    timetableDao.setTimetableToGroup(group.getTimetable().getId(), groupId);
-                }
-                LOGGER.debug("new group with id={} successufuly created! ", groupId);
+            validateEntity(group);
+            int groupId = groupDao.add(group);
+            groupDao.updateGroupHead(group.getCheef().getId(), groupId);
+            group.getStudentList().forEach(student -> studentDao.setStudentToGroup(student.getId(), groupId));
+            if (group.getTimetable() != null) {
+                timetableDao.setTimetableToGroup(group.getTimetable().getId(), groupId);
             }
+            LOGGER.debug("new group with id={} successufuly created! ", groupId);
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -81,15 +80,14 @@ public class GroupService implements Service<Group> {
     public void update(Group group) throws DaoException, ServiceException {
         LOGGER.debug("going update the group");
         try {
-            if (validateEntity(group)) {
-                groupDao.update(group);
-                groupDao.updateGroupHead(group.getCheef().getId(), group.getId());
-                group.getStudentList().forEach(student -> studentDao.setStudentToGroup(student.getId(), group.getId()));
-                if (group.getTimetable() != null) {
-                    timetableDao.updateTimetableRelatedGroup(group.getTimetable().getId(), group.getId());
-                }
-                LOGGER.debug("The group with id={} updated successfuly", group.getId());
+            validateEntity(group);
+            groupDao.update(group);
+            groupDao.updateGroupHead(group.getCheef().getId(), group.getId());
+            group.getStudentList().forEach(student -> studentDao.setStudentToGroup(student.getId(), group.getId()));
+            if (group.getTimetable() != null) {
+                timetableDao.updateTimetableRelatedGroup(group.getTimetable().getId(), group.getId());
             }
+            LOGGER.debug("The group with id={} updated successfuly", group.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -124,8 +122,7 @@ public class GroupService implements Service<Group> {
         }
     }
 
-    @Override
-    public boolean validateEntity(Group group) throws ServiceException {
+    public void validateEntity(Group group) throws ServiceException {
         LOGGER.debug("begin validation");
         if (group.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
@@ -137,7 +134,6 @@ public class GroupService implements Service<Group> {
             throw new ServiceException(EXCEPTION_NOT_VALID_STUDENTS_LIST);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired

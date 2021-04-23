@@ -28,13 +28,12 @@ public class DepartmentService implements Service<Department> {
     public void add(Department department) throws DaoException, ServiceException {
         LOGGER.debug("creating new department");
         try {
-            if (validateEntity(department)) {
-                int departmentId = departmentDao.add(department);
-                department.getGroupList().forEach(group -> groupDao.setDepartmentToGroup(departmentId, group.getId()));
-                department.getTeacherList()
-                        .forEach(teacher -> teacherDao.setDepartmentToTeacher(departmentId, teacher.getId()));
-                LOGGER.debug("department with name={} was created successfuly", department.getName());
-            }
+            validateEntity(department);
+            int departmentId = departmentDao.add(department);
+            department.getGroupList().forEach(group -> groupDao.setDepartmentToGroup(departmentId, group.getId()));
+            department.getTeacherList()
+                    .forEach(teacher -> teacherDao.setDepartmentToTeacher(departmentId, teacher.getId()));
+            LOGGER.debug("department with name={} was created successfuly", department.getName());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -74,14 +73,13 @@ public class DepartmentService implements Service<Department> {
     public void update(Department department) throws DaoException, ServiceException {
         LOGGER.debug("updating department");
         try {
-            if (validateEntity(department)) {
-                departmentDao.update(department);
-                department.getGroupList()
-                        .forEach(group -> groupDao.updateGroupDepartment(department.getId(), group.getId()));
-                department.getTeacherList()
-                        .forEach(teacher -> teacherDao.updateTeacherDepartment(department.getId(), teacher.getId()));
-                LOGGER.debug("department with id={} successfuly updated", department.getId());
-            }
+            validateEntity(department);
+            departmentDao.update(department);
+            department.getGroupList()
+                    .forEach(group -> groupDao.updateGroupDepartment(department.getId(), group.getId()));
+            department.getTeacherList()
+                    .forEach(teacher -> teacherDao.updateTeacherDepartment(department.getId(), teacher.getId()));
+            LOGGER.debug("department with id={} successfuly updated", department.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -98,8 +96,7 @@ public class DepartmentService implements Service<Department> {
         }
     }
 
-    @Override
-    public boolean validateEntity(Department department) throws ServiceException {
+    private void validateEntity(Department department) throws ServiceException {
         LOGGER.debug("begin validation");
         if (department.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
@@ -111,7 +108,6 @@ public class DepartmentService implements Service<Department> {
             throw new ServiceException(EXCEPTION_NOT_VALID_GROUPS_LIST);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired

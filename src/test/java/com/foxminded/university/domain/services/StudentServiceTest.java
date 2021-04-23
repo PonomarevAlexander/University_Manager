@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Student;
 import com.foxminded.university.domain.models.Teacher;
@@ -129,6 +131,16 @@ class StudentServiceTest {
         inOrder.verify(mockedStudentDao).add(student);        
         inOrder.verify(mockedStudentDao).setStudentToGroup(student.getId(),
                 student.getGroup().getId());        
+    }
+    
+    @Test
+    void testShouldThrowServiceException() {
+        Student emptyStudent = new Student();
+        assertNull(emptyStudent.getName());
+        assertNull(emptyStudent.getLastName());
+        assertNull(emptyStudent.getGroup());
+        assertEquals(0, emptyStudent.getAge());
+        assertThrows(ServiceException.class, () -> {studentService.add(emptyStudent);});
     }
 
     @Test

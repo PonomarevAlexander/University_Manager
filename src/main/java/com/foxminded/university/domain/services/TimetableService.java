@@ -32,11 +32,10 @@ public class TimetableService implements Service<Timetable> {
     public void add(Timetable timetable) throws DaoException, ServiceException {
         LOGGER.debug("creating new timetable");
         try {
-            if (validateEntity(timetable)) {
-                int timetableId = timetableDao.add(timetable);
-                timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
-                LOGGER.debug("timetable with was created");
-            }
+            validateEntity(timetable);
+            int timetableId = timetableDao.add(timetable);
+            timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
+            LOGGER.debug("timetable with was created");
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -84,12 +83,11 @@ public class TimetableService implements Service<Timetable> {
     public void update(Timetable timetable) throws DaoException, ServiceException {
         LOGGER.debug("updating timetable with id={}", timetable.getId());
         try {
-            if (validateEntity(timetable)) {
-                timetableDao.update(timetable);
-                timetable.getSchedule()
-                        .forEach(lesson -> lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
-                LOGGER.debug("timetable with id={} was updated", timetable.getId());
-            }
+            validateEntity(timetable);
+            timetableDao.update(timetable);
+            timetable.getSchedule()
+                    .forEach(lesson -> lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
+            LOGGER.debug("timetable with id={} was updated", timetable.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -129,8 +127,7 @@ public class TimetableService implements Service<Timetable> {
         }
     }
 
-    @Override
-    public boolean validateEntity(Timetable timetable) throws ServiceException {
+    private void validateEntity(Timetable timetable) throws ServiceException {
         LOGGER.debug("begin validation");
         if (timetable.getCreationDate() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_CREATION_DATE);
@@ -139,7 +136,6 @@ public class TimetableService implements Service<Timetable> {
             throw new ServiceException(EXCEPTION_NOT_VALID_SCHEDULE);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired

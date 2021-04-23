@@ -31,13 +31,12 @@ public class TeacherService implements Service<Teacher> {
     public void add(Teacher teacher) throws DaoException, ServiceException {
         LOGGER.debug("creating a new teacher with name={}, last name={}", teacher.getName(), teacher.getLastName());
         try {
-            if (validateEntity(teacher)) {
-                int receivedId = teacherDao.add(teacher);
-                if (teacher.getTimetable() != null) {
-                    timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(), receivedId);
-                }
-                LOGGER.debug("new teacher({} {}) was created", teacher.getName(), teacher.getLastName());
+            validateEntity(teacher);
+            int receivedId = teacherDao.add(teacher);
+            if (teacher.getTimetable() != null) {
+                timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(), receivedId);
             }
+            LOGGER.debug("new teacher({} {}) was created", teacher.getName(), teacher.getLastName());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -82,14 +81,13 @@ public class TeacherService implements Service<Teacher> {
     public void update(Teacher teacher) throws DaoException, ServiceException {
         LOGGER.debug("updating teacher with id={}", teacher.getId());
         try {
-            if (validateEntity(teacher)) {
-                teacherDao.update(teacher);
-                if (teacher.getTimetable() != null) {
-                    timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
-                }
-                LOGGER.debug("teacher with id={} was updated", teacher.getId());
+            validateEntity(teacher);
+            teacherDao.update(teacher);
+            if (teacher.getTimetable() != null) {
+                timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
             }
-        } catch (DaoException ex) {
+            LOGGER.debug("teacher with id={} was updated", teacher.getId());
+        } catch (DaoException | ServiceException ex) {
             throw ex;
         }
     }
@@ -105,7 +103,7 @@ public class TeacherService implements Service<Teacher> {
         }
     }
 
-    public boolean validateEntity(Teacher teacher) throws ServiceException {
+    private void validateEntity(Teacher teacher) throws ServiceException {
         LOGGER.debug("begin validation");
         if (teacher.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
@@ -114,7 +112,6 @@ public class TeacherService implements Service<Teacher> {
             throw new ServiceException(EXCEPTION_NOT_VALID_LAST_NAME);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired

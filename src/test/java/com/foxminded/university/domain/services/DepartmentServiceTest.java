@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.persistence.DepartmentDao;
 import com.foxminded.university.persistence.GroupDao;
@@ -68,6 +70,16 @@ class DepartmentServiceTest {
         assertEquals(4, actual.getId());
         assertEquals(0, actual.getGroupList().size());
         assertEquals(0, actual.getTeacherList().size());
+    }
+    
+    @Test
+    void testSholdThrowServiceExceptionIfModelHavingNullFields() {
+        Department dept = new Department();
+        assertNull(dept.getName());
+        assertNull(dept.getGroupList());
+        assertNull(dept.getTeacherList());
+        
+        assertThrows(ServiceException.class, () -> {departmentService.add(dept);});
     }
 
     @Test

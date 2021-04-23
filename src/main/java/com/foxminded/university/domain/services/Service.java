@@ -13,6 +13,4 @@ public interface Service<T> {
     void update(T entity);
     
     void remove(int id);
-    
-    boolean validateEntity(T entity);
 }

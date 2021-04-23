@@ -35,11 +35,10 @@ public class StudentService implements Service<Student> {
     public void add(Student student) throws DaoException, ServiceException {
         LOGGER.debug("creating new student");
         try {
-            if (validateEntity(student)) {
-                student.setId(studentDao.add(student));
-                studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
-                LOGGER.debug("new student with id={} was created", student.getId());
-            }
+            validateEntity(student);
+            student.setId(studentDao.add(student));
+            studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
+            LOGGER.debug("new student with id={} was created", student.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -91,11 +90,10 @@ public class StudentService implements Service<Student> {
     public void update(Student student) throws DaoException, ServiceException {
         LOGGER.debug("updating student");
         try {
-            if (validateEntity(student)) {
-                studentDao.update(student);
-                studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
-                LOGGER.debug("student with id={} successfully updated", student.getId());
-            }
+            validateEntity(student);
+            studentDao.update(student);
+            studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
+            LOGGER.debug("student with id={} successfully updated", student.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -133,8 +131,7 @@ public class StudentService implements Service<Student> {
         }
     }
 
-    @Override
-    public boolean validateEntity(Student student) throws ServiceException {
+    private void validateEntity(Student student) throws ServiceException {
         LOGGER.debug("begin validation");
         if (student.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
@@ -149,7 +146,6 @@ public class StudentService implements Service<Student> {
             throw new ServiceException(EXCEPTION_NOT_VALID_GROUP);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired

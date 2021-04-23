@@ -29,10 +29,9 @@ public class LessonService implements Service<Lesson> {
     public void add(Lesson lesson) throws DaoException, ServiceException {
         LOGGER.debug("creating a new lesson with name={}", lesson.getName());
         try {
-            if (validateEntity(lesson)) {
-                int obtainedId = lessonDao.add(lesson);
-                LOGGER.debug("lesson with name={} was created", obtainedId);
-            }
+            validateEntity(lesson);
+            int obtainedId = lessonDao.add(lesson);
+            LOGGER.debug("lesson with name={} was created", obtainedId);
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -72,10 +71,9 @@ public class LessonService implements Service<Lesson> {
     public void update(Lesson lesson) throws DaoException, ServiceException {
         LOGGER.debug("updating lesson with id={}", lesson.getId());
         try {
-            if (validateEntity(lesson)) {
-                lessonDao.update(lesson);
-                LOGGER.debug("lesson with id={} was updated", lesson.getId());
-            }
+            validateEntity(lesson);
+            lessonDao.update(lesson);
+            LOGGER.debug("lesson with id={} was updated", lesson.getId());
         } catch (DaoException | ServiceException ex) {
             throw ex;
         }
@@ -103,8 +101,7 @@ public class LessonService implements Service<Lesson> {
         }
     }
 
-    @Override
-    public boolean validateEntity(Lesson lesson) {
+    private void validateEntity(Lesson lesson) throws ServiceException {
         LOGGER.debug("begin validation");
         if (lesson.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
@@ -122,7 +119,6 @@ public class LessonService implements Service<Lesson> {
             throw new ServiceException(EXCEPTION_NOT_VALID_START_TIME);
         }
         LOGGER.debug("validation passed");
-        return true;
     }
 
     @Autowired
