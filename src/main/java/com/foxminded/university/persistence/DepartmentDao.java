@@ -14,11 +14,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.foxminded.university.domain.exceptions.DaoException;
-import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
-import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
-import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
+import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.EntityRemovingException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Department;
 
 @Repository
@@ -32,8 +31,8 @@ public class DepartmentDao implements Dao<Department> {
     private static final String QUERY_DELETE = "delete from departments where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
-    private static final String EXCEPTION_STUDENT_CREATE = "could not create a new department(%s)";
-    private static final String EXCEPTION_DEPARTMENT_NOT_FOUND = "group department id=%d not found";
+    private static final String EXCEPTION_STUDENT_CREATE = "new department(%s) was not create";
+    private static final String EXCEPTION_DEPARTMENT_NOT_FOUND = "group department with id=%d not found";
     private static final String EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND = "nothing to get. Database has no department yet";
 
     @Autowired
@@ -42,50 +41,50 @@ public class DepartmentDao implements Dao<Department> {
     }
     
     @Override
-    public int add(Department department) throws DaoException {
+    public int add(Department department) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(department), holder);
         int obtainedKey = holder.getKey().intValue();
         if (obtainedKey != 0) {
             return obtainedKey;
         } else {
-            throw new EntityCreatingFailureException(EXCEPTION_STUDENT_CREATE);
+            throw new EntityNotCreatedException(EXCEPTION_STUDENT_CREATE);
         }
     } 
         
     @Override
-    public Department get(int id) throws DaoException {
+    public Department get(int id) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, id));
+            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, id));
         }
     }
 
     @Override
-    public List<Department> getAll() throws DaoException {
+    public List<Department> getAll() {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND));
+            throw new EntityNotFoundException(String.format(EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND));
         }
     }
 
     @Override
-    public void update(Department department) throws DaoException {
+    public void update(Department department) {
         try {
             jdbcTemplate.update(QUERY_UPDATE, department.getName(), department.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new EntityUpdatingException(EXCEPTION_DEPARTMENT_NOT_FOUND);
         }
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingFailureException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new EntityRemovingException(EXCEPTION_DEPARTMENT_NOT_FOUND);
         }
     }
     

@@ -14,11 +14,10 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.domain.exceptions.DaoException;
-import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
-import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
-import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
+import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.EntityRemovingException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Teacher;
 
 @Repository
@@ -53,90 +52,90 @@ public class TeacherDao implements Dao<Teacher> {
     }
 
     @Override
-    public int add(Teacher teacher) throws DaoException {
+    public int add(Teacher teacher) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(teacher), holder);
         int obtainedId = holder.getKey().intValue();
         if (obtainedId != 0) {
             return obtainedId;
         } else {
-            throw new EntityCreatingFailureException(String.format(EXCEPTION_TEACHER_CREATE, teacher.getName(), teacher.getLastName()));
+            throw new EntityNotCreatedException(String.format(EXCEPTION_TEACHER_CREATE, teacher.getName(), teacher.getLastName()));
         }
     }
 
     @Override
-    public Teacher get(int id) throws DaoException {
+    public Teacher get(int id) {
         try {
             return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-             throw new EntityGettingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
+             throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
         }
     }
 
     @Override
-    public List<Teacher> getAll() throws DaoException {
+    public List<Teacher> getAll() {
         try {
             return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(EXCEPTION_ALL_TEACHERS_NOT_FOUND);
+            throw new EntityNotFoundException(EXCEPTION_ALL_TEACHERS_NOT_FOUND);
         }
     }
 
     @Override
-    public void update(Teacher teacher) throws DaoException {
+    public void update(Teacher teacher) {
         try {
             jdbcTemplate.update(QUERY_UPDATE, teacher.getName(), teacher.getLastName(), teacher.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacher.getId()));
+            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacher.getId()));
         }
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
+            throw new EntityRemovingException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
         }
     }
     
-    public Teacher getTeacherByLessonId(int lessonId) throws DaoException {
+    public Teacher getTeacherByLessonId(int lessonId) {
         try {
             return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, getRowMapper(), lessonId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND, lessonId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND, lessonId));
         }
     }
     
-    public Teacher getGroupTeacher(int groupId) throws DaoException {
+    public Teacher getGroupTeacher(int groupId) {
         try {
             return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_GROUP, getRowMapper(), groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND, groupId));
         }
     }
     
-    public void setDepartmentToTeacher(int departmentId, int teacherId) throws DaoException {
+    public void setDepartmentToTeacher(int departmentId, int teacherId) {
         try {
             jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, teacherId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
         }
     }
     
-    public void updateTeacherDepartment(int departmentId, int teacherId) throws DaoException {
+    public void updateTeacherDepartment(int departmentId, int teacherId) {
         try {
             jdbcTemplate.update(QUERY_DEPARTMEN, departmentId, teacherId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
         }
     }
     
-    public List<Teacher> getTeachersByDepartment(int departmentId) throws DaoException {
+    public List<Teacher> getTeachersByDepartment(int departmentId) {
         try {
             return jdbcTemplate.query(QUERY_GET_TEACHER_BY_DEPARTMENT, getRowMapper(), departmentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, departmentId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, departmentId));
         }
         
     }

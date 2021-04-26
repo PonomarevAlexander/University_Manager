@@ -15,10 +15,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.foxminded.university.domain.exceptions.DaoException;
-import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
-import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
-import com.foxminded.university.domain.exceptions.EntityRemovingFailureException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
+import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.EntityRemovingException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Student;
 
 @Repository
@@ -56,16 +56,16 @@ public class StudentDao implements Dao<Student> {
         if (holder.getKey().intValue() != 0) {
             return holder.getKey().intValue();
         } else {
-            throw new EntityCreatingFailureException(String.format(EXCEPTION_STUDENT_CREATE, student.getName(), student.getLastName()));
+            throw new EntityNotCreatedException(String.format(EXCEPTION_STUDENT_CREATE, student.getName(), student.getLastName()));
         }
     }
 
     @Override
-    public Student get(int id) throws DaoException {
+    public Student get(int id) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
+            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
         }
     }
 
@@ -74,7 +74,7 @@ public class StudentDao implements Dao<Student> {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(EXCEPTION_ALL_STUDENTS_NOT_FOUND);
+            throw new EntityNotFoundException(EXCEPTION_ALL_STUDENTS_NOT_FOUND);
         }
     }
 
@@ -83,7 +83,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
+            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
         }
     }
 
@@ -92,7 +92,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
+            throw new EntityRemovingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
         }
     }
 
@@ -100,7 +100,7 @@ public class StudentDao implements Dao<Student> {
         try {
             return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_GROUP_NOT_FOUND, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, groupId));
         }
     }
 
@@ -108,7 +108,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
+            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
         }
     }
     
@@ -116,7 +116,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
+            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
         }
     }
     

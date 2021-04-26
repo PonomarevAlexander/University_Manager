@@ -15,11 +15,9 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-
-import com.foxminded.university.domain.exceptions.DaoException;
-import com.foxminded.university.domain.exceptions.EntityCreatingFailureException;
-import com.foxminded.university.domain.exceptions.EntityGettingFailureException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingFailureException;
+import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
+import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Lesson;
 
 @Repository
@@ -52,37 +50,37 @@ public class LessonDao implements Dao<Lesson> {
     }
 
     @Override
-    public int add(Lesson lesson) throws DaoException {
+    public int add(Lesson lesson) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(lesson), holder);
         int obtainedId = holder.getKey().intValue();
         if (obtainedId != 0) {
             return obtainedId;
         } else {
-            throw new EntityCreatingFailureException(String.format(EXCEPTION_LESSON_CREATE, lesson.getName()));
+            throw new EntityNotCreatedException(String.format(EXCEPTION_LESSON_CREATE, lesson.getName()));
         }
     }
 
     @Override
-    public Lesson get(int id) throws DaoException {
+    public Lesson get(int id) {
         try {
             return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
         }
     }
 
     @Override
-    public List<Lesson> getAll() throws DaoException {
+    public List<Lesson> getAll() {
         try {
             return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_ALL_LESSONS_NOT_FOUND), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_ALL_LESSONS_NOT_FOUND), ex);
         }
     }
 
     @Override
-    public void update(Lesson lesson) throws DaoException {
+    public void update(Lesson lesson) {
         try {
             jdbcTemplate.update(QUERY_UPDATE,
                     lesson.getName(),
@@ -92,41 +90,41 @@ public class LessonDao implements Dao<Lesson> {
                     lesson.getGroup().getId(),
                     lesson.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND, lesson.getId()), ex);
+            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND, lesson.getId()), ex);
         }
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
+            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
         }
     }
     
-    public void setLessonToTimetable(int lessonId, int timetableId) throws DaoException {
+    public void setLessonToTimetable(int lessonId, int timetableId) {
         try {
             jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
         }
     }
     
-    public List<Lesson> getLessonsOfTimetable(int timetableId) throws DaoException {
+    public List<Lesson> getLessonsOfTimetable(int timetableId) {
         try {
             return jdbcTemplate.query(QUERY_GET_LESSONS_OF_TIMETABLE, getRowMapper(), timetableId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityGettingFailureException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND, timetableId), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_TIMETABLE_NOT_FOUND, timetableId), ex);
         }
     }
     
-    public void updateLessonOfTimetable(int lessonId, int timetableId) throws DaoException {
+    public void updateLessonOfTimetable(int lessonId, int timetableId) {
         try {
             jdbcTemplate.update(QUERY_UPDATE_LESSONS_TIMETABLES, lessonId, timetableId, timetableId, lessonId);
             jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingFailureException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
         }
     }
 
