@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
 import com.foxminded.university.domain.exceptions.ServiceException;
@@ -38,7 +37,6 @@ public class StudentService implements Service<Student> {
     private static final String EXCEPTION_GET_ALL = "Failed to receiving all students list. Reason is ";
     private static final String EXCEPTION_UPDATE = "Failed to updating the student(id=%d). Reason is ";
     private static final String EXCEPTION_REMOVE = "Failed to removing the student(id=%d). Reason is ";
-    
 
     @Override
     public void add(Student student) throws ServiceException {
@@ -71,7 +69,7 @@ public class StudentService implements Service<Student> {
             return student;
         } catch (EntityNotFoundException ex) {
             LOGGER.error("student with id={} not found or his group not found", id);
-            throw new ServiceException(String.format(EXCEPTION_GET, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
     }
 
@@ -94,7 +92,7 @@ public class StudentService implements Service<Student> {
             return studentsList;
         } catch (EntityNotFoundException ex) {
             LOGGER.error("no one student not found");
-            throw new ServiceException(String.format(EXCEPTION_GET_ALL, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_GET_ALL) + ex.getMessage());
         }
     }
 
@@ -108,7 +106,7 @@ public class StudentService implements Service<Student> {
             LOGGER.debug("student with id={} successfully updated", student.getId());
         } catch (EntityNotFoundException ex) {
             LOGGER.error("student updating failed!");
-            throw new ServiceException(String.format(EXCEPTION_UPDATE, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
     }
 
@@ -120,7 +118,7 @@ public class StudentService implements Service<Student> {
             LOGGER.debug("student with id={} has been deleted", id);
         } catch (EntityNotFoundException ex) {
             LOGGER.error("student with id={} was not removed! Student not found", id);
-            throw new ServiceException(String.format(EXCEPTION_REMOVE, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
     }
     
@@ -130,18 +128,18 @@ public class StudentService implements Service<Student> {
             return studentDao.getStudentRelatedGroup(group.getId());
         } catch (EntityNotFoundException ex) {
             LOGGER.error("receiving students list fail! Group with id={} not found", group.getId());
-            throw new ServiceException(String.format(EXCEPTION_GET_BY_GROUP, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_GET_BY_GROUP) + ex.getMessage());
         }
     }
 
-    public void assignToGroup(Student student, int targetGroup) throws DaoException {
+    public void assignToGroup(Student student, int targetGroup) {
         LOGGER.debug("seting student(id={}) to group(id={})", student.getId(), targetGroup);
         try {
             studentDao.setStudentToGroup(student.getId(), targetGroup);
             LOGGER.debug("student with id={} successfully assigned to group with id={}", student.getId(), targetGroup);
         } catch (EntityNotFoundException ex) {
             LOGGER.error("student updating failed!");
-            throw new ServiceException(String.format(EXCEPTION_UPDATE, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
     }
 
@@ -152,11 +150,12 @@ public class StudentService implements Service<Student> {
             LOGGER.debug("student with id={} was removed from group with id={}", student.getId(), student.getGroup().getId());
         } catch (EntityNotFoundException ex) {
             LOGGER.error("student with id={} was not removed! Student not found", student.getId());
-            throw new ServiceException(String.format(EXCEPTION_REMOVE, ex.getMessage()));
+            throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
     }
 
-    private void validateEntity(Student student) {
+    private void validateEntity(Student student) 
+    {
         LOGGER.debug("begin validation");
         if (student.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);

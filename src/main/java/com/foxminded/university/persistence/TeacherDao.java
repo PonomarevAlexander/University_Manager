@@ -16,8 +16,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
-import com.foxminded.university.domain.exceptions.EntityRemovingException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Teacher;
 
 @Repository
@@ -86,7 +84,7 @@ public class TeacherDao implements Dao<Teacher> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, teacher.getName(), teacher.getLastName(), teacher.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacher.getId()));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacher.getId()));
         }
     }
 
@@ -95,7 +93,7 @@ public class TeacherDao implements Dao<Teacher> {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
         }
     }
     
@@ -119,7 +117,7 @@ public class TeacherDao implements Dao<Teacher> {
         try {
             jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, teacherId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
         }
     }
     
@@ -127,7 +125,7 @@ public class TeacherDao implements Dao<Teacher> {
         try {
             jdbcTemplate.update(QUERY_DEPARTMEN, departmentId, teacherId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
         }
     }
     

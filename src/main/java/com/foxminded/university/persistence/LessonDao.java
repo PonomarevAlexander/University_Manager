@@ -17,7 +17,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Lesson;
 
 @Repository
@@ -90,7 +89,7 @@ public class LessonDao implements Dao<Lesson> {
                     lesson.getGroup().getId(),
                     lesson.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND, lesson.getId()), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND, lesson.getId()), ex);
         }
     }
 
@@ -99,7 +98,7 @@ public class LessonDao implements Dao<Lesson> {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
         }
     }
     
@@ -107,7 +106,7 @@ public class LessonDao implements Dao<Lesson> {
         try {
             jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
         }
     }
     
@@ -124,7 +123,7 @@ public class LessonDao implements Dao<Lesson> {
             jdbcTemplate.update(QUERY_UPDATE_LESSONS_TIMETABLES, lessonId, timetableId, timetableId, lessonId);
             jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
         }
     }
 

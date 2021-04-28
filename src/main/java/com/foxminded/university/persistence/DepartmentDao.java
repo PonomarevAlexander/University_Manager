@@ -13,11 +13,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
-import com.foxminded.university.domain.exceptions.EntityRemovingException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Department;
 
 @Repository
@@ -75,7 +72,7 @@ public class DepartmentDao implements Dao<Department> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, department.getName(), department.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new EntityNotFoundException(EXCEPTION_DEPARTMENT_NOT_FOUND);
         }
     }
 
@@ -84,7 +81,7 @@ public class DepartmentDao implements Dao<Department> {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new EntityNotFoundException(EXCEPTION_DEPARTMENT_NOT_FOUND);
         }
     }
     

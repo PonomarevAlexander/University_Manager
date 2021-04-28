@@ -13,12 +13,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-
-import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
-import com.foxminded.university.domain.exceptions.EntityRemovingException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Student;
 
 @Repository
@@ -50,7 +46,7 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public int add(Student student) throws DaoException {
+    public int add(Student student) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(student), holder);
         if (holder.getKey().intValue() != 0) {
@@ -83,7 +79,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
+            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
         }
     }
 
@@ -92,7 +88,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
+            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
         }
     }
 
@@ -108,7 +104,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
         }
     }
     
@@ -116,7 +112,7 @@ public class StudentDao implements Dao<Student> {
         try {
             jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
         }
     }
     

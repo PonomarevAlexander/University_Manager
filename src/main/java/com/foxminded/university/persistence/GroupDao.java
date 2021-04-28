@@ -13,11 +13,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
 import com.foxminded.university.domain.exceptions.EntityNotFoundException;
-import com.foxminded.university.domain.exceptions.EntityRemovingException;
-import com.foxminded.university.domain.exceptions.EntityUpdatingException;
 import com.foxminded.university.domain.models.Group;
 
 @Repository
@@ -54,7 +51,7 @@ public class GroupDao implements Dao<Group> {
     }
 
     @Override
-    public int add(Group group) throws EntityNotCreatedException {
+    public int add(Group group) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(group), holder);
         if (holder.getKey().longValue() != 0) {
@@ -65,7 +62,7 @@ public class GroupDao implements Dao<Group> {
     }
 
     @Override
-    public Group get(int id) throws DaoException {
+    public Group get(int id) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
@@ -74,7 +71,7 @@ public class GroupDao implements Dao<Group> {
     }
 
     @Override
-    public List<Group> getAll() throws DaoException {
+    public List<Group> getAll() {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
@@ -83,24 +80,24 @@ public class GroupDao implements Dao<Group> {
     }
 
     @Override
-    public void update(Group group) throws DaoException {
+    public void update(Group group) {
         try {
             jdbcTemplate.update(QUERY_UPDATE, group.getName(), group.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_GROUP_NOT_FOUND, group.getId()));
+            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, group.getId()));
         }
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityRemovingException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
+            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
         }
     }
 
-    public Group getGroupByStudent(int studentId) throws DaoException {
+    public Group getGroupByStudent(int studentId) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, getRowMapper(), studentId);
         } catch (EmptyResultDataAccessException ex) {
@@ -108,7 +105,7 @@ public class GroupDao implements Dao<Group> {
         }
     }
     
-    public Group getGroupByLesson(int lessonId) throws DaoException {
+    public Group getGroupByLesson(int lessonId) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_LESSON, getRowMapper(), lessonId);
         } catch (EmptyResultDataAccessException ex) {
@@ -116,7 +113,7 @@ public class GroupDao implements Dao<Group> {
         }
     }
     
-    public List<Group> getGroupsByDepartment(int departmentId) throws DaoException {
+    public List<Group> getGroupsByDepartment(int departmentId) {
         try {
             return jdbcTemplate.query(QUERY_SELECT_GROUP_BY_DEPARTMENT, getRowMapper(), departmentId);
         } catch (EmptyResultDataAccessException ex) {
@@ -124,7 +121,7 @@ public class GroupDao implements Dao<Group> {
         }
     }
     
-    public Group getGroupByTeacher(int teacherId) throws DaoException {
+    public Group getGroupByTeacher(int teacherId) {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
         } catch (EmptyResultDataAccessException ex) {
@@ -132,27 +129,27 @@ public class GroupDao implements Dao<Group> {
         }
     }
     
-    public void setDepartmentToGroup(int departmentId, int groupId) throws DaoException {
+    public void setDepartmentToGroup(int departmentId, int groupId) {
         try {
             jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
         }
     }
     
-    public void updateGroupDepartment(int departmentId, int groupId) throws DaoException {
+    public void updateGroupDepartment(int departmentId, int groupId) {
         try {
             jdbcTemplate.update(QUERY_UPDATE_DEPARTMENT, departmentId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
         }
     }
     
-    public void updateGroupHead(int teacherId, int groupId) throws DaoException {
+    public void updateGroupHead(int teacherId, int groupId) {
         try {
             jdbcTemplate.update(QUERY_UPDATE_GROUPHEAD, teacherId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityUpdatingException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, teacherId, groupId));
+            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, teacherId, groupId));
         }
     }
     
