@@ -70,7 +70,7 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public List<Student> getAll() throws DaoException {
+    public List<Student> getAll() {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
@@ -79,7 +79,7 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public void update(Student student) throws DaoException {
+    public void update(Student student) {
         try {
             jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
         } catch (EmptyResultDataAccessException ex) {
@@ -88,7 +88,7 @@ public class StudentDao implements Dao<Student> {
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         try {
             jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
         } catch (EmptyResultDataAccessException ex) {
@@ -96,7 +96,7 @@ public class StudentDao implements Dao<Student> {
         }
     }
 
-    public List<Student> getStudentRelatedGroup(int groupId) throws DaoException {
+    public List<Student> getStudentRelatedGroup(int groupId) {
         try {
             return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
         } catch (EmptyResultDataAccessException ex) {
@@ -104,7 +104,7 @@ public class StudentDao implements Dao<Student> {
         }
     }
 
-    public void setStudentToGroup(int studentId, int groupId) throws DaoException {
+    public void setStudentToGroup(int studentId, int groupId) {
         try {
             jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
         } catch (EmptyResultDataAccessException ex) {
@@ -112,7 +112,7 @@ public class StudentDao implements Dao<Student> {
         }
     }
     
-    public void removeStudentFromGroup(int studentId) throws DaoException {
+    public void removeStudentFromGroup(int studentId) {
         try {
             jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
         } catch (EmptyResultDataAccessException ex) {

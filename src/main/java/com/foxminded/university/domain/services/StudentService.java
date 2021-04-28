@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
+import com.foxminded.university.domain.exceptions.EntityNotFoundException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Student;
@@ -30,22 +32,30 @@ public class StudentService implements Service<Student> {
     private static final String EXCEPTION_NOT_VALID_LAST_NAME = "validation failed! student last name is null";
     private static final String EXCEPTION_NOT_VALID_AGE = "validation failed! student age is 0 or less";
     private static final String EXCEPTION_NOT_VALID_GROUP = "validation failed! student group is null";
+    private static final String EXCEPTION_ADD = "Failed to creating new student!";
+    private static final String EXCEPTION_GET = "Failed to receiving a student(id=%). Reason is ";
+    private static final String EXCEPTION_GET_BY_GROUP = "receiving a students related a group fail reason is";
+    private static final String EXCEPTION_GET_ALL = "Failed to receiving all students list. Reason is ";
+    private static final String EXCEPTION_UPDATE = "Failed to updating the student(id=%d). Reason is ";
+    private static final String EXCEPTION_REMOVE = "Failed to removing the student(id=%d). Reason is ";
+    
 
     @Override
-    public void add(Student student) throws DaoException, ServiceException {
+    public void add(Student student) throws ServiceException {
         LOGGER.debug("creating new student");
+        validateEntity(student);
         try {
-            validateEntity(student);
             student.setId(studentDao.add(student));
             studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
             LOGGER.debug("new student with id={} was created", student.getId());
-        } catch (DaoException | ServiceException ex) {
-            throw ex;
+        } catch (EntityNotCreatedException ex) {
+            LOGGER.error("new student was not created");
+            throw new ServiceException(EXCEPTION_ADD);
         }
     }
 
     @Override
-    public Student getById(int id) throws DaoException {
+    public Student getById(int id) {
         LOGGER.debug("getting student by id={}", id);
         try {
             Student student = studentDao.get(id);
@@ -59,13 +69,14 @@ public class StudentService implements Service<Student> {
             student.setGroup(group);
             LOGGER.debug("student with id={} was prepared and returned", student.getId());
             return student;
-        } catch (DaoException ex) {
-            throw ex;
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("student with id={} not found or his group not found", id);
+            throw new ServiceException(String.format(EXCEPTION_GET, ex.getMessage()));
         }
     }
 
     @Override
-    public List<Student> getAll() throws DaoException {
+    public List<Student> getAll() {
         LOGGER.debug("getting all students");
         try {
             List<Student> studentsList = studentDao.getAll();
@@ -81,32 +92,45 @@ public class StudentService implements Service<Student> {
             });
             LOGGER.debug("students list(size={}) was prepared and returned", studentsList.size());
             return studentsList;
-        } catch (DaoException ex) {
-            throw ex;
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("no one student not found");
+            throw new ServiceException(String.format(EXCEPTION_GET_ALL, ex.getMessage()));
         }
     }
 
     @Override
-    public void update(Student student) throws DaoException, ServiceException {
+    public void update(Student student) throws ServiceException {
         LOGGER.debug("updating student");
+        validateEntity(student);
         try {
-            validateEntity(student);
             studentDao.update(student);
             studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
             LOGGER.debug("student with id={} successfully updated", student.getId());
-        } catch (DaoException | ServiceException ex) {
-            throw ex;
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("student updating failed!");
+            throw new ServiceException(String.format(EXCEPTION_UPDATE, ex.getMessage()));
         }
     }
 
     @Override
-    public void remove(int id) throws DaoException {
+    public void remove(int id) {
         LOGGER.debug("removing student");
         try {
             studentDao.remove(id);
             LOGGER.debug("student with id={} has been deleted", id);
-        } catch (DaoException ex) {
-            throw ex;
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("student with id={} was not removed! Student not found", id);
+            throw new ServiceException(String.format(EXCEPTION_REMOVE, ex.getMessage()));
+        }
+    }
+    
+    public List<Student> getStudentsByGroup(Group group) {
+        LOGGER.debug("getting students list by group(id={})", group.getId());
+        try {
+            return studentDao.getStudentRelatedGroup(group.getId());
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("receiving students list fail! Group with id={} not found", group.getId());
+            throw new ServiceException(String.format(EXCEPTION_GET_BY_GROUP, ex.getMessage()));
         }
     }
 
@@ -115,23 +139,24 @@ public class StudentService implements Service<Student> {
         try {
             studentDao.setStudentToGroup(student.getId(), targetGroup);
             LOGGER.debug("student with id={} successfully assigned to group with id={}", student.getId(), targetGroup);
-        } catch (DaoException ex) {
-            throw ex;
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("student updating failed!");
+            throw new ServiceException(String.format(EXCEPTION_UPDATE, ex.getMessage()));
         }
     }
 
-    public void removeFromGroup(Student student) throws DaoException {
+    public void removeFromGroup(Student student) {
         LOGGER.debug("removing student from group");
         try {
             studentDao.removeStudentFromGroup(student.getId());
-            LOGGER.debug("student with id={} was removed from group with id={}", student.getId(),
-                    student.getGroup().getId());
-        } catch (DaoException ex) {
-            throw ex;
+            LOGGER.debug("student with id={} was removed from group with id={}", student.getId(), student.getGroup().getId());
+        } catch (EntityNotFoundException ex) {
+            LOGGER.error("student with id={} was not removed! Student not found", student.getId());
+            throw new ServiceException(String.format(EXCEPTION_REMOVE, ex.getMessage()));
         }
     }
 
-    private void validateEntity(Student student) throws ServiceException {
+    private void validateEntity(Student student) {
         LOGGER.debug("begin validation");
         if (student.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
