@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface Service<T> {
     
-    void add(T entity);
+    int add(T entity);
     
     T getById(int id);
     

@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Teacher;
@@ -34,7 +33,7 @@ public class TeacherService implements Service<Teacher> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the teacher(id=%d). Reason is ";
 
     @Override
-    public void add(Teacher teacher) throws ServiceException {
+    public int add(Teacher teacher) throws ServiceException {
         LOGGER.debug("creating a new teacher with name={}, last name={}", teacher.getName(), teacher.getLastName());
         validateEntity(teacher);
         try {
@@ -43,7 +42,8 @@ public class TeacherService implements Service<Teacher> {
                 timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(), receivedId);
             }
             LOGGER.debug("new teacher({} {}) was created", teacher.getName(), teacher.getLastName());
-        } catch (EntityNotCreatedException ex) {
+            return receivedId;
+        } catch (DaoException ex) {
             LOGGER.error("new teacher was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -60,7 +60,7 @@ public class TeacherService implements Service<Teacher> {
             teacher.setTimetable(timetable);
             LOGGER.debug("Teacher with id={} was prepared and returned", teacher.getId());
             return teacher;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("lesson with id={} not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -80,7 +80,7 @@ public class TeacherService implements Service<Teacher> {
             });
             LOGGER.debug("all teachers obtained and returned");
             return teachersList;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("no one teacher not found");
             throw new ServiceException(String.format(EXCEPTION_GET_LIST) +  ex.getMessage());
         }
@@ -96,7 +96,7 @@ public class TeacherService implements Service<Teacher> {
                 timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
             }
             LOGGER.debug("teacher with id={} was updated", teacher.getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("teacher updating fail!");
             throw new ServiceException(String.format(EXCEPTION_UPDATE,teacher.getId()) +  ex.getMessage());
         }
@@ -108,7 +108,7 @@ public class TeacherService implements Service<Teacher> {
         try {
             teacherDao.remove(id);
             LOGGER.debug("teacher with id={} was removed", id);
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("teacher with id={} was not removed! Lesson not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) +  ex.getMessage());
         }

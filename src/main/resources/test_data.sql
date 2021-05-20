@@ -18,9 +18,9 @@ insert into lessons(name, start_time, duration, teacher_id, group_id) values('ma
 insert into lessons(name, start_time, duration, teacher_id, group_id) values('english', '2021-02-12 12:12:12', 5400, 2, 1);
 insert into lessons(name, start_time, duration, teacher_id, group_id) values('mechanics', '2021-03-13 13:13:13', 5400, 3, 2);
 
-insert into timetables(creation_date) values('2021-01-11 11:11:11');
-insert into timetables(creation_date) values('2021-02-12 12:12:12');
-insert into timetables(creation_date) values('2021-03-13 13:13:13');
+insert into timetables(creation_date, description) values('2021-01-11 11:11:11', 'for teacher1');
+insert into timetables(creation_date, description) values('2021-02-12 12:12:12', 'for teacher2');
+insert into timetables(creation_date, description) values('2021-03-13 13:13:13', 'for teacher3');
 
 insert into teachers_lessons(teacher_id, lesson_id) values(1, 1);
 insert into teachers_lessons(teacher_id, lesson_id) values(2, 2);

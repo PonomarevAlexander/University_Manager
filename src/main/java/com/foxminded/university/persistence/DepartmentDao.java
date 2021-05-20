@@ -13,8 +13,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Department;
 
 @Repository
@@ -24,12 +23,14 @@ public class DepartmentDao implements Dao<Department> {
     private static final String QUERY_INSERT = "insert into departments(name) values(?)";
     private static final String QUERY_SELECT_BY_ID = "select * from departments where id=?";
     private static final String QUERY_SELECT_ALL = "select * from departments";
+    private static final String QUERY_SELECT_BY_GROUP = "select * from departments d left join groups g on d.id=g.department_id where g.id=?";
     private static final String QUERY_UPDATE = "update departments set name=? where id=?";
     private static final String QUERY_DELETE = "delete from departments where id=?";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String EXCEPTION_STUDENT_CREATE = "new department(%s) was not create";
     private static final String EXCEPTION_DEPARTMENT_NOT_FOUND = "group department with id=%d not found";
+    private static final String EXCEPTION_GROUP_NOT_FOUND = "group with id=%d not found";
     private static final String EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND = "nothing to get. Database has no department yet";
 
     @Autowired
@@ -41,11 +42,11 @@ public class DepartmentDao implements Dao<Department> {
     public int add(Department department) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(department), holder);
-        int obtainedKey = holder.getKey().intValue();
+        int obtainedKey = (int) holder.getKeys().get("id");
         if (obtainedKey != 0) {
             return obtainedKey;
         } else {
-            throw new EntityNotCreatedException(EXCEPTION_STUDENT_CREATE);
+            throw new DaoException(EXCEPTION_STUDENT_CREATE);
         }
     } 
         
@@ -54,7 +55,7 @@ public class DepartmentDao implements Dao<Department> {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, id));
+            throw new DaoException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, id));
         }
     }
 
@@ -63,7 +64,7 @@ public class DepartmentDao implements Dao<Department> {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND));
+            throw new DaoException(String.format(EXCEPTION_ALL_DEPARTMENTS_NOT_FOUND));
         }
     }
 
@@ -72,7 +73,7 @@ public class DepartmentDao implements Dao<Department> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, department.getName(), department.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new DaoException(EXCEPTION_DEPARTMENT_NOT_FOUND);
         }
     }
 
@@ -81,7 +82,15 @@ public class DepartmentDao implements Dao<Department> {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+            throw new DaoException(EXCEPTION_DEPARTMENT_NOT_FOUND);
+        }
+    }
+    
+    public Department getDepartmentByGroup(int groupId) {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_BY_GROUP, getRowMapper(), groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_GROUP_NOT_FOUND, groupId));
         }
     }
     

@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Student;
@@ -39,14 +39,15 @@ public class StudentService implements Service<Student> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the student(id=%d). Reason is ";
 
     @Override
-    public void add(Student student) throws ServiceException {
+    public int add(Student student) throws ServiceException {
         LOGGER.debug("creating new student");
         validateEntity(student);
         try {
-            student.setId(studentDao.add(student));
-            studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
-            LOGGER.debug("new student with id={} was created", student.getId());
-        } catch (EntityNotCreatedException ex) {
+            int studentId = studentDao.add(student);
+            studentDao.setStudentToGroup(studentId, student.getGroup().getId());
+            LOGGER.debug("new student with id={} was created", studentId);
+            return studentId;
+        } catch (DaoException ex) {
             LOGGER.error("new student was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -63,11 +64,11 @@ public class StudentService implements Service<Student> {
             timetable.setSchedule(lessonDao.getLessonsOfTimetable(timetable.getId()));
             group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
             group.setTimetable(timetable);
-            group.setCheef(teacherDao.getGroupTeacher(group.getId()));
+            group.setTeacher(teacherDao.getGroupTeacher(group.getId()));
             student.setGroup(group);
             LOGGER.debug("student with id={} was prepared and returned", student.getId());
             return student;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("student with id={} not found or his group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -85,12 +86,12 @@ public class StudentService implements Service<Student> {
                 timetable.setSchedule(lessonDao.getLessonsOfTimetable(timetable.getId()));
                 group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
                 group.setTimetable(timetable);
-                group.setCheef(teacherDao.getGroupTeacher(group.getId()));
+                group.setTeacher(teacherDao.getGroupTeacher(group.getId()));
                 student.setGroup(group);
             });
             LOGGER.debug("students list(size={}) was prepared and returned", studentsList.size());
             return studentsList;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("no one student not found");
             throw new ServiceException(String.format(EXCEPTION_GET_ALL) + ex.getMessage());
         }
@@ -104,7 +105,7 @@ public class StudentService implements Service<Student> {
             studentDao.update(student);
             studentDao.setStudentToGroup(student.getId(), student.getGroup().getId());
             LOGGER.debug("student with id={} successfully updated", student.getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("student updating failed!");
             throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
@@ -116,7 +117,7 @@ public class StudentService implements Service<Student> {
         try {
             studentDao.remove(id);
             LOGGER.debug("student with id={} has been deleted", id);
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("student with id={} was not removed! Student not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -126,7 +127,7 @@ public class StudentService implements Service<Student> {
         LOGGER.debug("getting students list by group(id={})", group.getId());
         try {
             return studentDao.getStudentRelatedGroup(group.getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("receiving students list fail! Group with id={} not found", group.getId());
             throw new ServiceException(String.format(EXCEPTION_GET_BY_GROUP) + ex.getMessage());
         }
@@ -137,7 +138,7 @@ public class StudentService implements Service<Student> {
         try {
             studentDao.setStudentToGroup(student.getId(), targetGroup);
             LOGGER.debug("student with id={} successfully assigned to group with id={}", student.getId(), targetGroup);
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("student updating failed!");
             throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
@@ -148,7 +149,7 @@ public class StudentService implements Service<Student> {
         try {
             studentDao.removeStudentFromGroup(student.getId());
             LOGGER.debug("student with id={} was removed from group with id={}", student.getId(), student.getGroup().getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("student with id={} was not removed! Student not found", student.getId());
             throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }

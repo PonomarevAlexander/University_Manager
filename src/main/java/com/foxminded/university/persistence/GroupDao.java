@@ -13,8 +13,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Group;
 
 @Repository
@@ -23,7 +22,7 @@ public class GroupDao implements Dao<Group> {
     private JdbcTemplate jdbcTemplate;
 
     private static final String QUERY_INSERT = "insert into groups(name) values(?)";
-    private static final String QUERY_INSERT_DEPARTMENT = "insert into groups(department_id) values(?) where groups.id=? on conflict do nonthing";
+    private static final String QUERY_INSERT_DEPARTMENT = "insert into groups(department_id) values(?) where id=? on conflict do nonthing";
     private static final String QUERY_SELECT_BY_ID = "select * from groups where id=?";
     private static final String QUERY_SELECT_ALL = "select * from groups";
     private static final String QUERY_SELECT_GROUP_BY_STUDENT = "select g.* from groups g left join students s on g.id=s.group_id where s.id=?";
@@ -54,10 +53,11 @@ public class GroupDao implements Dao<Group> {
     public int add(Group group) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(group), holder);
-        if (holder.getKey().longValue() != 0) {
-            return holder.getKey().intValue();
+        int obtainedKey = (int) holder.getKeys().get("id");
+        if (obtainedKey != 0) {
+            return obtainedKey;
         } else {
-            throw new EntityNotCreatedException(String.format(EXCEPTION_GROUP_CREATE, group.getName()));
+            throw new DaoException(String.format(EXCEPTION_GROUP_CREATE, group.getName()));
         }
     }
 
@@ -66,7 +66,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
+            throw new DaoException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
         }
     }
 
@@ -75,7 +75,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(EXCEPTION_ALL_GROUPS_NOT_FOUND);
+            throw new DaoException(EXCEPTION_ALL_GROUPS_NOT_FOUND);
         }
     }
 
@@ -84,7 +84,7 @@ public class GroupDao implements Dao<Group> {
         try {
             jdbcTemplate.update(QUERY_UPDATE, group.getName(), group.getId());
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, group.getId()));
+            throw new DaoException(String.format(EXCEPTION_GROUP_NOT_FOUND, group.getId()));
         }
     }
 
@@ -93,7 +93,7 @@ public class GroupDao implements Dao<Group> {
         try {
             jdbcTemplate.update(QUERY_DELETE, id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
+            throw new DaoException(String.format(EXCEPTION_GROUP_NOT_FOUND, id));
         }
     }
 
@@ -101,7 +101,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_STUDENT, getRowMapper(), studentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
         }
     }
     
@@ -109,7 +109,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_LESSON, getRowMapper(), lessonId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_LESSON_NOT_FOUND, lessonId));
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND, lessonId));
         }
     }
     
@@ -117,7 +117,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.query(QUERY_SELECT_GROUP_BY_DEPARTMENT, getRowMapper(), departmentId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, departmentId));
+            throw new DaoException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, departmentId));
         }
     }
     
@@ -125,7 +125,7 @@ public class GroupDao implements Dao<Group> {
         try {
             return jdbcTemplate.queryForObject(QUERY_SELECT_GROUP_BY_TEACHER, getRowMapper(), teacherId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacherId));
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacherId));
         }
     }
     
@@ -133,7 +133,7 @@ public class GroupDao implements Dao<Group> {
         try {
             jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
+            throw new DaoException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
         }
     }
     
@@ -141,7 +141,7 @@ public class GroupDao implements Dao<Group> {
         try {
             jdbcTemplate.update(QUERY_UPDATE_DEPARTMENT, departmentId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
+            throw new DaoException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, departmentId, groupId));
         }
     }
     
@@ -149,7 +149,7 @@ public class GroupDao implements Dao<Group> {
         try {
             jdbcTemplate.update(QUERY_UPDATE_GROUPHEAD, teacherId, groupId);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EntityNotFoundException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, teacherId, groupId));
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, teacherId, groupId));
         }
     }
     

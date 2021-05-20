@@ -1,4 +1,4 @@
-package com.foxminded.university.domain;
+package com.foxminded.university.domain.config;
 
 import javax.sql.DataSource;
 
@@ -14,6 +14,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @PropertySource("classpath:db_config.properties")
 public class ApplicationConfig {
     
+    @Value("${database.driver}")
+    private String driver;
+    
     @Value("${database.url}")
     private String url;
     
@@ -26,6 +29,7 @@ public class ApplicationConfig {
     @Bean
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driver);
         dataSource.setUrl(url);
         dataSource.setUsername(user);
         dataSource.setPassword(password);

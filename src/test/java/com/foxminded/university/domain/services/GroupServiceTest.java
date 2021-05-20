@@ -94,7 +94,7 @@ class GroupServiceTest {
         Teacher groupTeacher = teacherDao.get(3);
         Student student = studentDao.get(2);
         Timetable timetable = timetableDao.get(3);
-        newGroup.setCheef(groupTeacher);
+        newGroup.setTeacher(groupTeacher);
         newGroup.setStudentList(new ArrayList<Student>(Arrays.asList(student)));
         newGroup.setTimetable(timetable);
         
@@ -102,7 +102,7 @@ class GroupServiceTest {
         Group actual = groupService.getById(4);
         
         assertEquals(4, actual.getId());
-        assertEquals(3, actual.getCheef().getId());
+        assertEquals(3, actual.getTeacher().getId());
         assertEquals(3, actual.getTimetable().getId());
         assertEquals(1, actual.getStudentList().size());
         assertEquals(2, actual.getStudentList().get(0).getId());
@@ -114,7 +114,7 @@ class GroupServiceTest {
         Teacher groupTeacher = teacherDao.get(3);
         Student student = studentDao.get(2);
         Timetable timetable = timetableDao.get(3);
-        newGroup.setCheef(groupTeacher);
+        newGroup.setTeacher(groupTeacher);
         newGroup.setStudentList(new ArrayList<Student>(Arrays.asList(student)));
         newGroup.setTimetable(timetable);
         
@@ -130,7 +130,7 @@ class GroupServiceTest {
         Group actual = groupService.getById(1);
         assertEquals(1, actual.getId());
         assertEquals(TEST_GROUP_NAME_1, actual.getName());
-        assertEquals(1, actual.getCheef().getId());
+        assertEquals(1, actual.getTeacher().getId());
         assertEquals(2, actual.getStudentList().size());
         assertEquals(1, actual.getStudentList().get(0).getId());
         assertEquals(2, actual.getStudentList().get(1).getId());
@@ -154,13 +154,13 @@ class GroupServiceTest {
         int groupId = 1;
         Group initial = groupService.getById(groupId);
         assertEquals(1, initial.getId());
-        assertEquals(1, initial.getCheef().getId());
+        assertEquals(1, initial.getTeacher().getId());
         assertEquals(1, initial.getTimetable().getId());
         assertEquals(2, initial.getStudentList().size());
         assertEquals(TEST_GROUP_NAME_1, initial.getName());
         
         initial.setName(TEST_GROUP_NAME_4);
-        initial.setCheef(teacherDao.get(2));
+        initial.setTeacher(teacherDao.get(2));
         initial.setTimetable(timetableDao.get(2));
         initial.setStudentList(studentDao.getAll());
         
@@ -168,7 +168,7 @@ class GroupServiceTest {
         Group actual = groupService.getById(groupId);
         
         assertEquals(1, actual.getId());
-        assertEquals(2, actual.getCheef().getId());
+        assertEquals(2, actual.getTeacher().getId());
         assertEquals(2, actual.getTimetable().getId());
         assertEquals(3, actual.getStudentList().size());
         assertEquals(TEST_GROUP_NAME_4, actual.getName());

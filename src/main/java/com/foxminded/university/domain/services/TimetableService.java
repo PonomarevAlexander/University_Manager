@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Lesson;
@@ -27,7 +27,6 @@ public class TimetableService implements Service<Timetable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimetableService.class);
     private static final String EXCEPTION_NOT_VALID_CREATION_DATE = "validation failed! timetable creation date is null";
-    private static final String EXCEPTION_NOT_VALID_SCHEDULE = "validation failed! timetable schedule is null";
     private static final String EXCEPTION_ADD = "Failed to creating new timetable!";
     private static final String EXCEPTION_GET = "Failed to receiving a timetable(id=%). Reason is ";
     private static final String EXCEPTION_GET_LIST = "Failed to receiving all timetables list. Reason is ";
@@ -35,14 +34,17 @@ public class TimetableService implements Service<Timetable> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the timetable(id=%d). Reason is ";
 
     @Override
-    public void add(Timetable timetable) throws ServiceException {
+    public int add(Timetable timetable) throws ServiceException {
         LOGGER.debug("creating new timetable");
         validateEntity(timetable);
         try {
             int timetableId = timetableDao.add(timetable);
-            timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
+            if (timetable.getSchedule() != null) {
+                timetable.getSchedule().forEach(lesson -> lessonDao.setLessonToTimetable(lesson.getId(), timetableId));
+            }
             LOGGER.debug("timetable with was created");
-        } catch (EntityNotCreatedException ex) {
+            return timetableId;
+        } catch (DaoException ex) {
             LOGGER.error("new timetable was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -54,14 +56,16 @@ public class TimetableService implements Service<Timetable> {
         try {
             Timetable timetable = timetableDao.get(id);
             List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
-            lessons.forEach(lesson -> {
-                lesson.setTeacher(teacherDao.getTeacherByLessonId(lesson.getId()));
-                lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
-            });
+            if (!lessons.isEmpty()) {
+                lessons.forEach(lesson -> {
+                    lesson.setTeacher(teacherDao.getTeacherByLesson(lesson.getId()));
+                    lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
+                });
+            }
             timetable.setSchedule(lessons);
             LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
             return timetable;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("timetable with id={} not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -75,14 +79,14 @@ public class TimetableService implements Service<Timetable> {
             timetablesList.forEach(timetable -> {
                 List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
                 lessons.forEach(lesson -> {
-                    lesson.setTeacher(teacherDao.getTeacherByLessonId(lesson.getId()));
+                    lesson.setTeacher(teacherDao.getTeacherByLesson(lesson.getId()));
                     lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
                 });
                 timetable.setSchedule(lessons);
             });
             LOGGER.debug("all timetables obtained and returned");
             return timetablesList;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("no one timetable not found");
             throw new ServiceException(String.format(EXCEPTION_GET_LIST) + ex.getMessage());
         }
@@ -97,7 +101,7 @@ public class TimetableService implements Service<Timetable> {
             timetable.getSchedule()
                     .forEach(lesson -> lessonDao.updateLessonOfTimetable(lesson.getId(), timetable.getId()));
             LOGGER.debug("timetable with id={} was updated", timetable.getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("timetable updating fail!");
             throw new ServiceException(String.format(EXCEPTION_UPDATE, timetable.getId()) + ex.getMessage());
         }
@@ -110,7 +114,7 @@ public class TimetableService implements Service<Timetable> {
         try {
             timetableDao.remove(id);
             LOGGER.debug("timetable with id={} was removed", id);
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("timetable with id={} was not removed! Timetable not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -122,7 +126,7 @@ public class TimetableService implements Service<Timetable> {
             Timetable timetable = timetableDao.getTimetableRelatedTeacher(teacher.getId());
             LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
             return timetable;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("timetable not found");
             throw new ServiceException(String.format(EXCEPTION_GET) + ex.getMessage());
         }
@@ -134,7 +138,7 @@ public class TimetableService implements Service<Timetable> {
             Timetable timetable = timetableDao.getTimetableRelatedGroup(group.getId());
             LOGGER.debug("timetable with id={} was prepared and returned", timetable.getId());
             return timetable;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("timetable not found");
             throw new ServiceException(String.format(EXCEPTION_GET) + ex.getMessage());
         }
@@ -144,9 +148,6 @@ public class TimetableService implements Service<Timetable> {
         LOGGER.debug("begin validation");
         if (timetable.getCreationDate() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_CREATION_DATE);
-        }
-        if (timetable.getSchedule() == null) {
-            throw new ServiceException(EXCEPTION_NOT_VALID_SCHEDULE);
         }
         LOGGER.debug("validation passed");
     }

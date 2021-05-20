@@ -6,6 +6,7 @@ import java.util.List;
 public class Timetable {
 
     private int id;
+    private String description;
     private List<Lesson> schedule;
     private LocalDateTime creationDate;
 
@@ -15,21 +16,38 @@ public class Timetable {
     public Timetable(List<Lesson> schedule) {
         this.schedule = schedule;
     }
+    
+    public Timetable(List<Lesson> schedule, String name) {
+        this.schedule = schedule;
+        this.description = name;
+    }
 
     public int getId() {
         return id;
-    }
-
-    public List<Lesson> getSchedule() {
-        return schedule;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Lesson> getSchedule() {
+        return schedule;
+    }
+
     public void setSchedule(List<Lesson> schedule) {
         this.schedule = schedule;
+    }
+    
+    public void appendToSchedule(Lesson lesson) {
+        this.schedule.add(lesson);
     }
 
     public LocalDateTime getCreationDate() {
@@ -46,6 +64,7 @@ public class Timetable {
         int result = 1;
         result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
         result = prime * result + id;
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + ((schedule == null) ? 0 : schedule.hashCode());
         return result;
     }
@@ -66,6 +85,11 @@ public class Timetable {
             return false;
         if (id != other.id)
             return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
         if (schedule == null) {
             if (other.schedule != null)
                 return false;
@@ -76,6 +100,8 @@ public class Timetable {
 
     @Override
     public String toString() {
-        return "Timetable [id=" + id + ", schedule=" + schedule + ", creationDate=" + creationDate + "]";
+        return "Timetable [id=" + id + ", name=" + description + ", schedule=" + schedule + ", creationDate=" + creationDate
+                + "]";
     }
+
 }

@@ -123,7 +123,7 @@ class LessonServiceTest {
         mockedLessonService.getById(0);
         
         verify(mockedLessonDao).get(0);
-        verify(mockedTeacherDao).getTeacherByLessonId(0);
+        verify(mockedTeacherDao).getTeacherByLesson(0);
         verify(mockedGroupDao).getGroupByLesson(0);
     }
     
@@ -134,7 +134,7 @@ class LessonServiceTest {
         mockedLessonService.getById(0);
         
         inOrder.verify(mockedLessonDao).get(0);
-        inOrder.verify(mockedTeacherDao).getTeacherByLessonId(0);
+        inOrder.verify(mockedTeacherDao).getTeacherByLesson(0);
         inOrder.verify(mockedGroupDao).getGroupByLesson(0);
     }
     

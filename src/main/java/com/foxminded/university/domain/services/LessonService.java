@@ -4,8 +4,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.foxminded.university.domain.exceptions.EntityNotCreatedException;
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import org.springframework.stereotype.Component;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Timetable;
@@ -13,6 +14,7 @@ import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.LessonDao;
 import com.foxminded.university.persistence.TeacherDao;
 
+@Component
 public class LessonService implements Service<Lesson> {
 
     private GroupDao groupDao;
@@ -33,13 +35,14 @@ public class LessonService implements Service<Lesson> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the lesson(id=%d). Reason is ";
 
     @Override
-    public void add(Lesson lesson) throws ServiceException {
+    public int add(Lesson lesson) throws ServiceException {
         LOGGER.debug("creating a new lesson with name={}", lesson.getName());
         validateEntity(lesson);
         try {
             int obtainedId = lessonDao.add(lesson);
             LOGGER.debug("lesson with name={} was created", obtainedId);
-        } catch (EntityNotCreatedException ex) {
+            return obtainedId;
+        } catch (DaoException ex) {
             LOGGER.error("new lesson was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -50,11 +53,11 @@ public class LessonService implements Service<Lesson> {
         LOGGER.debug("obtaining a lesson by id={}", id);
         try {
             Lesson lesson = lessonDao.get(id);
-            lesson.setTeacher(teacherDao.getTeacherByLessonId(id));
+            lesson.setTeacher(teacherDao.getTeacherByLesson(id));
             lesson.setGroup(groupDao.getGroupByLesson(id));
             LOGGER.debug("Lesson with id={} was prepared and returned", lesson.getId());
             return lesson;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("lesson with id={} not found or teacher, group related to the group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -66,12 +69,12 @@ public class LessonService implements Service<Lesson> {
         try {
             List<Lesson> lessonsList = lessonDao.getAll();
             lessonsList.forEach(lesson -> {
-                lesson.setTeacher(teacherDao.getTeacherByLessonId(lesson.getId()));
+                lesson.setTeacher(teacherDao.getTeacherByLesson(lesson.getId()));
                 lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
             });
             LOGGER.debug("all lessons obtained and returned");
             return lessonsList;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("no one lesson not found");
             throw new ServiceException(EXCEPTION_GET_ALL + ex.getMessage());
         }
@@ -84,7 +87,7 @@ public class LessonService implements Service<Lesson> {
         try {
             lessonDao.update(lesson);
             LOGGER.debug("lesson with id={} was updated", lesson.getId());
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("lesson updatining fail! Reason to lesson with id={} not found", lesson.getId());
             throw new ServiceException(String.format(EXCEPTION_UPDATE, lesson.getId()) + ex.getMessage());
         }
@@ -96,7 +99,7 @@ public class LessonService implements Service<Lesson> {
         try {
             lessonDao.remove(id);
             LOGGER.debug("lesson with id={} was removed", id);
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("lesson with id={} was not removed! Lesson not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -108,7 +111,7 @@ public class LessonService implements Service<Lesson> {
             List<Lesson> lessonsList = lessonDao.getLessonsOfTimetable(timetable.getId());
             LOGGER.debug("lessons list was obtained and returned");
             return lessonsList;
-        } catch (EntityNotFoundException ex) {
+        } catch (DaoException ex) {
             LOGGER.error("receiving lessons list fail! Timetable with id={} not found", timetable.getId());
             throw new ServiceException(EXCEPTION_GET_BY_TIMETABLE);
         }
