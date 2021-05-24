@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.foxminded.university.domain.exceptions.EntityNotFoundException;
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.persistence.DepartmentDao;
 
@@ -49,8 +49,8 @@ class DepartmentDaoTest {
     
     @Test
     void testShouldThrowsException() {
-        assertThrows(EntityNotFoundException.class, () -> {departmentDao.get(999);});
-        assertThrows(EntityNotFoundException.class, () -> {departmentDao.remove(999);});
+        assertThrows(DaoException.class, () -> {departmentDao.get(999);});
+        assertThrows(DaoException.class, () -> {departmentDao.remove(999);});
     }
     
     @Test

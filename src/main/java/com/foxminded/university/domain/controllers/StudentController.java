@@ -18,57 +18,66 @@ import com.foxminded.university.domain.services.StudentService;
 @Controller
 @RequestMapping("/students")
 public class StudentController {
-    
+
     private final StudentService studentService;
     private final GroupService groupService;
+
+    private static final String MODEL_STUDENT = "student";
+    private static final String MODEL_ALL_STUDENTS = "students";
+    private static final String MODEL_GROUPS = "groups";
+    private static final String VIEW_ALL_STUDENTS = "student/all_students";
+    private static final String VIEW_STUDENT = "student/student";
+    private static final String VIEW_NEW_STUDENT = "student/new_student";
+    private static final String VIEW_UPDATE_STUDENT = "student/update_student";
+    private static final String VIEW_REDIRECT_TO_STATUS = "redirect:/students";
 
     @Autowired
     public StudentController(StudentService studentService, GroupService groupService) {
         this.studentService = studentService;
         this.groupService = groupService;
     }
-    
+
     @GetMapping()
     public String getAll(Model model) {
-        model.addAttribute("students", studentService.getAll());
-        return "student/all_students";
+        model.addAttribute(MODEL_ALL_STUDENTS, studentService.getAll());
+        return VIEW_ALL_STUDENTS;
     }
-    
+
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") int id, Model model) {
-        model.addAttribute("student", studentService.getById(id));
-        return "student/student";
+        model.addAttribute(MODEL_STUDENT, studentService.getById(id));
+        return VIEW_STUDENT;
     }
-    
+
     @GetMapping("/new")
-    public String getCreatingForm(@ModelAttribute("student") Student student, Model model) {
-        model.addAttribute("groups", groupService.getAll());
-        return "student/new_student";
+    public String getCreatingForm(@ModelAttribute(MODEL_STUDENT) Student student, Model model) {
+        model.addAttribute(MODEL_GROUPS, groupService.getAll());
+        return VIEW_NEW_STUDENT;
     }
-    
+
     @PostMapping()
-    public String add(@ModelAttribute("student") Student student) {
+    public String add(@ModelAttribute(MODEL_STUDENT) Student student) {
         studentService.add(student);
-        return "redirect:/students";
+        return VIEW_REDIRECT_TO_STATUS;
     }
-    
+
     @GetMapping("/{id}/update")
     public String getUpdatingForm(@PathVariable("id") int id, Model model) {
-        model.addAttribute("student", studentService.getById(id));
-        model.addAttribute("groups", groupService.getAll());
-        return "student/update_student";
+        model.addAttribute(MODEL_STUDENT, studentService.getById(id));
+        model.addAttribute(MODEL_GROUPS, groupService.getAll());
+        return VIEW_UPDATE_STUDENT;
     }
-    
+
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("student") Student student) {
+    public String update(@ModelAttribute(MODEL_STUDENT) Student student) {
         studentService.update(student);
-        return "redirect:/students";
+        return VIEW_REDIRECT_TO_STATUS;
     }
-    
+
     @DeleteMapping("/{id}")
     public String remove(@PathVariable("id") int id) {
         studentService.remove(id);
-        return "redirect:/students";
+        return VIEW_REDIRECT_TO_STATUS;
     }
 
 }

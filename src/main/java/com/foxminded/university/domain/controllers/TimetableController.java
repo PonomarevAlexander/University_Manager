@@ -23,77 +23,95 @@ import com.foxminded.university.domain.services.TimetableService;
 @Controller
 @RequestMapping("/timetables")
 public class TimetableController {
-    
+
     private final TimetableService timetableService;
     private final TeacherService teacherService;
     private final GroupService groupService;
     private final LessonService lessonService;
-    
+
+    private static final String MODEL_TIMETABLE = "timetable";
+    private static final String MODEL_ALL_TIMETABLES = "timetables";
+    private static final String MODEL_CREATED = "creationDate";
+    private static final String MODEL_DATE_TIME = "datetime";
+    private static final String MODEL_LESSONS = "lessons";
+    private static final String MODEL_GROUPS = "groups";
+    private static final String MODEL_TEACHERS = "teachers";
+    private static final String MODEL_LESSON = "lesson";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+    private static final String VIEW_ALL_TIMETABLES = "timetable/all_timetables";
+    private static final String VIEW_NEW_TIMETABLES = "timetable/new_timetable";
+    private static final String VIEW_TIMETABLE = "timetable/timetable";
+    private static final String VIEW_UPDATE_TIMETABLE = "timetable/update_timetable";
+    private static final String VIEW_REDIRECT_TO_STATUS_TIMETABLES = "redirect:/timetables";
+    private static final String VIEW_REDIRECT_TO_PROFILE_TIMETABLE = "redirect:/timetables/{id}";
+    private static final String VIEW_ADD_LESSON_TO_TIMETABLE = "timetable/add_lesson_to_timetable";
+
     @Autowired
-    public TimetableController(TimetableService timetableService, TeacherService teacherService, GroupService groupService, LessonService lessonService) {
+    public TimetableController(TimetableService timetableService, TeacherService teacherService,
+            GroupService groupService, LessonService lessonService) {
         this.timetableService = timetableService;
         this.teacherService = teacherService;
         this.groupService = groupService;
         this.lessonService = lessonService;
-        
+
     }
-    
+
     @GetMapping()
     public String getAll(Model model) {
-        model.addAttribute("timetables", timetableService.getAll());
-        return "timetable/all_timetables";
+        model.addAttribute(MODEL_ALL_TIMETABLES, timetableService.getAll());
+        return VIEW_ALL_TIMETABLES;
     }
-    
+
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") int id, Model model) {
         Timetable timetable = timetableService.getById(id);
-        model.addAttribute("timetable", timetable);
-        model.addAttribute("creationDate", timetable.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        return "timetable/timetable";
+        model.addAttribute(MODEL_TIMETABLE, timetable);
+        model.addAttribute(MODEL_CREATED, timetable.getCreationDate().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        return VIEW_TIMETABLE;
     }
-    
+
     @GetMapping("/new")
-    public String getCreationForm(@ModelAttribute("timetable") Timetable timetable) {
-        return "timetable/new_timetable";
+    public String getCreationForm(@ModelAttribute(MODEL_TIMETABLE) Timetable timetable) {
+        return VIEW_NEW_TIMETABLES;
     }
-    
+
     @PostMapping()
-    public String add(@ModelAttribute("timetable") Timetable timetable) {
+    public String add(@ModelAttribute(MODEL_TIMETABLE) Timetable timetable) {
         timetable.setCreationDate(LocalDateTime.now());
         timetableService.add(timetable);
-        return "redirect:/timetables";
+        return VIEW_REDIRECT_TO_STATUS_TIMETABLES;
     }
-    
+
     @GetMapping("/{id}/update")
     public String getUpdatingForm(@PathVariable("id") int id, Model model) {
         Timetable timetable = timetableService.getById(id);
-        model.addAttribute("timetable", timetable);
-        model.addAttribute("lessons", timetable.getSchedule());
-        return "timetable/update_timetable";
+        model.addAttribute(MODEL_TIMETABLE, timetable);
+        model.addAttribute(MODEL_LESSONS, timetable.getSchedule());
+        return VIEW_UPDATE_TIMETABLE;
     }
-    
+
     @GetMapping("/{id}/update/addLesson")
-    public String addLessonForm(@ModelAttribute("lesson") Lesson lesson, @PathVariable("id") int id, Model model) {
-        model.addAttribute("teachers", teacherService.getAll());
-        model.addAttribute("groups", groupService.getAll());
-        model.addAttribute("timetable", timetableService.getById(id));
-        return "timetable/add_lesson_to_timetable";
+    public String addLessonForm(@ModelAttribute(MODEL_LESSON) Lesson lesson, @PathVariable("id") int id, Model model) {
+        model.addAttribute(MODEL_TEACHERS, teacherService.getAll());
+        model.addAttribute(MODEL_GROUPS, groupService.getAll());
+        model.addAttribute(MODEL_TIMETABLE, timetableService.getById(id));
+        return VIEW_ADD_LESSON_TO_TIMETABLE;
     }
-    
+
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("lesson") Lesson lesson, @PathVariable("id") int id, @RequestParam("datetime") String datetime) {
+    public String update(@ModelAttribute(MODEL_LESSON) Lesson lesson, @PathVariable("id") int id, @RequestParam(MODEL_DATE_TIME) String datetime) {
         Timetable timetable = timetableService.getById(id);
         lesson.setStartTime(LocalDateTime.parse(datetime));
         lesson.setId(lessonService.add(lesson));
         timetable.appendToSchedule(lesson);
         timetableService.update(timetable);
-        return "redirect:/timetables/{id}";
+        return VIEW_REDIRECT_TO_PROFILE_TIMETABLE;
     }
-    
+
     @DeleteMapping("/{id}")
     public String remove(@PathVariable("id") int id) {
         timetableService.remove(id);
-        return "redirect:/timetables";
+        return VIEW_REDIRECT_TO_STATUS_TIMETABLES;
     }
-    
+
 }

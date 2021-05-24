@@ -18,6 +18,15 @@ import com.foxminded.university.domain.services.DepartmentService;
 public class DepartmentsController {
 
     private final DepartmentService departmentService;
+    private static final String MODEL_NAME_DEPARTMENT = "department";
+    private static final String MODEL_ALL_DEPARTMENTS = "departments";
+    private static final String MODEL_NAME_GROUPS = "groups";
+    private static final String MODEL_NAME_TEACHERS = "teachers";
+    private static final String VIEW_ALL_DEPARTMENTS = "department/all_departments";
+    private static final String VIEW_DEPARTMENT = "department/department";
+    private static final String VIEW_ADD_DEPARTMENT = "department/add_department";
+    private static final String VIEW_UPDATE_DEPARTMENT = "department/update_department";
+    private static final String VIEW_REDIRECT_TO_ALL_DEPARTMENTS = "redirect:/departments";
     
     @Autowired
     public DepartmentsController(DepartmentService departmentService) {
@@ -26,46 +35,46 @@ public class DepartmentsController {
 
     @GetMapping()
     public String getAll(Model model) {
-        model.addAttribute("departments", departmentService.getAll());
-        return "department/all_departments";
+        model.addAttribute(MODEL_ALL_DEPARTMENTS, departmentService.getAll());
+        return VIEW_ALL_DEPARTMENTS;
     }
 
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") int id, Model model) {
         Department department = departmentService.getById(id);
-        model.addAttribute("department", department);
-        model.addAttribute("groups", department.getGroupList());
-        model.addAttribute("teachers", department.getTeacherList());
-        return "department/department";
+        model.addAttribute(MODEL_NAME_DEPARTMENT, department);
+        model.addAttribute(MODEL_NAME_GROUPS, department.getGroupList());
+        model.addAttribute(MODEL_NAME_TEACHERS, department.getTeacherList());
+        return VIEW_DEPARTMENT;
     }
     
     @GetMapping("/new")
-    public String newDepartmentFrom(@ModelAttribute("department") Department department) {
-        return "department/add_department";
+    public String newDepartmentFrom(@ModelAttribute(MODEL_NAME_DEPARTMENT) Department department) {
+        return VIEW_ADD_DEPARTMENT;
     }
     
     @PostMapping()
-    public String add(@ModelAttribute("department") Department department) {
+    public String add(@ModelAttribute(MODEL_NAME_DEPARTMENT) Department department) {
         departmentService.add(department);
-        return "redirect:/departments";
+        return VIEW_REDIRECT_TO_ALL_DEPARTMENTS;
     }
     
     @GetMapping("/{id}/update")
     public String updateForm(Model model, @PathVariable("id") int id) {
-        model.addAttribute("department", departmentService.getById(id));
-        return "department/update_department";
+        model.addAttribute(MODEL_NAME_DEPARTMENT, departmentService.getById(id));
+        return VIEW_UPDATE_DEPARTMENT;
     }
     
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("department") Department department, @PathVariable("id") int id) {
+    public String update(@ModelAttribute(MODEL_NAME_DEPARTMENT) Department department, @PathVariable("id") int id) {
         departmentService.update(department); 
-        return "redirect:/departments";
+        return VIEW_REDIRECT_TO_ALL_DEPARTMENTS;
     }
     
     @DeleteMapping("/{id}")
     public String remove(@PathVariable("id") int id) {
         departmentService.remove(id);
-        return "redirect:/departments";
+        return VIEW_REDIRECT_TO_ALL_DEPARTMENTS;
     }
 
 }
