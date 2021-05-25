@@ -31,10 +31,10 @@ public class GroupController {
     private static final String MODEL_DEPARTMENTS = "departments";
     private static final String MODEL_TEACHERS = "teachers";
     private static final String MODEL_STUDENTS = "students";
-    private static final String VIEW_ALL_GROUP = "group/all_groups";
+    private static final String VIEW_ALL_GROUP = "group/all-groups";
     private static final String VIEW_ONE_GROUP = "group/group";
-    private static final String VIEW_NEW_GROUP = "group/new_group";
-    private static final String VIEW_UPDATE_GROUP = "group/update_group";
+    private static final String VIEW_NEW_GROUP = "group/new-group";
+    private static final String VIEW_UPDATE_GROUP = "group/update-group";
     private static final String VIEW_REDIRECT_TO_ALL_GROUP = "redirect:/groups";
 
     @Autowired

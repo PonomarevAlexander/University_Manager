@@ -38,13 +38,13 @@ public class TimetableController {
     private static final String MODEL_TEACHERS = "teachers";
     private static final String MODEL_LESSON = "lesson";
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
-    private static final String VIEW_ALL_TIMETABLES = "timetable/all_timetables";
-    private static final String VIEW_NEW_TIMETABLES = "timetable/new_timetable";
+    private static final String VIEW_ALL_TIMETABLES = "timetable/all-timetables";
+    private static final String VIEW_NEW_TIMETABLES = "timetable/new-timetable";
     private static final String VIEW_TIMETABLE = "timetable/timetable";
-    private static final String VIEW_UPDATE_TIMETABLE = "timetable/update_timetable";
+    private static final String VIEW_UPDATE_TIMETABLE = "timetable/update-timetable";
     private static final String VIEW_REDIRECT_TO_STATUS_TIMETABLES = "redirect:/timetables";
     private static final String VIEW_REDIRECT_TO_PROFILE_TIMETABLE = "redirect:/timetables/{id}";
-    private static final String VIEW_ADD_LESSON_TO_TIMETABLE = "timetable/add_lesson_to_timetable";
+    private static final String VIEW_ADD_LESSON_TO_TIMETABLE = "timetable/add-lesson-to-timetable";
 
     @Autowired
     public TimetableController(TimetableService timetableService, TeacherService teacherService,

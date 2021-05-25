@@ -32,10 +32,10 @@ class LessonControllerTest {
     private static final String MODEL_LESSON = "lesson";
     private static final String MODEL_GROUPS = "groups";
     private static final String MODEL_TEACHERS = "teachers";
-    private static final String VIEW_ALL_LESSONS = "lesson/all_lessons";
+    private static final String VIEW_ALL_LESSONS = "lesson/all-lessons";
     private static final String VIEW_ONE_LESSON = "lesson/lesson";
-    private static final String VIEW_NEW_LESSON = "lesson/new_lesson";
-    private static final String VIEW_UPDATE_LESSON = "lesson/update_lesson";
+    private static final String VIEW_NEW_LESSON = "lesson/new-lesson";
+    private static final String VIEW_UPDATE_LESSON = "lesson/update-lesson";
     private static final String VIEW_REDIRECT_TO_ALL_LESSONS = "redirect:/lessons";
     
     @Mock

@@ -30,10 +30,10 @@ class StudentControllerTest {
     private static final String MODEL_STUDENT = "student";
     private static final String MODEL_ALL_STUDENTS = "students";
     private static final String MODEL_GROUPS = "groups";
-    private static final String VIEW_ALL_STUDENTS = "student/all_students";
+    private static final String VIEW_ALL_STUDENTS = "student/all-students";
     private static final String VIEW_STUDENT = "student/student";
-    private static final String VIEW_NEW_STUDENT = "student/new_student";
-    private static final String VIEW_UPDATE_STUDENT = "student/update_student";
+    private static final String VIEW_NEW_STUDENT = "student/new-student";
+    private static final String VIEW_UPDATE_STUDENT = "student/update-student";
     private static final String VIEW_REDIRECT_TO_STATUS = "redirect:/students";
     
     @Mock

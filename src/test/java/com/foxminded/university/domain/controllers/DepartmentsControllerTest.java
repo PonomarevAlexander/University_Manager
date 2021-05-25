@@ -32,10 +32,10 @@ class DepartmentsControllerTest {
     private static final String MODEL_ALL_DEPARTMENTS = "departments";
     private static final String MODEL_NAME_GROUPS = "groups";
     private static final String MODEL_NAME_TEACHERS = "teachers";
-    private static final String VIEW_ALL_DEPARTMENTS = "department/all_departments";
+    private static final String VIEW_ALL_DEPARTMENTS = "department/all-departments";
     private static final String VIEW_DEPARTMENT = "department/department";
-    private static final String VIEW_ADD_DEPARTMENT = "department/add_department";
-    private static final String VIEW_UPDATE_DEPARTMENT = "department/update_department";
+    private static final String VIEW_ADD_DEPARTMENT = "department/add-department";
+    private static final String VIEW_UPDATE_DEPARTMENT = "department/update-department";
     private static final String VIEW_REDIRECT_TO_ALL_DEPARTMENTS = "redirect:/departments";
     private static final String NAME = "name";
 

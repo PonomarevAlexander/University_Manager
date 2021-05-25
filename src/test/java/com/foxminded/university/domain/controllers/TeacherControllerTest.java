@@ -30,10 +30,10 @@ class TeacherControllerTest {
     private static final String MODEL_ALL_TEACHERS = "teachers";
     private static final String MODEL_TEACHER = "teacher";
     private static final String MODEL_TIMETABLES = "timetables";
-    private static final String VIEW_ALL_TEACHERS = "teacher/all_teachers";
+    private static final String VIEW_ALL_TEACHERS = "teacher/all-teachers";
     private static final String VIEW_TEACHER = "teacher/teacher";
-    private static final String VIEW_NEW_TEACHER = "teacher/new_teacher";
-    private static final String VIEW_UPDATE_TEACHER = "teacher/update_teacher";
+    private static final String VIEW_NEW_TEACHER = "teacher/new-teacher";
+    private static final String VIEW_UPDATE_TEACHER = "teacher/update-teacher";
     private static final String VIEW_REDIRECT_TO_TICHERS = "redirect:/teachers";
 
     @Mock
