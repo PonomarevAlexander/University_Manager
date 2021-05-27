@@ -7,11 +7,14 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Student;
 
 @Repository
@@ -31,6 +34,11 @@ public class StudentDao implements Dao<Student> {
     private static final String COLUMN_LAST_NAME = "last_name";
     private static final String COLUMN_AGE = "age";
     private static final String COLUMN_ID = "id";
+    private static final String OR = " or ";
+    private static final String EXCEPTION_GROUP_NOT_FOUND = "group with id=%d not found";
+    private static final String EXCEPTION_STUDENT_NOT_FOUND = "student with id=%d not found";
+    private static final String EXCEPTION_ALL_STUDENTS_NOT_FOUND = "nothing to get. Database has no students yet";
+    private static final String EXCEPTION_STUDENT_CREATE = "could not create a new student(%s %s)";
 
     @Autowired
     public StudentDao(DataSource dataSource) {
@@ -41,39 +49,72 @@ public class StudentDao implements Dao<Student> {
     public int add(Student student) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(student), holder);
-        return (int) holder.getKey().longValue();
+        int obtainedId = (int) holder.getKeys().get("id");
+        if (obtainedId != 0) {
+            return obtainedId;
+        } else {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_CREATE, student.getName(), student.getLastName()));
+        }
     }
 
     @Override
     public Student get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject(QUERY_SELECT_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
+        }
     }
 
     @Override
     public List<Student> getAll() {
-        return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(EXCEPTION_ALL_STUDENTS_NOT_FOUND);
+        }
     }
 
     @Override
-    public void update(Student entity) {
-        jdbcTemplate.update(QUERY_UPDATE, entity.getName(), entity.getLastName(), entity.getAge(), entity.getId());
+    public void update(Student student) {
+        try {
+            jdbcTemplate.update(QUERY_UPDATE, student.getName(), student.getLastName(), student.getAge(), student.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND, student.getId()));
+        }
     }
 
     @Override
     public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+        try {
+            jdbcTemplate.update(QUERY_DELETE_BY_ID, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND, id));
+        }
     }
 
     public List<Student> getStudentRelatedGroup(int groupId) {
-        return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
+        try {
+            return jdbcTemplate.query(QUERY_SELECT_STUDENTS_RELATED_GROUP, getRowMapper(), groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_GROUP_NOT_FOUND, groupId));
+        }
     }
 
     public void setStudentToGroup(int studentId, int groupId) {
-        jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
+        try {
+            jdbcTemplate.update(QUERY_UPDATE_STUDENT_GROUP, groupId, studentId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND + OR + EXCEPTION_GROUP_NOT_FOUND, studentId, groupId));
+        }
     }
     
     public void removeStudentFromGroup(int studentId) {
-        jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
+        try {
+            jdbcTemplate.update(QUERY_DELETE_FROM_GROUP, studentId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_STUDENT_NOT_FOUND, studentId));
+        }
     }
     
     private RowMapper<Student> getRowMapper() {

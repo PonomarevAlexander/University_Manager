@@ -6,14 +6,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Lesson;
 
 @Repository
@@ -34,6 +38,11 @@ public class LessonDao implements Dao<Lesson> {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_START_TIME = "start_time";
     private static final String COLUMN_DURATION = "duration";
+    private static final String EXCEPTION_LESSON_NOT_FOUND = "lesson with id=%d not found";
+    private static final String EXCEPTION_ALL_LESSONS_NOT_FOUND = "nothing to get. Database has no lessons yet";
+    private static final String EXCEPTION_LESSON_CREATE = "could not create a new lesson(%s)";
+    private static final String OR = " or ";
+    private static final String EXCEPTION_TIMETABLE_NOT_FOUND = "timetable with id=%d not found";
     
     @Autowired
     public LessonDao(DataSource dataSource) {
@@ -44,46 +53,79 @@ public class LessonDao implements Dao<Lesson> {
     public int add(Lesson lesson) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(lesson), holder);
-        return (int) holder.getKey().longValue();
+        int obtainedId = (int) holder.getKeys().get("id");
+        if (obtainedId != 0) {
+            return obtainedId;
+        } else {
+            throw new DaoException(String.format(EXCEPTION_LESSON_CREATE, lesson.getName()));
+        }
     }
 
     @Override
     public Lesson get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
+        }
     }
 
     @Override
     public List<Lesson> getAll() {
-        return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
+        try {
+            return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_ALL_LESSONS_NOT_FOUND), ex);
+        }
     }
 
     @Override
     public void update(Lesson lesson) {
-        jdbcTemplate.update(QUERY_UPDATE,
-                lesson.getName(),
-                lesson.getStartTime().format(FORMATTER),
-                lesson.getLessonDurationSecond(),
-                lesson.getTeacher().getId(),
-                lesson.getGroup().getId(),
-                lesson.getId());
+        try {
+            jdbcTemplate.update(QUERY_UPDATE,
+                    lesson.getName(),
+                    lesson.getStartTime().format(FORMATTER),
+                    lesson.getLessonDurationSecond(),
+                    lesson.getTeacher().getId(),
+                    lesson.getGroup().getId(),
+                    lesson.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND, lesson.getId()), ex);
+        }
     }
 
     @Override
     public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE, id);
+        try {
+            jdbcTemplate.update(QUERY_DELETE, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND, id), ex);
+        }
     }
     
     public void setLessonToTimetable(int lessonId, int timetableId) {
-        jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
+        try {
+            jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+        }
     }
     
     public List<Lesson> getLessonsOfTimetable(int timetableId) {
-        return jdbcTemplate.query(QUERY_GET_LESSONS_OF_TIMETABLE, getRowMapper(), timetableId);
+        try {
+            return jdbcTemplate.query(QUERY_GET_LESSONS_OF_TIMETABLE, getRowMapper(), timetableId);
+        } catch (EmptyResultDataAccessException ex) {
+            return new ArrayList<>();
+        }
     }
     
     public void updateLessonOfTimetable(int lessonId, int timetableId) {
-        jdbcTemplate.update(QUERY_UPDATE_LESSONS_TIMETABLES, lessonId, timetableId, timetableId, lessonId);
-        jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
+        try {
+            jdbcTemplate.update(QUERY_UPDATE_LESSONS_TIMETABLES, lessonId, timetableId, timetableId, lessonId);
+            jdbcTemplate.update(QUERY_INSERT_LESSON_TO_TIMETABLE, lessonId, timetableId, lessonId, timetableId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND + OR + EXCEPTION_TIMETABLE_NOT_FOUND, lessonId, timetableId), ex);
+        }
     }
 
     private RowMapper<Lesson> getRowMapper() {

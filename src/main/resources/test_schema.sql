@@ -36,6 +36,7 @@ create table lessons(
 	
 create table timetables(
 	id serial primary key,
+	description varchar(255),
 	creation_date varchar(20) not null);
 	
 create table timetables_lessons(

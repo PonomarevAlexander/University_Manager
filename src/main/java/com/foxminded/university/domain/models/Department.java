@@ -18,7 +18,8 @@ public class Department {
         this.groupList = new ArrayList<>();
     }
 
-    public Department(String name, List<Teacher> teacherList, List<Group> groupList) {
+    public Department(int id, String name, List<Teacher> teacherList, List<Group> groupList) {
+        this.id = id;
         this.name = name;
         this.teacherList = teacherList;
         this.groupList = groupList;

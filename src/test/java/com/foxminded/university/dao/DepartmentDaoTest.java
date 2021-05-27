@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.persistence.DepartmentDao;
 
@@ -44,6 +45,12 @@ class DepartmentDaoTest {
         Department actual = departmentDao.get(1);
         assertEquals(1, actual.getId());
         assertEquals(TEST_NAME_1, actual.getName());
+    }
+    
+    @Test
+    void testShouldThrowsException() {
+        assertThrows(DaoException.class, () -> {departmentDao.get(999);});
+        assertThrows(DaoException.class, () -> {departmentDao.remove(999);});
     }
     
     @Test

@@ -24,36 +24,36 @@ public class Lesson {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public int getLessonDurationSecond() {
-        return lessonDurationSecond;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
+    public int getLessonDurationSecond() {
+        return lessonDurationSecond;
+    }
+
     public void setLessonDurationSecond(int lessonDurationSecond) {
         this.lessonDurationSecond = lessonDurationSecond;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
     }
 
     public void setTeacher(Teacher teacher) {
@@ -122,4 +122,5 @@ public class Lesson {
         return "Lesson [id=" + id + ", name=" + name + ", startTime=" + startTime + ", lessonDurationSecond="
                 + lessonDurationSecond + ", teacher=" + teacher + ", group=" + group + "]";
     }
+
 }

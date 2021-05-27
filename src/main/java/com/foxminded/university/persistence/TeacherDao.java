@@ -1,3 +1,4 @@
+
 package com.foxminded.university.persistence;
 
 import java.sql.Connection;
@@ -7,11 +8,14 @@ import java.sql.Statement;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.models.Teacher;
 
 @Repository
@@ -32,6 +36,13 @@ public class TeacherDao implements Dao<Teacher> {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_LAST_NAME = "last_name";
+    private static final String EXCEPTION_TEACHER_NOT_FOUND = "teacher with id=%d not found";
+    private static final String EXCEPTION_LESSON_NOT_FOUND = "lesson with id=%d not found";
+    private static final String EXCEPTION_ALL_TEACHERS_NOT_FOUND = "nothing to get. Database has no teachers yet";
+    private static final String EXCEPTION_DEPARTMENT_NOT_FOUND = "department with id=%d not found";
+    private static final String EXCEPTION_TEACHER_CREATE = "could not create a new teacher(name=%s, last name=%s)";
+    private static final String OR = " or ";
+
 
     @Autowired
     public TeacherDao(DataSource dataSource) {
@@ -42,47 +53,88 @@ public class TeacherDao implements Dao<Teacher> {
     public int add(Teacher teacher) {
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(getInsertParametredStatement(teacher), holder);
-        return (int) holder.getKey().longValue();
+        int obtainedId = (int) holder.getKeys().get("id");
+        if (obtainedId != 0) {
+            return obtainedId;
+        } else {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_CREATE, teacher.getName(), teacher.getLastName()));
+        }
     }
 
     @Override
     public Teacher get(int id) {
-        return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject(QUERY_GET_BY_ID, getRowMapper(), id);
+        } catch (EmptyResultDataAccessException ex) {
+             throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
+        }
     }
 
     @Override
     public List<Teacher> getAll() {
-        return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
+        try {
+            return jdbcTemplate.query(QUERY_GET_ALL, getRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(EXCEPTION_ALL_TEACHERS_NOT_FOUND);
+        }
     }
 
     @Override
     public void update(Teacher teacher) {
-        jdbcTemplate.update(QUERY_UPDATE, teacher.getName(), teacher.getLastName(), teacher.getId());
+        try {
+            jdbcTemplate.update(QUERY_UPDATE, teacher.getName(), teacher.getLastName(), teacher.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND, teacher.getId()));
+        }
     }
 
     @Override
     public void remove(int id) {
-        jdbcTemplate.update(QUERY_DELETE, id);
+        try {
+            jdbcTemplate.update(QUERY_DELETE, id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND, id));
+        }
     }
     
-    public Teacher getTeacherByLessonId(int lessonId) {
-        return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, getRowMapper(), lessonId);
+    public Teacher getTeacherByLesson(int lessonId) {
+        try {
+            return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_LESSON, getRowMapper(), lessonId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_LESSON_NOT_FOUND, lessonId));
+        }
     }
     
     public Teacher getGroupTeacher(int groupId) {
-        return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_GROUP, getRowMapper(), groupId);
+        try {
+            return jdbcTemplate.queryForObject(QUERY_GET_TEACHER_BY_GROUP, getRowMapper(), groupId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND, groupId));
+        }
     }
     
     public void setDepartmentToTeacher(int departmentId, int teacherId) {
-        jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, teacherId);
+        try {
+            jdbcTemplate.update(QUERY_INSERT_DEPARTMENT, departmentId, teacherId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+        }
     }
     
-    public void updateTeacherDepartment(int departmentId, int teacherid) {
-        jdbcTemplate.update(QUERY_DEPARTMEN, departmentId, teacherid);
+    public void updateTeacherDepartment(int departmentId, int teacherId) {
+        try {
+            jdbcTemplate.update(QUERY_DEPARTMEN, departmentId, teacherId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_TEACHER_NOT_FOUND + OR + EXCEPTION_DEPARTMENT_NOT_FOUND, teacherId, departmentId));
+        }
     }
     
-    public List<Teacher> getTeachersByDepartment(int departmentId){
-        return jdbcTemplate.query(QUERY_GET_TEACHER_BY_DEPARTMENT, getRowMapper(), departmentId);
+    public List<Teacher> getTeachersByDepartment(int departmentId) {
+        try {
+            return jdbcTemplate.query(QUERY_GET_TEACHER_BY_DEPARTMENT, getRowMapper(), departmentId);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new DaoException(String.format(EXCEPTION_DEPARTMENT_NOT_FOUND, departmentId));
+        }
         
     }
     

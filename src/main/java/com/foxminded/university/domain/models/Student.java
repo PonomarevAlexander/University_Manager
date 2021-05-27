@@ -6,7 +6,6 @@ public class Student {
     private String name;
     private String lastName;
     private int age;
-    private int grade;
     private Group group;
 
     public Student() {
@@ -18,12 +17,11 @@ public class Student {
         this.age = age;
     }
 
-    public Student(int id, String name, String lastName, int age, int grade, Group group) {
+    public Student(int id, String name, String lastName, int age, Group group) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.age = age;
-        this.grade = grade;
         this.group = group;
     }
 
@@ -47,10 +45,6 @@ public class Student {
         return age;
     }
 
-    public int getGrade() {
-        return grade;
-    }
-
     public void setGroup(Group group) {
         this.group = group;
     }
@@ -71,16 +65,11 @@ public class Student {
         this.age = age;
     }
 
-    public void setGrade(int grade) {
-        this.grade = grade;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + age;
-        result = prime * result + grade;
         result = prime * result + ((group == null) ? 0 : group.hashCode());
         result = prime * result + id;
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
@@ -98,8 +87,6 @@ public class Student {
             return false;
         Student other = (Student) obj;
         if (age != other.age)
-            return false;
-        if (grade != other.grade)
             return false;
         if (group == null) {
             if (other.group != null)
@@ -123,7 +110,7 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student [id=" + id + ", name=" + name + ", lastName=" + lastName + ", age=" + age + ", grade=" + grade
+        return "Student [id=" + id + ", name=" + name + ", lastName=" + lastName + ", age=" + age
                 + ", group=" + group + "]";
     }
 }
