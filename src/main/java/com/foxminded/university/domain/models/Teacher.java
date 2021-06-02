@@ -1,11 +1,27 @@
 package com.foxminded.university.domain.models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "teachers")
 public class Teacher {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @Column(name = "last_name")
     private String lastName;
-    private Timetable timetable;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
+    @OneToOne(mappedBy = "teacher")
+    private Group group;
 
     public Teacher() {}
 
@@ -14,11 +30,13 @@ public class Teacher {
         this.lastName = lastName;
     }
 
-    public Teacher(int id, String name, String lastName, Timetable timetable) {
+    public Teacher(int id, String name, String lastName, Department department, Group group) {
+        super();
         this.id = id;
         this.name = name;
         this.lastName = lastName;
-        this.timetable = timetable;
+        this.department = department;
+        this.group = group;
     }
 
     public int getId() {
@@ -33,8 +51,12 @@ public class Teacher {
         return lastName;
     }
 
-    public Timetable getTimetable() {
-        return timetable;
+    public Department getDepartment() {
+        return department;
+    }
+
+    public Group getGroup() {
+        return group;
     }
 
     public void setId(int id) {
@@ -49,18 +71,23 @@ public class Teacher {
         this.lastName = lastName;
     }
 
-    public void setTimetable(Timetable timetable) {
-        this.timetable = timetable;
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((department == null) ? 0 : department.hashCode());
+        result = prime * result + ((group == null) ? 0 : group.hashCode());
         result = prime * result + id;
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((timetable == null) ? 0 : timetable.hashCode());
         return result;
     }
 
@@ -73,6 +100,16 @@ public class Teacher {
         if (getClass() != obj.getClass())
             return false;
         Teacher other = (Teacher) obj;
+        if (department == null) {
+            if (other.department != null)
+                return false;
+        } else if (!department.equals(other.department))
+            return false;
+        if (group == null) {
+            if (other.group != null)
+                return false;
+        } else if (!group.equals(other.group))
+            return false;
         if (id != other.id)
             return false;
         if (lastName == null) {
@@ -85,16 +122,13 @@ public class Teacher {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (timetable == null) {
-            if (other.timetable != null)
-                return false;
-        } else if (!timetable.equals(other.timetable))
-            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", timetable=" + timetable + "]";
+        return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", department=" + department
+                + ", group=" + group + "]";
     }
+
 }

@@ -2,12 +2,23 @@ package com.foxminded.university.domain.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "departments")
 public class Department {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Teacher> teacherList;
+    
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groupList;
     
     public Department() {}
@@ -19,6 +30,7 @@ public class Department {
     }
 
     public Department(int id, String name, List<Teacher> teacherList, List<Group> groupList) {
+        super();
         this.id = id;
         this.name = name;
         this.teacherList = teacherList;
