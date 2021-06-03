@@ -14,7 +14,6 @@ import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.services.DepartmentService;
 import com.foxminded.university.domain.services.GroupService;
 import com.foxminded.university.domain.services.TeacherService;
-import com.foxminded.university.domain.services.TimetableService;
 
 @Controller
 @RequestMapping("/groups")
@@ -22,12 +21,10 @@ public class GroupController {
 
     private final GroupService groupService;
     private final TeacherService teacherService;
-    private final TimetableService timetableService;
     private final DepartmentService departmentService;
 
     private static final String MODEL_GROUPS = "groups";
     private static final String MODEL_GROUP = "group";
-    private static final String MODEL_TIMETABLES = "timetables";
     private static final String MODEL_DEPARTMENTS = "departments";
     private static final String MODEL_TEACHERS = "teachers";
     private static final String MODEL_STUDENTS = "students";
@@ -38,11 +35,9 @@ public class GroupController {
     private static final String VIEW_REDIRECT_TO_ALL_GROUP = "redirect:/groups";
 
     @Autowired
-    public GroupController(GroupService groupService, TeacherService teachersService, TimetableService timetableService,
-            DepartmentService departmentService) {
+    public GroupController(GroupService groupService, TeacherService teachersService, DepartmentService departmentService) {
         this.groupService = groupService;
         this.teacherService = teachersService;
-        this.timetableService = timetableService;
         this.departmentService = departmentService;
 
     }
@@ -65,7 +60,6 @@ public class GroupController {
     public String createGroupForm(Model model) {
         model.addAttribute(MODEL_GROUP, new Group());
         model.addAttribute(MODEL_TEACHERS, teacherService.getAll());
-        model.addAttribute(MODEL_TIMETABLES, timetableService.getAll());
         model.addAttribute(MODEL_DEPARTMENTS, departmentService.getAll());
         return VIEW_NEW_GROUP;
     }
@@ -80,7 +74,6 @@ public class GroupController {
     public String updateForm(@PathVariable("id") int id, Model model) {
         model.addAttribute(MODEL_GROUP, groupService.getById(id));
         model.addAttribute(MODEL_TEACHERS, teacherService.getAll());
-        model.addAttribute(MODEL_TIMETABLES, timetableService.getAll());
         model.addAttribute(MODEL_DEPARTMENTS, departmentService.getAll());
         return VIEW_UPDATE_GROUP;
     }

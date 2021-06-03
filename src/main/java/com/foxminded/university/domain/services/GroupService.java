@@ -8,20 +8,13 @@ import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
-import com.foxminded.university.persistence.DepartmentDao;
-import com.foxminded.university.persistence.GroupDao;
-import com.foxminded.university.persistence.StudentDao;
-import com.foxminded.university.persistence.TeacherDao;
-import com.foxminded.university.persistence.TimetableDao;
+import com.foxminded.university.persistence.Dao;
+import com.foxminded.university.persistence.GenericHibernateDao;
 
 @Component
 public class GroupService implements Service<Group> {
-
-    private StudentDao studentDao;
-    private GroupDao groupDao;
-    private TimetableDao timetableDao;
-    private TeacherDao teacherDao;
-    private DepartmentDao departmentDao;
+    
+    private Dao<Group> groupDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! group name is null";
@@ -32,16 +25,12 @@ public class GroupService implements Service<Group> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the group(id=%d). Reason is ";
 
     @Override
-    public int add(Group group) throws DaoException, ServiceException {
+    public void add(Group group) throws DaoException, ServiceException {
         LOGGER.debug("creating new group with name={}", group.getName());
         validateEntity(group);
         try {
-            int groupId = groupDao.add(group);
-            groupDao.updateGroupHead(group.getTeacher().getId(), groupId);
-            timetableDao.setTimetableToGroup(group.getTimetable().getId(), groupId);
-            groupDao.updateGroupDepartment(group.getDepartment().getId(), groupId);
-            LOGGER.debug("new group with id={} successufuly created! ", groupId);
-            return groupId;
+            groupDao.add(group);
+            LOGGER.debug("new group successufuly created! ");
         } catch (DaoException ex) {
             LOGGER.error("new group was not created");
             throw new ServiceException(EXCEPTION_ADD);
@@ -53,11 +42,7 @@ public class GroupService implements Service<Group> {
         LOGGER.debug("getting group by id={}", id);
         try {
             Group group = groupDao.get(id);
-            group.setTeacher(teacherDao.getGroupTeacher(group.getId()));
-            group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
-            group.setTimetable(timetableDao.getTimetableRelatedGroup(group.getId()));
-            group.setDepartment(departmentDao.getDepartmentByGroup(group.getId()));
-            LOGGER.debug("group with id={} was prepared and returned", id);
+            LOGGER.debug("group with id={} was prepared and returned", group.getId());
             return group;
         } catch (DaoException ex) {
             LOGGER.error("group with id={} not found! Group or students, teacher, timetable related to the group not found", id);
@@ -70,12 +55,6 @@ public class GroupService implements Service<Group> {
         LOGGER.debug("going retrieving all groups list");
         try {
             List<Group> groupsList = groupDao.getAll();
-            groupsList.forEach(group -> {
-                group.setTeacher(teacherDao.getGroupTeacher(group.getId()));
-                group.setStudentList(studentDao.getStudentRelatedGroup(group.getId()));
-                group.setTimetable(timetableDao.getTimetableRelatedGroup(group.getId()));
-                group.setDepartment(departmentDao.getDepartmentByGroup(group.getId()));
-            });
             LOGGER.debug("groups list was prepared and returned successfuly");
             return groupsList;
         } catch (DaoException ex) {
@@ -90,10 +69,6 @@ public class GroupService implements Service<Group> {
         validateEntity(group);
         try {
             groupDao.update(group);
-            groupDao.updateGroupHead(group.getTeacher().getId(), group.getId());
-            group.getStudentList().forEach(student -> studentDao.setStudentToGroup(student.getId(), group.getId())); // !!!
-            timetableDao.updateTimetableRelatedGroup(group.getTimetable().getId(), group.getId());
-            groupDao.updateGroupDepartment(group.getDepartment().getId(), group.getId());
             LOGGER.debug("The group with id={} updated successfuly", group.getId());
         } catch (DaoException ex) {
             LOGGER.error("group with id={} not found! Group or students, teacher, timetable related to the group not found", group.getId());
@@ -113,16 +88,6 @@ public class GroupService implements Service<Group> {
         }
     }
 
-    public void changeDepartmentForGroup(Group group, int departmentId) {
-        LOGGER.debug("going update group(id={}) department", group.getId());
-        try {
-            groupDao.updateGroupDepartment(departmentId, group.getId());
-        } catch (DaoException ex) {
-            LOGGER.error("Department id={} was not assigned to group with id={}! Department or group  not found", departmentId, group.getId());
-            throw new ServiceException(String.format(EXCEPTION_UPDATE, group.getId()) + ex.getMessage());
-        }
-    }
-
     private void validateEntity(Group group) {
         LOGGER.debug("begin validation");
         if (group.getName() == null) {
@@ -132,27 +97,8 @@ public class GroupService implements Service<Group> {
     }
 
     @Autowired
-    public void setStudentDao(StudentDao studentDao) {
-        this.studentDao = studentDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
+    public void setGroupDao(GenericHibernateDao<Group> groupDao) {
+        groupDao.setClazz(Group.class);
         this.groupDao = groupDao;
-    }
-
-    @Autowired
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
-
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-    
-    @Autowired
-    public void setDepartmentDao(DepartmentDao departmentDao) {
-        this.departmentDao = departmentDao;
     }
 }

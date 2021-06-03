@@ -20,7 +20,6 @@ import com.foxminded.university.domain.services.TimetableService;
 public class TeacherController {
 
     private final TeacherService teacherService;
-    private final TimetableService timetableService;
 
     private static final String MODEL_ALL_TEACHERS = "teachers";
     private static final String MODEL_TEACHER = "teacher";
@@ -32,9 +31,8 @@ public class TeacherController {
     private static final String VIEW_REDIRECT_TO_TICHERS = "redirect:/teachers";
 
     @Autowired
-    public TeacherController(TeacherService teacherService, TimetableService timeTableService) {
+    public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
-        this.timetableService = timeTableService;
     }
 
     @GetMapping()

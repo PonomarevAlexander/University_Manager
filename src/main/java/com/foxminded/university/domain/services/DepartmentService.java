@@ -8,16 +8,13 @@ import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
-import com.foxminded.university.persistence.DepartmentDao;
-import com.foxminded.university.persistence.GroupDao;
-import com.foxminded.university.persistence.TeacherDao;
+import com.foxminded.university.persistence.Dao;
+import com.foxminded.university.persistence.GenericHibernateDao;
 
 @Component
 public class DepartmentService implements Service<Department> {
 
-    private GroupDao groupDao;
-    private TeacherDao teacherDao;
-    private DepartmentDao departmentDao;
+    private Dao<Department> departmentDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! department name is null";
@@ -28,20 +25,12 @@ public class DepartmentService implements Service<Department> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the department(id=%d). Reason is ";
 
     @Override
-    public int add(Department department) throws ServiceException {
+    public void add(Department department) throws ServiceException {
         LOGGER.debug("creating new department");
         validateEntity(department);
         try {
-            int departmentId = departmentDao.add(department);
-            if (department.getGroupList() != null) {
-                department.getGroupList().forEach(group -> groupDao.setDepartmentToGroup(departmentId, group.getId()));
-            }
-            if (department.getTeacherList() != null) {
-                department.getTeacherList()
-                    .forEach(teacher -> teacherDao.setDepartmentToTeacher(departmentId, teacher.getId()));
-            }
+            departmentDao.add(department);
             LOGGER.debug("department with name={} was created successfuly", department.getName());
-            return departmentId;
         } catch (DaoException ex) {
             LOGGER.error("new department was not created");
             throw new ServiceException(EXCEPTION_ADD);
@@ -53,8 +42,6 @@ public class DepartmentService implements Service<Department> {
         LOGGER.debug("obtaining department by id={}", id);
         try {
             Department department = departmentDao.get(id);
-            department.setGroupList(groupDao.getGroupsByDepartment(department.getId()));
-            department.setTeacherList(teacherDao.getTeachersByDepartment(department.getId()));
             LOGGER.debug("department with id={} was prepared and returned", id);
             return department;
         } catch (DaoException ex) {
@@ -68,10 +55,6 @@ public class DepartmentService implements Service<Department> {
         LOGGER.debug("obtaining all departments");
         try {
             List<Department> departments = departmentDao.getAll();
-            departments.forEach(department -> {
-                department.setGroupList(groupDao.getGroupsByDepartment(department.getId()));
-                department.setTeacherList(teacherDao.getTeachersByDepartment(department.getId()));
-            });
             LOGGER.debug("departments list(size={}) was prepared and returned", departments.size());
             return departments;
         } catch (DaoException ex) {
@@ -86,14 +69,6 @@ public class DepartmentService implements Service<Department> {
         validateEntity(department);
         try {
             departmentDao.update(department);
-            if (department.getGroupList() != null) {
-                department.getGroupList()
-                        .forEach(group -> groupDao.updateGroupDepartment(department.getId(), group.getId()));
-            }
-            if (department.getTeacherList() != null) {
-                department.getTeacherList()
-                        .forEach(teacher -> teacherDao.updateTeacherDepartment(department.getId(), teacher.getId()));
-            }
             LOGGER.debug("department with id={} successfuly updated", department.getId());
         } catch (DaoException ex) {
             LOGGER.error("department with id={} was not updated! group or teacher related to the department not found", department.getId());
@@ -122,18 +97,9 @@ public class DepartmentService implements Service<Department> {
     }
 
     @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
-
-    @Autowired
-    public void setDepartmentDao(DepartmentDao departmentDao) {
-        this.departmentDao = departmentDao;
+    public void setDepartmentDao(GenericHibernateDao<Department> genericHibernateDao) {
+        genericHibernateDao.setClazz(Department.class);
+        this.departmentDao = genericHibernateDao;
     }
 
 }

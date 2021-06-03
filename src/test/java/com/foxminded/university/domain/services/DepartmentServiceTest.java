@@ -15,7 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
-import com.foxminded.university.persistence.DepartmentDao;
+import com.foxminded.university.persistence.GenericHibernateDao;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.TeacherDao;
 
@@ -24,7 +24,7 @@ class DepartmentServiceTest {
     
     private GroupDao groupDao;
     private TeacherDao teacherDao;
-    private DepartmentDao departmentDao;
+    private GenericHibernateDao departmentDao;
     private DepartmentService departmentService;
     
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
@@ -40,7 +40,7 @@ class DepartmentServiceTest {
     private GroupDao mockedGroupDao;
     
     @Mock
-    private DepartmentDao mockedDepartmentDao;
+    private GenericHibernateDao mockedDepartmentDao;
     
     @InjectMocks
     private DepartmentService mockedDepartmentService;
@@ -54,7 +54,7 @@ class DepartmentServiceTest {
                 .build();
         
         this.teacherDao = new TeacherDao(dataSource);
-        this.departmentDao = new DepartmentDao(dataSource);
+        this.departmentDao = new GenericHibernateDao(dataSource);
         this.groupDao = new GroupDao(dataSource);
         this.departmentService = new DepartmentService();
         departmentService.setDepartmentDao(departmentDao);

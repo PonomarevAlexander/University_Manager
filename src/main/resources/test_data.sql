@@ -17,23 +17,3 @@ insert into students(name, last_name, age, group_id) values('studentName3', 'stu
 insert into lessons(name, start_time, duration, teacher_id, group_id) values('math', '2021-01-11 11:11:11', 5400, 1, 1);
 insert into lessons(name, start_time, duration, teacher_id, group_id) values('english', '2021-02-12 12:12:12', 5400, 2, 1);
 insert into lessons(name, start_time, duration, teacher_id, group_id) values('mechanics', '2021-03-13 13:13:13', 5400, 3, 2);
-
-insert into timetables(creation_date, description) values('2021-01-11 11:11:11', 'for teacher1');
-insert into timetables(creation_date, description) values('2021-02-12 12:12:12', 'for teacher2');
-insert into timetables(creation_date, description) values('2021-03-13 13:13:13', 'for teacher3');
-
-insert into teachers_lessons(teacher_id, lesson_id) values(1, 1);
-insert into teachers_lessons(teacher_id, lesson_id) values(2, 2);
-insert into teachers_lessons(teacher_id, lesson_id) values(1, 3);
-
-insert into timetables_lessons(timetable_id, lesson_id) values(1, 1);
-insert into timetables_lessons(timetable_id, lesson_id) values(1, 2);
-insert into timetables_lessons(timetable_id, lesson_id) values(2, 3);
-
-insert into timetables_teachers(timetable_id, teacher_id) values(1, 1);
-insert into timetables_teachers(timetable_id, teacher_id) values(2, 2);
-insert into timetables_teachers(timetable_id, teacher_id) values(3, 3);
-
-insert into timetables_groups(timetable_id, group_id) values(1, 1);
-insert into timetables_groups(timetable_id, group_id) values(2, 2);
-insert into timetables_groups(timetable_id, group_id) values(3, 3);

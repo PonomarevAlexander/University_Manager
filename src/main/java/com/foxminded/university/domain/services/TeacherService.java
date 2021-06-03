@@ -1,27 +1,20 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
-import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.models.Teacher;
-import com.foxminded.university.domain.models.Timetable;
-import com.foxminded.university.persistence.LessonDao;
-import com.foxminded.university.persistence.TeacherDao;
-import com.foxminded.university.persistence.TimetableDao;
+import com.foxminded.university.persistence.Dao;
+import com.foxminded.university.persistence.GenericHibernateDao;
 
 @Component
 public class TeacherService implements Service<Teacher> {
 
-    private TeacherDao teacherDao;
-    private TimetableDao timetableDao;
-    private LessonDao lessonDao;
+    private Dao<Teacher> teacherDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TeacherService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! teacher name is null";
@@ -33,16 +26,13 @@ public class TeacherService implements Service<Teacher> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the teacher(id=%d). Reason is ";
 
     @Override
-    public int add(Teacher teacher) throws ServiceException {
+    public void add(Teacher teacher) throws ServiceException {
         LOGGER.debug("creating a new teacher with name={}, last name={}", teacher.getName(), teacher.getLastName());
         validateEntity(teacher);
         try {
-            int receivedId = teacherDao.add(teacher);
-            if (teacher.getTimetable() != null) {
-                timetableDao.setTimetableToTeacher(teacher.getTimetable().getId(), receivedId);
-            }
+            teacherDao.add(teacher);
+            
             LOGGER.debug("new teacher({} {}) was created", teacher.getName(), teacher.getLastName());
-            return receivedId;
         } catch (DaoException ex) {
             LOGGER.error("new teacher was not created");
             throw new ServiceException(EXCEPTION_ADD);
@@ -54,10 +44,6 @@ public class TeacherService implements Service<Teacher> {
         LOGGER.debug("obtaining a teacher by id={}", id);
         try {
             Teacher teacher = teacherDao.get(id);
-            Timetable timetable = timetableDao.getTimetableRelatedTeacher(teacher.getId());
-            List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
-            timetable.setSchedule(lessons);
-            teacher.setTimetable(timetable);
             LOGGER.debug("Teacher with id={} was prepared and returned", teacher.getId());
             return teacher;
         } catch (DaoException ex) {
@@ -72,12 +58,6 @@ public class TeacherService implements Service<Teacher> {
         LOGGER.debug("obtaining list of all teachers");
         try {
             List<Teacher> teachersList = teacherDao.getAll();
-            teachersList.forEach(teacher -> {
-                Timetable timetable = timetableDao.getTimetableRelatedTeacher(teacher.getId());
-                List<Lesson> lessons = lessonDao.getLessonsOfTimetable(timetable.getId());
-                timetable.setSchedule(lessons);
-                teacher.setTimetable(timetable);
-            });
             LOGGER.debug("all teachers obtained and returned");
             return teachersList;
         } catch (DaoException ex) {
@@ -92,9 +72,6 @@ public class TeacherService implements Service<Teacher> {
         validateEntity(teacher);
         try {
             teacherDao.update(teacher);
-            if (teacher.getTimetable() != null) {
-                timetableDao.updateTimetableRelatedTeacher(teacher.getTimetable().getId(), teacher.getId());
-            }
             LOGGER.debug("teacher with id={} was updated", teacher.getId());
         } catch (DaoException ex) {
             LOGGER.error("teacher updating fail!");
@@ -126,18 +103,9 @@ public class TeacherService implements Service<Teacher> {
     }
 
     @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
+    public void setTeacherDao(GenericHibernateDao<Teacher> teacherDao) {
+        teacherDao.setClazz(Teacher.class);
         this.teacherDao = teacherDao;
-    }
-
-    @Autowired
-    public void setTimetableDao(TimetableDao timetableDao) {
-        this.timetableDao = timetableDao;
-    }
-
-    @Autowired
-    public void setLessonDao(LessonDao lessonDao) {
-        this.lessonDao = lessonDao;
     }
 
 }

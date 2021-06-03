@@ -1,5 +1,7 @@
 package com.foxminded.university.domain.models;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,8 +22,11 @@ public class Teacher {
     @JoinColumn(name = "department_id")
     private Department department;
     
-    @OneToOne(mappedBy = "teacher")
+    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
     private Group group;
+    
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lesson> timetable;
 
     public Teacher() {}
 
