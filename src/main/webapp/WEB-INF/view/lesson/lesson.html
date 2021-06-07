@@ -48,7 +48,7 @@
 			<div class="col-md-4">
 				<p><small>Lesson id:</small> <strong th:text="${lesson.id}"></strong></p>
 				<p><small>Lesson name:</small> <strong th:text="${lesson.name}"></strong></p>
-				<p><small>Time:</small> <strong th:text="${datetime}"></strong></p>
+				<p><small>Time:</small> <strong th:text="${lesson.startTime}"></strong></p>
 				<p><small>Duration:</small> <strong th:text="${lesson.lessonDurationSecond / 60 + ' min'}"></strong></p>
 				<p><small>Teacher:</small><a th:href="@{/teachers/{id}(id=${lesson.teacher.id})}" th:text="${lesson.teacher.name + ' ' + lesson.teacher.lastName}">teacher</a></p>
 				<p><small>Group:</small><a th:href="@{/groups/{id}(id=${lesson.group.id})}" th:text="${lesson.group.name}">group</a></p>

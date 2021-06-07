@@ -45,7 +45,7 @@ public class ApplicationConfig {
     private final Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        hibernateProperties.put("hibernate.show_sql", false);
+        hibernateProperties.put("hibernate.show_sql", true);
         return hibernateProperties;
     }
 }   

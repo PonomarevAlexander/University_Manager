@@ -48,7 +48,20 @@
 			<div class="col-md-6">
 			<p><small>Teacher id:</small> <strong th:text="${teacher.id}"></strong></p>
 			<p><small>Teacher name:</small> <strong th:text="${teacher.name + ' ' + teacher.lastName}"></strong></p>
-			<p><small>Timetable:</small> <a th:href="@{/timetables/{id}(id=${teacher.timetable.id})}">timetable</a></p>
+			<p><small>Timetable:</p>
+			<table class="table table-light table-bordered">
+					<thead>
+						<tr>
+							<th scope="col">start time</th>
+							<th scope="col">Lesson name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="lesson : ${timetable}">
+							<td th:text="${lesson.startTime}"></td>
+							<td><a th:href="@{/lessons/{id}(id=${lesson.id})}" th:text="${lesson.name}"></a></td>
+						</tr>
+			</table>
 			<br/>
 			<a class="btn btn-outline-warning" th:href="@{/teachers/{id}/update(id=${teacher.id})}" role="button" > edit </a>
 			<form th:method="DELETE" th:action="@{/teachers/{id}(id=${teacher.id})}">

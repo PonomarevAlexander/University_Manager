@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private int id;
 
     @Column(name = "name")
@@ -19,8 +19,7 @@ public class Student {
     @Column(name = "age")
     private int age;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
+    @ManyToOne()
     private Group group;
 
     public Student() {

@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class Teacher {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private int id;
     
     @Column(name = "name")
@@ -18,14 +18,14 @@ public class Teacher {
     @Column(name = "last_name")
     private String lastName;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
     private Department department;
     
     @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
     private Group group;
     
-    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "teacher")
     private List<Lesson> timetable;
 
     public Teacher() {}
@@ -35,13 +35,14 @@ public class Teacher {
         this.lastName = lastName;
     }
 
-    public Teacher(int id, String name, String lastName, Department department, Group group) {
+    public Teacher(int id, String name, String lastName, Department department, Group group, List<Lesson> timetable) {
         super();
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.department = department;
         this.group = group;
+        this.timetable = timetable;
     }
 
     public int getId() {
@@ -64,6 +65,10 @@ public class Teacher {
         return group;
     }
 
+    public List<Lesson> getTimetable() {
+        return timetable;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -84,6 +89,10 @@ public class Teacher {
         this.group = group;
     }
 
+    public void setTimetable(List<Lesson> timetable) {
+        this.timetable = timetable;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -93,6 +102,7 @@ public class Teacher {
         result = prime * result + id;
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((timetable == null) ? 0 : timetable.hashCode());
         return result;
     }
 
@@ -127,13 +137,18 @@ public class Teacher {
                 return false;
         } else if (!name.equals(other.name))
             return false;
+        if (timetable == null) {
+            if (other.timetable != null)
+                return false;
+        } else if (!timetable.equals(other.timetable))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", department=" + department
-                + ", group=" + group + "]";
+                + ", group=" + group + ", timetable=" + timetable + "]";
     }
-
+    
 }

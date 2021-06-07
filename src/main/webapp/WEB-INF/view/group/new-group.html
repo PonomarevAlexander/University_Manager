@@ -61,11 +61,6 @@
 			            <option th:each="teacher :${teachers}" th:value="${teacher.id}" th:text="${teacher.getName()}"></option>
 					</select>
 					
-					<label for="timetable">Timetable</label> 
-					<select class="form-select" aria-label="timetables" th:field="*{timetable.id}" id="timetable">
-			            <option th:each="t :${timetables}" th:value="${t.id}" th:text="${t.id}"></option>
-					</select>
-					
 					<br/>
 					<div class="d-grid gap-2 col-6 mx-auto">
   						<button class="btn btn-primary" type="submit">Create</button>

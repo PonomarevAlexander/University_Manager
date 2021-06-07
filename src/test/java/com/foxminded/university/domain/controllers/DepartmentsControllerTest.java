@@ -83,8 +83,6 @@ class DepartmentsControllerTest {
 
     @Test
     void testShouldCreateNewDepartmentAndRedirectToAllDepartmentsPage() throws Exception {
-        when(mockedDepartmentService.add(new Department(0, NAME, null, null))).thenReturn(0);
-
         mockMvc.perform(post("/departments?name=name"))
                 .andExpect(view().name(VIEW_REDIRECT_TO_ALL_DEPARTMENTS))
                 .andExpect(model().attribute(MODEL_NAME_DEPARTMENT, new Department(0, NAME, null, null)));

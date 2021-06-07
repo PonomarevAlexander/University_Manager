@@ -8,16 +8,18 @@ import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
+import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.persistence.Dao;
 import com.foxminded.university.persistence.GenericHibernateDao;
 
 @Component
-public class GroupService implements Service<Group> {
+public class GroupService implements ServiceInterface<Group> {
     
     private Dao<Group> groupDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! group name is null";
+    private static final String EXCEPTION_NOT_VALID_TEACHER = "validation failed! group teacher is null";
     private static final String EXCEPTION_ADD = "Failed to creating new group!";
     private static final String EXCEPTION_GET = "Failed to receiving a group(id=%). Reason is ";
     private static final String EXCEPTION_GET_ALL = "Failed to receiving all groups list. Reason is ";
@@ -92,6 +94,9 @@ public class GroupService implements Service<Group> {
         LOGGER.debug("begin validation");
         if (group.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
+        }
+        if (group.getTeacher() == null) {
+            throw new ServiceException(EXCEPTION_NOT_VALID_TEACHER);
         }
         LOGGER.debug("validation passed");
     }

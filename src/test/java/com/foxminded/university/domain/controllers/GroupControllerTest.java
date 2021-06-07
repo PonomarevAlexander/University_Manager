@@ -20,11 +20,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Teacher;
-import com.foxminded.university.domain.models.Timetable;
 import com.foxminded.university.domain.services.DepartmentService;
 import com.foxminded.university.domain.services.GroupService;
 import com.foxminded.university.domain.services.TeacherService;
-import com.foxminded.university.domain.services.TimetableService;
 
 @ExtendWith(MockitoExtension.class)
 class GroupControllerTest {
@@ -33,7 +31,6 @@ class GroupControllerTest {
 
     private static final String MODEL_GROUPS = "groups";
     private static final String MODEL_GROUP = "group";
-    private static final String MODEL_TIMETABLES = "timetables";
     private static final String MODEL_DEPARTMENTS = "departments";
     private static final String MODEL_TEACHERS = "teachers";
     private static final String VIEW_ALL_GROUP = "group/all-groups";
@@ -49,9 +46,6 @@ class GroupControllerTest {
 
     @Mock
     private TeacherService teacherService;
-
-    @Mock
-    private TimetableService timetableService;
 
     @Mock
     private DepartmentService departmentService;
@@ -90,14 +84,11 @@ class GroupControllerTest {
                 .andExpect(view().name(VIEW_NEW_GROUP));
         
         verify(teacherService).getAll();
-        verify(timetableService).getAll();
         verify(departmentService).getAll();
     }
 
     @Test
     void testShouldCreateNewGroupAndRedirectToStatusPage() throws Exception {
-        when(groupService.add(testGroup)).thenReturn(1);
-
         mockMvc.perform(post("/groups?id=1&name=name"))
                 .andExpect(view().name(VIEW_REDIRECT_TO_ALL_GROUP))
                 .andExpect(model().attribute(MODEL_GROUP, testGroup));
@@ -109,18 +100,15 @@ class GroupControllerTest {
     void testShouldRenderGroupUpdatingPage() throws Exception {
         when(groupService.getById(1)).thenReturn(testGroup);
         when(teacherService.getAll()).thenReturn(List.of(new Teacher()));
-        when(timetableService.getAll()).thenReturn(List.of(new Timetable()));
         when(departmentService.getAll()).thenReturn(List.of(new Department()));
 
         mockMvc.perform(get("/groups/1/update")).andExpect(view().name(VIEW_UPDATE_GROUP))
                 .andExpect(model().attribute(MODEL_GROUP, testGroup))
                 .andExpect(model().attribute(MODEL_TEACHERS, List.of(new Teacher())))
-                .andExpect(model().attribute(MODEL_TIMETABLES, List.of(new Timetable())))
                 .andExpect(model().attribute(MODEL_DEPARTMENTS, List.of(new Department())));
         
         verify(groupService).getById(1);
         verify(teacherService).getAll();
-        verify(timetableService).getAll();
         verify(departmentService).getAll();
         
     }

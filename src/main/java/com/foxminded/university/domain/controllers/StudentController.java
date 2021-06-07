@@ -1,5 +1,7 @@
 package com.foxminded.university.domain.controllers;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,7 @@ import com.foxminded.university.domain.services.StudentService;
 
 @Controller
 @RequestMapping("/students")
+@Transactional
 public class StudentController {
 
     private final StudentService studentService;

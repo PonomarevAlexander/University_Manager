@@ -4,15 +4,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.persistence.Dao;
 import com.foxminded.university.persistence.GenericHibernateDao;
 
-@Component
-public class DepartmentService implements Service<Department> {
+@Service
+public class DepartmentService implements ServiceInterface<Department> {
 
     private Dao<Department> departmentDao;
 

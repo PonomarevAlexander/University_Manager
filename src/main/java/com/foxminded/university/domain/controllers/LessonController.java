@@ -3,6 +3,8 @@ package com.foxminded.university.domain.controllers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +24,7 @@ import com.foxminded.university.domain.services.TeacherService;
 
 @Controller
 @RequestMapping("/lessons")
+@Transactional
 public class LessonController {
     
     private final LessonService lessonService;
@@ -57,7 +60,6 @@ public class LessonController {
     public String getById(@PathVariable("id") int id, Model model) {
         Lesson lesson = lessonService.getById(id);
         model.addAttribute(MODEL_LESSON, lesson);
-        model.addAttribute(DATETIME, lesson.getStartTime().format(DateTimeFormatter.ofPattern(FORMAT)));
         return VIEW_ONE_LESSON;
     }
     

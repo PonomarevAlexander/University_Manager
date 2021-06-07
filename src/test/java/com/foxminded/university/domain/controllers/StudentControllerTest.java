@@ -81,8 +81,6 @@ class StudentControllerTest {
     @Test
     void testShouldCreateNewStudentThenRedirect() throws Exception {
         Student student = new Student("name", "lastName", 20);
-        when(studentService.add(student)).thenReturn(1);
-        
         mockMvc.perform(post("/students?name=name&lastName=lastName&age=20"))
                 .andExpect(view().name(VIEW_REDIRECT_TO_STATUS))
                 .andExpect(model().attribute(MODEL_STUDENT, student));

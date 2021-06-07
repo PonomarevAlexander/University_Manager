@@ -12,7 +12,7 @@ import com.foxminded.university.persistence.Dao;
 import com.foxminded.university.persistence.GenericHibernateDao;
 
 @Component
-public class LessonService implements Service<Lesson> {
+public class LessonService implements ServiceInterface<Lesson> {
 
     private Dao<Lesson> lessonDao;
 

@@ -2,6 +2,7 @@ package com.foxminded.university.domain.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +16,11 @@ import com.foxminded.university.domain.services.DepartmentService;
 
 @Controller
 @RequestMapping("/departments")
+@Transactional
 public class DepartmentsController {
 
     private final DepartmentService departmentService;
+    
     private static final String MODEL_NAME_DEPARTMENT = "department";
     private static final String MODEL_ALL_DEPARTMENTS = "departments";
     private static final String MODEL_NAME_GROUPS = "groups";

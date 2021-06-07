@@ -1,14 +1,18 @@
 package com.foxminded.university.domain.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "lessons")
 public class Lesson {
+    
+    private static final String FORMAT = "yyyy-MM-dd HH:mm";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private int id;
     
     @Column(name = "name")
@@ -20,12 +24,10 @@ public class Lesson {
     @Column(name = "duration")
     private int lessonDurationSecond;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @ManyToOne()
     private Teacher teacher;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
+    @ManyToOne()
     private Group group;
 
     public Lesson() {
@@ -56,8 +58,8 @@ public class Lesson {
         return name;
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
+    public String getStartTime() {
+        return startTime.format(DateTimeFormatter.ofPattern(FORMAT));
     }
 
     public int getLessonDurationSecond() {
