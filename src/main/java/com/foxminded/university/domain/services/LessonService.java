@@ -9,7 +9,7 @@ import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDao;
+import com.foxminded.university.persistence.GenericHibernateDaoImpl;
 
 @Component
 public class LessonService implements ServiceInterface<Lesson> {
@@ -113,7 +113,7 @@ public class LessonService implements ServiceInterface<Lesson> {
     }
 
     @Autowired
-    public void setLessonDao(GenericHibernateDao<Lesson> lessonDao) {
+    public void setLessonDao(GenericHibernateDaoImpl<Lesson> lessonDao) {
         lessonDao.setClazz(Lesson.class);
         this.lessonDao = lessonDao;
     }

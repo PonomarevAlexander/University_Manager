@@ -1,7 +1,5 @@
 package com.foxminded.university.domain.controllers;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.foxminded.university.domain.models.Group;
-import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.domain.services.DepartmentService;
 import com.foxminded.university.domain.services.GroupService;
 import com.foxminded.university.domain.services.TeacherService;

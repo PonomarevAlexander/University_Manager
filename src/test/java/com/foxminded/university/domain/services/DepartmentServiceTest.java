@@ -18,7 +18,7 @@ import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.domain.models.Teacher;
 import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDao;
+import com.foxminded.university.persistence.GenericHibernateDaoImpl;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.TeacherDao;
 
@@ -37,13 +37,13 @@ class DepartmentServiceTest {
     private static final String TEST_NAME_3 = "department3";
     
     @Mock
-    private GenericHibernateDao<Teacher> mockedTeacherDao;
+    private GenericHibernateDaoImpl<Teacher> mockedTeacherDao;
     
     @Mock
-    private GenericHibernateDao<Group> mockedGroupDao;
+    private GenericHibernateDaoImpl<Group> mockedGroupDao;
     
     @Mock
-    private GenericHibernateDao<Department> mockedDepartmentDao;
+    private GenericHibernateDaoImpl<Department> mockedDepartmentDao;
     
     @InjectMocks
     private DepartmentService mockedDepartmentService;
@@ -56,9 +56,9 @@ class DepartmentServiceTest {
                 .addScript(TEST_DATA)
                 .build();
         
-        this.teacherDao = new GenericHibernateDao<>();
-        this.departmentDao = new GenericHibernateDao<>();
-        this.groupDao = new GenericHibernateDao<>();
+        this.teacherDao = new GenericHibernateDaoImpl<>();
+        this.departmentDao = new GenericHibernateDaoImpl<>();
+        this.groupDao = new GenericHibernateDaoImpl<>();
         this.departmentService = new DepartmentService();
         departmentService.setDepartmentDao(departmentDao);;
         departmentService.setGroupDao(groupDao);

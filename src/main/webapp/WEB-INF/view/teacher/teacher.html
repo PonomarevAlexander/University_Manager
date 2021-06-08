@@ -35,8 +35,6 @@
 						href="/university-manager/teachers">Teachers</a></li>
 					<li><a class="nav-link active" aria-current="page"
 						href="/university-manager/lessons">Lessons</a></li>
-					<li><a class="nav-link active" aria-current="page"
-						href="/university-manager/timetables">Timetables</a></li>
 				</ul>
 			</div>
 		</div>
@@ -61,7 +59,7 @@
 							<td th:text="${lesson.startTime}"></td>
 							<td><a th:href="@{/lessons/{id}(id=${lesson.id})}" th:text="${lesson.name}"></a></td>
 						</tr>
-			</table>
+				</table>
 			<br/>
 			<a class="btn btn-outline-warning" th:href="@{/teachers/{id}/update(id=${teacher.id})}" role="button" > edit </a>
 			<form th:method="DELETE" th:action="@{/teachers/{id}(id=${teacher.id})}">

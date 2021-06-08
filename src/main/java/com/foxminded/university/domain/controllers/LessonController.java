@@ -1,8 +1,6 @@
 package com.foxminded.university.domain.controllers;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,6 @@ public class LessonController {
     private static final String VIEW_UPDATE_LESSON = "lesson/update-lesson";
     private static final String VIEW_REDIRECT_TO_ALL_LESSONS = "redirect:/lessons";
     private static final String DATETIME = "datetime";
-    private static final String FORMAT = "yyyy-MM-dd HH:mm";
     
     @Autowired
     public LessonController(LessonService lessonService, TeacherService teacherService, GroupService groupService) {

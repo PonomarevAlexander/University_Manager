@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 @Entity
 @Table(name = "teachers")
 public class Teacher {
@@ -18,14 +21,14 @@ public class Teacher {
     @Column(name = "last_name")
     private String lastName;
     
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "department_id")
+    @ManyToOne()
     private Department department;
     
     @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
     private Group group;
     
-    @OneToMany(mappedBy = "teacher")
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Lesson> timetable;
 
     public Teacher() {}

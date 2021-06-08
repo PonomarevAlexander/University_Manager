@@ -10,7 +10,7 @@ import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDao;
+import com.foxminded.university.persistence.GenericHibernateDaoImpl;
 
 @Service
 public class DepartmentService implements ServiceInterface<Department> {
@@ -98,7 +98,7 @@ public class DepartmentService implements ServiceInterface<Department> {
     }
 
     @Autowired
-    public void setDepartmentDao(GenericHibernateDao<Department> genericHibernateDao) {
+    public void setDepartmentDao(GenericHibernateDaoImpl<Department> genericHibernateDao) {
         genericHibernateDao.setClazz(Department.class);
         this.departmentDao = genericHibernateDao;
     }

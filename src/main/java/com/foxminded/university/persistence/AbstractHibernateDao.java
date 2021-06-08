@@ -39,5 +39,4 @@ public abstract class AbstractHibernateDao<T> {
         this.sessionFactory = sessionFactory;
     }
     
-    
 }

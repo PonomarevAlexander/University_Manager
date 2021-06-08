@@ -28,7 +28,7 @@ public class Group {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Student> studentList;
     
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Lesson> timetable;
 

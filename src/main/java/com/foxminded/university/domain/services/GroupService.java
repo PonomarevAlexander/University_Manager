@@ -8,9 +8,8 @@ import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
-import com.foxminded.university.domain.models.Lesson;
 import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDao;
+import com.foxminded.university.persistence.GenericHibernateDaoImpl;
 
 @Component
 public class GroupService implements ServiceInterface<Group> {
@@ -102,7 +101,7 @@ public class GroupService implements ServiceInterface<Group> {
     }
 
     @Autowired
-    public void setGroupDao(GenericHibernateDao<Group> groupDao) {
+    public void setGroupDao(GenericHibernateDaoImpl<Group> groupDao) {
         groupDao.setClazz(Group.class);
         this.groupDao = groupDao;
     }
