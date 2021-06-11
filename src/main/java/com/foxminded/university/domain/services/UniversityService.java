@@ -2,7 +2,7 @@ package com.foxminded.university.domain.services;
 
 import java.util.List;
 
-public interface ServiceInterface<T> {
+public interface UniversityService<T> {
     
     void add(T entity);
     

@@ -2,7 +2,7 @@ package com.foxminded.university.persistence;
 
 import java.util.List;
 
-public interface Dao<T> {
+public interface UniversityRepository<T> {
 
     void add(T entity);
 

@@ -5,16 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.HibernateException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Student;
-import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDaoImpl;
+import com.foxminded.university.persistence.UniversityRepository;
+import com.foxminded.university.persistence.GenericHibernateRepositoryImpl;
 
 @Component
-public class StudentService implements ServiceInterface<Student> {
+public class StudentService implements UniversityService<Student> {
 
-    private Dao<Student> studentDao;
+    private UniversityRepository<Student> studentRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! student name is null";
@@ -32,9 +32,9 @@ public class StudentService implements ServiceInterface<Student> {
         LOGGER.debug("creating new student");
         validateEntity(student);
         try {
-            studentDao.add(student);
+            studentRepository.add(student);
             LOGGER.debug("new student was created");
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("new student was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -44,10 +44,10 @@ public class StudentService implements ServiceInterface<Student> {
     public Student getById(int id) {
         LOGGER.debug("getting student by id={}", id);
         try {
-            Student student = studentDao.get(id);
+            Student student = studentRepository.get(id);
             LOGGER.debug("student with id={} was prepared and returned", student.getId());
             return student;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("student with id={} not found or his group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -57,10 +57,10 @@ public class StudentService implements ServiceInterface<Student> {
     public List<Student> getAll() {
         LOGGER.debug("getting all students");
         try {
-            List<Student> studentsList = studentDao.getAll();
+            List<Student> studentsList = studentRepository.getAll();
             LOGGER.debug("students list(size={}) was prepared and returned", studentsList.size());
             return studentsList;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("no one student not found");
             throw new ServiceException(String.format(EXCEPTION_GET_ALL) + ex.getMessage());
         }
@@ -71,9 +71,9 @@ public class StudentService implements ServiceInterface<Student> {
         LOGGER.debug("updating student");
         validateEntity(student);
         try {
-            studentDao.update(student);
+            studentRepository.update(student);
             LOGGER.debug("student with id={} successfully updated", student.getId());
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("student updating failed!");
             throw new ServiceException(String.format(EXCEPTION_UPDATE, student.getId()) + ex.getMessage());
         }
@@ -83,9 +83,9 @@ public class StudentService implements ServiceInterface<Student> {
     public void remove(int id) {
         LOGGER.debug("removing student");
         try {
-            studentDao.remove(id);
+            studentRepository.remove(id);
             LOGGER.debug("student with id={} has been deleted", id);
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("student with id={} was not removed! Student not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -110,8 +110,8 @@ public class StudentService implements ServiceInterface<Student> {
     }
 
     @Autowired
-    public void setStudentDao(GenericHibernateDaoImpl<Student> studentDao) {
-        studentDao.setClazz(Student.class);
-        this.studentDao = studentDao;
+    public void setStudentDao(GenericHibernateRepositoryImpl<Student> studentRepository) {
+        studentRepository.setClazz(Student.class);
+        this.studentRepository = studentRepository;
     }
 }

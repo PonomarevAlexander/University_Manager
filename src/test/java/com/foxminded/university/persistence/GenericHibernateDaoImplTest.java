@@ -21,10 +21,10 @@ import com.foxminded.university.domain.models.Department;
 class GenericHibernateDaoImplTest {
 
     @Autowired
-    private ApplicationContext applicationCaontext;
+    private ApplicationContext applicationContext;
     
     @Test
     void test() {
-        assertNotNull(applicationCaontext);
+        assertNotNull(applicationContext);
     }
 }

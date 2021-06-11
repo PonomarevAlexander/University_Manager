@@ -1,20 +1,21 @@
 package com.foxminded.university.domain.services;
 
 import java.util.List;
+
+import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.DaoException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
-import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDaoImpl;
+import com.foxminded.university.persistence.UniversityRepository;
+import com.foxminded.university.persistence.GenericHibernateRepositoryImpl;
 
 @Component
-public class GroupService implements ServiceInterface<Group> {
+public class GroupService implements UniversityService<Group> {
     
-    private Dao<Group> groupDao;
+    private UniversityRepository<Group> groupDao;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! group name is null";
@@ -26,26 +27,26 @@ public class GroupService implements ServiceInterface<Group> {
     private static final String EXCEPTION_REMOVE = "Failed to removing the group(id=%d). Reason is ";
 
     @Override
-    public void add(Group group) throws DaoException, ServiceException {
+    public void add(Group group) throws HibernateException, ServiceException {
         LOGGER.debug("creating new group with name={}", group.getName());
         validateEntity(group);
         try {
             groupDao.add(group);
             LOGGER.debug("new group successufuly created! ");
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("new group was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
     }
 
     @Override
-    public Group getById(int id) throws DaoException {
+    public Group getById(int id) throws HibernateException {
         LOGGER.debug("getting group by id={}", id);
         try {
             Group group = groupDao.get(id);
             LOGGER.debug("group with id={} was prepared and returned", group.getId());
             return group;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("group with id={} not found! Group or students, teacher, timetable related to the group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -58,7 +59,7 @@ public class GroupService implements ServiceInterface<Group> {
             List<Group> groupsList = groupDao.getAll();
             LOGGER.debug("groups list was prepared and returned successfuly");
             return groupsList;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("no one group not found");
             throw new ServiceException(EXCEPTION_GET_ALL + ex.getMessage());
         }
@@ -71,7 +72,7 @@ public class GroupService implements ServiceInterface<Group> {
         try {
             groupDao.update(group);
             LOGGER.debug("The group with id={} updated successfuly", group.getId());
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("group with id={} not found! Group or students, teacher, timetable related to the group not found", group.getId());
             throw new ServiceException(String.format(EXCEPTION_UPDATE, group.getId()) + ex.getMessage());
         }
@@ -83,7 +84,7 @@ public class GroupService implements ServiceInterface<Group> {
         try {
             groupDao.remove(id);
             LOGGER.debug("successfuly removed group with id={}", id);
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("group with id={} was not removed! Group not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -101,7 +102,7 @@ public class GroupService implements ServiceInterface<Group> {
     }
 
     @Autowired
-    public void setGroupDao(GenericHibernateDaoImpl<Group> groupDao) {
+    public void setGroupDao(GenericHibernateRepositoryImpl<Group> groupDao) {
         groupDao.setClazz(Group.class);
         this.groupDao = groupDao;
     }

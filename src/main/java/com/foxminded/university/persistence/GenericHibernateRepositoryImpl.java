@@ -6,7 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GenericHibernateDaoImpl<T> extends AbstractHibernateDao<T> implements Dao<T> {
-
-    //there is generic implementation
-}
+public class GenericHibernateRepositoryImpl<T> extends AbstractHibernateRepository<T> implements UniversityRepository<T> {}

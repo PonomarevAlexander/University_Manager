@@ -4,7 +4,7 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractHibernateDao<T> {
+public abstract class AbstractHibernateRepository<T> {
 
     private Class<T> clazz;
     private SessionFactory sessionFactory;
@@ -19,7 +19,7 @@ public abstract class AbstractHibernateDao<T> {
     
     @SuppressWarnings("unchecked")
     public List<T> getAll() {
-        return sessionFactory.getCurrentSession().createQuery("from " + clazz.getName()).list();
+            return sessionFactory.getCurrentSession().createQuery("from " + clazz.getName()).list();
     }
     
     public void update(T entity) {

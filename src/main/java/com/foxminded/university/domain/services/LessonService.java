@@ -5,16 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.HibernateException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Lesson;
-import com.foxminded.university.persistence.Dao;
-import com.foxminded.university.persistence.GenericHibernateDaoImpl;
+import com.foxminded.university.persistence.UniversityRepository;
+import com.foxminded.university.persistence.GenericHibernateRepositoryImpl;
 
 @Component
-public class LessonService implements ServiceInterface<Lesson> {
+public class LessonService implements UniversityService<Lesson> {
 
-    private Dao<Lesson> lessonDao;
+    private UniversityRepository<Lesson> lessonRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LessonService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! lesson name is null";
@@ -33,9 +33,9 @@ public class LessonService implements ServiceInterface<Lesson> {
         LOGGER.debug("creating a new lesson with name={}", lesson.getName());
         validateEntity(lesson);
         try {
-            lessonDao.add(lesson);
+            lessonRepository.add(lesson);
             LOGGER.debug("lesson with name={} was created", lesson.getName());
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("new lesson was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -45,10 +45,10 @@ public class LessonService implements ServiceInterface<Lesson> {
     public Lesson getById(int id) {
         LOGGER.debug("obtaining a lesson by id={}", id);
         try {
-            Lesson lesson = lessonDao.get(id);
+            Lesson lesson = lessonRepository.get(id);
             LOGGER.debug("Lesson with id={} was prepared and returned", lesson.getId());
             return lesson;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson with id={} not found or teacher, group related to the group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -58,10 +58,10 @@ public class LessonService implements ServiceInterface<Lesson> {
     public List<Lesson> getAll() {
         LOGGER.debug("obtaining list of all lessons");
         try {
-            List<Lesson> lessonsList = lessonDao.getAll();
+            List<Lesson> lessonsList = lessonRepository.getAll();
             LOGGER.debug("all lessons obtained and returned");
             return lessonsList;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("no one lesson not found");
             throw new ServiceException(EXCEPTION_GET_ALL + ex.getMessage());
         }
@@ -72,9 +72,9 @@ public class LessonService implements ServiceInterface<Lesson> {
         LOGGER.debug("updating lesson with id={}", lesson.getId());
         validateEntity(lesson);
         try {
-            lessonDao.update(lesson);
+            lessonRepository.update(lesson);
             LOGGER.debug("lesson with id={} was updated", lesson.getId());
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson updatining fail! Reason to lesson with id={} not found", lesson.getId());
             throw new ServiceException(String.format(EXCEPTION_UPDATE, lesson.getId()) + ex.getMessage());
         }
@@ -84,9 +84,9 @@ public class LessonService implements ServiceInterface<Lesson> {
     public void remove(int id) {
         LOGGER.debug("removing lesson with id={}", id);
         try {
-            lessonDao.remove(id);
+            lessonRepository.remove(id);
             LOGGER.debug("lesson with id={} was removed", id);
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson with id={} was not removed! Lesson not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
         }
@@ -113,9 +113,9 @@ public class LessonService implements ServiceInterface<Lesson> {
     }
 
     @Autowired
-    public void setLessonDao(GenericHibernateDaoImpl<Lesson> lessonDao) {
-        lessonDao.setClazz(Lesson.class);
-        this.lessonDao = lessonDao;
+    public void setLessonDao(GenericHibernateRepositoryImpl<Lesson> lessonRepository) {
+        lessonRepository.setClazz(Lesson.class);
+        this.lessonRepository = lessonRepository;
     }
 
 }
