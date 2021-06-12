@@ -2,9 +2,9 @@ package com.foxminded.university.persistence;
 
 import java.util.List;
 
-public interface Dao<T> {
+public interface UniversityRepository<T> {
 
-    int add(T entity);
+    void add(T entity);
 
     T get(int id);
 
@@ -13,4 +13,5 @@ public interface Dao<T> {
     void update(T entity);
 
     void remove(int id);
+
 }

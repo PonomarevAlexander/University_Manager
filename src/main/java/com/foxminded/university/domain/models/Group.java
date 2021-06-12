@@ -1,15 +1,36 @@
 package com.foxminded.university.domain.models;
 
 import java.util.List;
+import javax.persistence.*;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+@Entity
+@Table(name = "groups")
 public class Group {
 
+    @Id
+    @GeneratedValue()
     private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @OneToOne()
+    @JoinColumn(name = "head")
     private Teacher teacher;
+
+    @ManyToOne()
     private Department department;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Student> studentList;
-    private Timetable timetable;
+    
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Lesson> timetable;
 
     public Group() {
     }
@@ -18,67 +39,63 @@ public class Group {
         this.name = name;
     }
 
-    public Group(int id, String name, Teacher teacher, List<Student> studentList, Timetable timetable, Department department) {
+    public Group(int id, String name, Teacher teacher, Department department, List<Student> studentList,
+            List<Lesson> timetable) {
+        super();
         this.id = id;
         this.name = name;
         this.teacher = teacher;
+        this.department = department;
         this.studentList = studentList;
         this.timetable = timetable;
-        this.department = department;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
     public Department getDepartment() {
         return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
     }
 
     public List<Student> getStudentList() {
         return studentList;
     }
 
+    public List<Lesson> getTimetable() {
+        return timetable;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
     public void setStudentList(List<Student> studentList) {
         this.studentList = studentList;
     }
 
-    public Timetable getTimetable() {
-        return timetable;
-    }
-
-    public void setTimetable(Timetable timetable) {
+    public void setTimetable(List<Lesson> timetable) {
         this.timetable = timetable;
-    }
-
-    @Override
-    public String toString() {
-        return "Group [id=" + id + ", name=" + name + ", teacher=" + teacher + ", department=" + department
-                + ", studentList=" + studentList + ", timetable=" + timetable + "]";
     }
 
     @Override
@@ -132,4 +149,11 @@ public class Group {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Group [id=" + id + ", name=" + name + ", teacher=" + teacher + ", department=" + department
+                + ", studentList=" + studentList + ", timetable=" + timetable + "]";
+    }
+
 }

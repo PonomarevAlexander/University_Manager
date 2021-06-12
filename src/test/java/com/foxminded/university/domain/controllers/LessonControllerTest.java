@@ -1,6 +1,5 @@
 package com.foxminded.university.domain.controllers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +71,7 @@ class LessonControllerTest {
     @Test
     void testShouldRenderLessonProfilePageById() throws Exception {
         when(lessonService.getById(1)).thenReturn(mockedLesson);
-        when(mockedLesson.getStartTime()).thenReturn(LocalDateTime.parse("2021-01-01T12:12"));
+        when(mockedLesson.getStartTime()).thenReturn("2021-01-01 12:12");
         
         mockMvc.perform(get("/lessons/1"))
         .andExpect(view().name(VIEW_ONE_LESSON))

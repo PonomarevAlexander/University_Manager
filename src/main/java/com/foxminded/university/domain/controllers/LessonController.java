@@ -1,7 +1,7 @@
 package com.foxminded.university.domain.controllers;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +22,7 @@ import com.foxminded.university.domain.services.TeacherService;
 
 @Controller
 @RequestMapping("/lessons")
+@Transactional
 public class LessonController {
     
     private final LessonService lessonService;
@@ -38,7 +39,6 @@ public class LessonController {
     private static final String VIEW_UPDATE_LESSON = "lesson/update-lesson";
     private static final String VIEW_REDIRECT_TO_ALL_LESSONS = "redirect:/lessons";
     private static final String DATETIME = "datetime";
-    private static final String FORMAT = "yyyy-MM-dd HH:mm";
     
     @Autowired
     public LessonController(LessonService lessonService, TeacherService teacherService, GroupService groupService) {
@@ -57,7 +57,6 @@ public class LessonController {
     public String getById(@PathVariable("id") int id, Model model) {
         Lesson lesson = lessonService.getById(id);
         model.addAttribute(MODEL_LESSON, lesson);
-        model.addAttribute(DATETIME, lesson.getStartTime().format(DateTimeFormatter.ofPattern(FORMAT)));
         return VIEW_ONE_LESSON;
     }
     

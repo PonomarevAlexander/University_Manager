@@ -1,11 +1,35 @@
 package com.foxminded.university.domain.models;
 
+import java.util.List;
+
+import javax.persistence.*;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+@Entity
+@Table(name = "teachers")
 public class Teacher {
 
+    @Id
+    @GeneratedValue()
     private int id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @Column(name = "last_name")
     private String lastName;
-    private Timetable timetable;
+    
+    @ManyToOne()
+    private Department department;
+    
+    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
+    private Group group;
+    
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Lesson> timetable;
 
     public Teacher() {}
 
@@ -14,10 +38,13 @@ public class Teacher {
         this.lastName = lastName;
     }
 
-    public Teacher(int id, String name, String lastName, Timetable timetable) {
+    public Teacher(int id, String name, String lastName, Department department, Group group, List<Lesson> timetable) {
+        super();
         this.id = id;
         this.name = name;
         this.lastName = lastName;
+        this.department = department;
+        this.group = group;
         this.timetable = timetable;
     }
 
@@ -33,7 +60,15 @@ public class Teacher {
         return lastName;
     }
 
-    public Timetable getTimetable() {
+    public Department getDepartment() {
+        return department;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public List<Lesson> getTimetable() {
         return timetable;
     }
 
@@ -49,7 +84,15 @@ public class Teacher {
         this.lastName = lastName;
     }
 
-    public void setTimetable(Timetable timetable) {
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public void setTimetable(List<Lesson> timetable) {
         this.timetable = timetable;
     }
 
@@ -57,6 +100,8 @@ public class Teacher {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((department == null) ? 0 : department.hashCode());
+        result = prime * result + ((group == null) ? 0 : group.hashCode());
         result = prime * result + id;
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -73,6 +118,16 @@ public class Teacher {
         if (getClass() != obj.getClass())
             return false;
         Teacher other = (Teacher) obj;
+        if (department == null) {
+            if (other.department != null)
+                return false;
+        } else if (!department.equals(other.department))
+            return false;
+        if (group == null) {
+            if (other.group != null)
+                return false;
+        } else if (!group.equals(other.group))
+            return false;
         if (id != other.id)
             return false;
         if (lastName == null) {
@@ -95,6 +150,8 @@ public class Teacher {
 
     @Override
     public String toString() {
-        return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", timetable=" + timetable + "]";
+        return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", department=" + department
+                + ", group=" + group + ", timetable=" + timetable + "]";
     }
+    
 }

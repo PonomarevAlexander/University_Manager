@@ -18,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.foxminded.university.domain.models.Teacher;
-import com.foxminded.university.domain.models.Timetable;
 import com.foxminded.university.domain.services.TeacherService;
-import com.foxminded.university.domain.services.TimetableService;
 
 @ExtendWith(MockitoExtension.class)
 class TeacherControllerTest {
@@ -38,9 +36,6 @@ class TeacherControllerTest {
 
     @Mock
     private TeacherService teacherService;
-
-    @Mock
-    private TimetableService timetableService;
 
     @InjectMocks
     private TeacherController teacherController;
@@ -72,22 +67,11 @@ class TeacherControllerTest {
         verify(teacherService).getById(1);
     }
 
-    @Test
-    void testShouldRenderTeacherCreatingFormPage() throws Exception {
-        when(timetableService.getAll()).thenReturn(List.of(new Timetable()));
-
-        mockMvc.perform(get("/teachers/new"))
-                .andExpect(view().name(VIEW_NEW_TEACHER))
-                .andExpect(model().attribute(MODEL_TIMETABLES, List.of(new Timetable())))
-                .andExpect(model().attribute(MODEL_TEACHER, new Teacher()));
-
-        verify(timetableService).getAll();
-    }
 
     @Test
     void testShouldCreateNewTeacherThenRedirect() throws Exception {
         Teacher teacher = new Teacher("name", "lastName");
-        when(teacherService.add(teacher)).thenReturn(1);
+        doNothing().when(teacherService).add(teacher);
 
         mockMvc.perform(post("/teachers?name=name&lastName=lastName"))
                 .andExpect(view().name(VIEW_REDIRECT_TO_TICHERS))
@@ -98,7 +82,6 @@ class TeacherControllerTest {
     void testShouldRenderTeacherUpdatingPage() throws Exception {
         Teacher teacher = new Teacher("name", "lastName");
         when(teacherService.getById(1)).thenReturn(teacher);
-        when(timetableService.getAll()).thenReturn(List.of(new Timetable()));
 
         mockMvc.perform(get("/teachers/1/update"))
                 .andExpect(view().name(VIEW_UPDATE_TEACHER));

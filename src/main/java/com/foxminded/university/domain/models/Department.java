@@ -1,24 +1,38 @@
 package com.foxminded.university.domain.models;
 
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+@Entity
+@Table(name = "departments")
 public class Department {
 
+    @Id
+    @GeneratedValue()
     private int id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Teacher> teacherList;
+    
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Group> groupList;
     
     public Department() {}
 
     public Department(String name) {
         this.name = name;
-        this.teacherList = new ArrayList<>();
-        this.groupList = new ArrayList<>();
     }
 
     public Department(int id, String name, List<Teacher> teacherList, List<Group> groupList) {
+        super();
         this.id = id;
         this.name = name;
         this.teacherList = teacherList;

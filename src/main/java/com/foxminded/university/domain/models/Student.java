@@ -1,11 +1,25 @@
 package com.foxminded.university.domain.models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "students")
 public class Student {
 
+    @Id
+    @GeneratedValue()
     private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "age")
     private int age;
+
+    @ManyToOne()
     private Group group;
 
     public Student() {
@@ -18,15 +32,12 @@ public class Student {
     }
 
     public Student(int id, String name, String lastName, int age, Group group) {
+        super();
         this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.age = age;
         this.group = group;
-    }
-
-    public Group getGroup() {
-        return group;
     }
 
     public int getId() {
@@ -45,8 +56,8 @@ public class Student {
         return age;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public Group getGroup() {
+        return group;
     }
 
     public void setId(int id) {
@@ -63,6 +74,10 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     @Override
@@ -110,7 +125,8 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student [id=" + id + ", name=" + name + ", lastName=" + lastName + ", age=" + age
-                + ", group=" + group + "]";
+        return "Student [id=" + id + ", name=" + name + ", lastName=" + lastName + ", age=" + age + ", group=" + group
+                + "]";
     }
-}
+
+ }

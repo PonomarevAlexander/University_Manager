@@ -15,16 +15,19 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Department;
-import com.foxminded.university.persistence.DepartmentDao;
+import com.foxminded.university.domain.models.Group;
+import com.foxminded.university.domain.models.Teacher;
+import com.foxminded.university.persistence.UniversityRepository;
+import com.foxminded.university.persistence.GenericHibernateRepositoryImpl;
 import com.foxminded.university.persistence.GroupDao;
 import com.foxminded.university.persistence.TeacherDao;
 
 @ExtendWith(MockitoExtension.class)
 class DepartmentServiceTest {
     
-    private GroupDao groupDao;
-    private TeacherDao teacherDao;
-    private DepartmentDao departmentDao;
+    private UniversityRepository<Group> groupDao;
+    private UniversityRepository<Teacher> teacherDao;
+    private UniversityRepository<Department> departmentDao;
     private DepartmentService departmentService;
     
     private static final String TEST_SCHEMA = "classpath:test_schema.sql";
@@ -34,13 +37,13 @@ class DepartmentServiceTest {
     private static final String TEST_NAME_3 = "department3";
     
     @Mock
-    private TeacherDao mockedTeacherDao;
+    private GenericHibernateRepositoryImpl<Teacher> mockedTeacherDao;
     
     @Mock
-    private GroupDao mockedGroupDao;
+    private GenericHibernateRepositoryImpl<Group> mockedGroupDao;
     
     @Mock
-    private DepartmentDao mockedDepartmentDao;
+    private GenericHibernateRepositoryImpl<Department> mockedDepartmentDao;
     
     @InjectMocks
     private DepartmentService mockedDepartmentService;
@@ -53,11 +56,11 @@ class DepartmentServiceTest {
                 .addScript(TEST_DATA)
                 .build();
         
-        this.teacherDao = new TeacherDao(dataSource);
-        this.departmentDao = new DepartmentDao(dataSource);
-        this.groupDao = new GroupDao(dataSource);
+        this.teacherDao = new GenericHibernateRepositoryImpl<>();
+        this.departmentDao = new GenericHibernateRepositoryImpl<>();
+        this.groupDao = new GenericHibernateRepositoryImpl<>();
         this.departmentService = new DepartmentService();
-        departmentService.setDepartmentDao(departmentDao);
+        departmentService.setDepartmentDao(departmentDao);;
         departmentService.setGroupDao(groupDao);
         departmentService.setTeacherDao(teacherDao);
     }

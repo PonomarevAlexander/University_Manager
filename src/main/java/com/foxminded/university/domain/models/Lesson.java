@@ -1,14 +1,33 @@
 package com.foxminded.university.domain.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "lessons")
 public class Lesson {
+    
+    private static final String FORMAT = "yyyy-MM-dd HH:mm";
 
+    @Id
+    @GeneratedValue()
     private int id;
+    
+    @Column(name = "name")
     private String name;
+    
+    @Column(name = "start_time")
     private LocalDateTime startTime;
+    
+    @Column(name = "duration")
     private int lessonDurationSecond;
+    
+    @ManyToOne()
     private Teacher teacher;
+    
+    @ManyToOne()
     private Group group;
 
     public Lesson() {
@@ -20,48 +39,59 @@ public class Lesson {
         this.lessonDurationSecond = lessonDurationSecond;
     }
 
-    public int getId() {
-        return id;
+    public Lesson(int id, String name, LocalDateTime startTime, int lessonDurationSecond, Teacher teacher,
+            Group group) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.startTime = startTime;
+        this.lessonDurationSecond = lessonDurationSecond;
+        this.teacher = teacher;
+        this.group = group;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+    public String getStartTime() {
+        return startTime.format(DateTimeFormatter.ofPattern(FORMAT));
     }
 
     public int getLessonDurationSecond() {
         return lessonDurationSecond;
     }
 
-    public void setLessonDurationSecond(int lessonDurationSecond) {
-        this.lessonDurationSecond = lessonDurationSecond;
-    }
-
     public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
     public Group getGroup() {
         return group;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setLessonDurationSecond(int lessonDurationSecond) {
+        this.lessonDurationSecond = lessonDurationSecond;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 
     public void setGroup(Group group) {
@@ -122,5 +152,5 @@ public class Lesson {
         return "Lesson [id=" + id + ", name=" + name + ", startTime=" + startTime + ", lessonDurationSecond="
                 + lessonDurationSecond + ", teacher=" + teacher + ", group=" + group + "]";
     }
-
+    
 }

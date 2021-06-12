@@ -2,9 +2,9 @@ package com.foxminded.university.domain.services;
 
 import java.util.List;
 
-public interface Service<T> {
+public interface UniversityService<T> {
     
-    int add(T entity);
+    void add(T entity);
     
     T getById(int id);
     

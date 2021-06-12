@@ -5,21 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.foxminded.university.domain.exceptions.DaoException;
+import com.foxminded.university.domain.exceptions.HibernateException;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Lesson;
-import com.foxminded.university.domain.models.Timetable;
-import com.foxminded.university.persistence.GroupDao;
-import com.foxminded.university.persistence.LessonDao;
-import com.foxminded.university.persistence.TeacherDao;
+import com.foxminded.university.persistence.UniversityRepository;
+import com.foxminded.university.persistence.GenericHibernateRepositoryImpl;
 
 @Component
-public class LessonService implements Service<Lesson> {
+public class LessonService implements UniversityService<Lesson> {
 
-    private GroupDao groupDao;
-    private LessonDao lessonDao;
-    private TeacherDao teacherDao;
+    private UniversityRepository<Lesson> lessonRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LessonService.class);
     private static final String EXCEPTION_NOT_VALID_NAME = "validation failed! lesson name is null";
@@ -29,20 +24,18 @@ public class LessonService implements Service<Lesson> {
     private static final String EXCEPTION_NOT_VALID_DURATION = "validation failed! lesson duration less 45 min";
     private static final String EXCEPTION_ADD = "Failed to creating new lesson!";
     private static final String EXCEPTION_GET = "Failed to receiving a lesson(id=%). Reason is ";
-    private static final String EXCEPTION_GET_BY_TIMETABLE = "receiving a lesson fail reason is";
     private static final String EXCEPTION_GET_ALL = "Failed to receiving all lessons list. Reason is ";
     private static final String EXCEPTION_UPDATE = "Failed to updating the lesson(id=%d). Reason is ";
     private static final String EXCEPTION_REMOVE = "Failed to removing the lesson(id=%d). Reason is ";
 
     @Override
-    public int add(Lesson lesson) throws ServiceException {
+    public void add(Lesson lesson) {
         LOGGER.debug("creating a new lesson with name={}", lesson.getName());
         validateEntity(lesson);
         try {
-            int obtainedId = lessonDao.add(lesson);
-            LOGGER.debug("lesson with name={} was created", obtainedId);
-            return obtainedId;
-        } catch (DaoException ex) {
+            lessonRepository.add(lesson);
+            LOGGER.debug("lesson with name={} was created", lesson.getName());
+        } catch (HibernateException ex) {
             LOGGER.error("new lesson was not created");
             throw new ServiceException(EXCEPTION_ADD);
         }
@@ -52,12 +45,10 @@ public class LessonService implements Service<Lesson> {
     public Lesson getById(int id) {
         LOGGER.debug("obtaining a lesson by id={}", id);
         try {
-            Lesson lesson = lessonDao.get(id);
-            lesson.setTeacher(teacherDao.getTeacherByLesson(id));
-            lesson.setGroup(groupDao.getGroupByLesson(id));
+            Lesson lesson = lessonRepository.get(id);
             LOGGER.debug("Lesson with id={} was prepared and returned", lesson.getId());
             return lesson;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson with id={} not found or teacher, group related to the group not found", id);
             throw new ServiceException(String.format(EXCEPTION_GET, id) + ex.getMessage());
         }
@@ -67,14 +58,10 @@ public class LessonService implements Service<Lesson> {
     public List<Lesson> getAll() {
         LOGGER.debug("obtaining list of all lessons");
         try {
-            List<Lesson> lessonsList = lessonDao.getAll();
-            lessonsList.forEach(lesson -> {
-                lesson.setTeacher(teacherDao.getTeacherByLesson(lesson.getId()));
-                lesson.setGroup(groupDao.getGroupByLesson(lesson.getId()));
-            });
+            List<Lesson> lessonsList = lessonRepository.getAll();
             LOGGER.debug("all lessons obtained and returned");
             return lessonsList;
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("no one lesson not found");
             throw new ServiceException(EXCEPTION_GET_ALL + ex.getMessage());
         }
@@ -85,9 +72,9 @@ public class LessonService implements Service<Lesson> {
         LOGGER.debug("updating lesson with id={}", lesson.getId());
         validateEntity(lesson);
         try {
-            lessonDao.update(lesson);
+            lessonRepository.update(lesson);
             LOGGER.debug("lesson with id={} was updated", lesson.getId());
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson updatining fail! Reason to lesson with id={} not found", lesson.getId());
             throw new ServiceException(String.format(EXCEPTION_UPDATE, lesson.getId()) + ex.getMessage());
         }
@@ -97,23 +84,11 @@ public class LessonService implements Service<Lesson> {
     public void remove(int id) {
         LOGGER.debug("removing lesson with id={}", id);
         try {
-            lessonDao.remove(id);
+            lessonRepository.remove(id);
             LOGGER.debug("lesson with id={} was removed", id);
-        } catch (DaoException ex) {
+        } catch (HibernateException ex) {
             LOGGER.error("lesson with id={} was not removed! Lesson not found", id);
             throw new ServiceException(String.format(EXCEPTION_REMOVE, id) + ex.getMessage());
-        }
-    }
-
-    public List<Lesson> getLessonsByTimetable(Timetable timetable) {
-        LOGGER.debug("obtaining lessons by timetable(id={})", timetable.getId());
-        try {
-            List<Lesson> lessonsList = lessonDao.getLessonsOfTimetable(timetable.getId());
-            LOGGER.debug("lessons list was obtained and returned");
-            return lessonsList;
-        } catch (DaoException ex) {
-            LOGGER.error("receiving lessons list fail! Timetable with id={} not found", timetable.getId());
-            throw new ServiceException(EXCEPTION_GET_BY_TIMETABLE);
         }
     }
 
@@ -138,17 +113,9 @@ public class LessonService implements Service<Lesson> {
     }
 
     @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
+    public void setLessonDao(GenericHibernateRepositoryImpl<Lesson> lessonRepository) {
+        lessonRepository.setClazz(Lesson.class);
+        this.lessonRepository = lessonRepository;
     }
 
-    @Autowired
-    public void setLessonDao(LessonDao lessonDao) {
-        this.lessonDao = lessonDao;
-    }
-
-    @Autowired
-    public void setGroupDao(GroupDao groupDao) {
-        this.groupDao = groupDao;
-    }
 }

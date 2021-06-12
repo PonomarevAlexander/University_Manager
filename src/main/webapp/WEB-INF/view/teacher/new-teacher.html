@@ -53,10 +53,9 @@
 					<label for="lastName">Last name</label> 
 					<input type="text" class="form-control" aria-label="lastName" th:field="*{lastName}" id="lastName">
 					
-					<label for="timetable">Timetable</label> 
-					<select class="form-select" aria-label="timetables" th:field="*{timetable.id}" id="timetable">
-			            <option th:each="timetable :${timetables}" th:value="${timetable.id}" th:text="${'timetable ID - ' + timetable.id}"></option>
-					</select>
+					<label for="departments">Select department</label> 
+						<select class="form-select" aria-label="departments" th:field="*{department.id}" id="department">
+			            <option th:each="department :${departments}" th:value="${department.id}" th:text="${department.name}"></option></select>
 					
 					<br/>
 					<div class="d-grid gap-2 col-6 mx-auto">
