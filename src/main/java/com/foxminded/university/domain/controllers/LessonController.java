@@ -22,7 +22,6 @@ import com.foxminded.university.domain.services.TeacherService;
 
 @Controller
 @RequestMapping("/lessons")
-@Transactional
 public class LessonController {
     
     private final LessonService lessonService;
@@ -83,14 +82,14 @@ public class LessonController {
         return VIEW_UPDATE_LESSON;
     }
     
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/update")
     public String update(@ModelAttribute(MODEL_LESSON) Lesson lesson, @RequestParam(DATETIME) String datetime) {
         lesson.setStartTime(LocalDateTime.parse(datetime));
         lessonService.update(lesson);
         return VIEW_REDIRECT_TO_ALL_LESSONS;
     }
     
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String remove(@PathVariable("id") int id) {
         lessonService.remove(id);
         return VIEW_REDIRECT_TO_ALL_LESSONS;

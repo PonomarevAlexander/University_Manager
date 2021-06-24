@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.domain.services.DepartmentService;
 
 @Controller
 @RequestMapping("/departments")
-@Transactional
+
 public class DepartmentsController {
 
     private final DepartmentService departmentService;
@@ -68,13 +70,13 @@ public class DepartmentsController {
         return VIEW_UPDATE_DEPARTMENT;
     }
     
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/update")
     public String update(@ModelAttribute(MODEL_NAME_DEPARTMENT) Department department, @PathVariable("id") int id) {
         departmentService.update(department); 
         return VIEW_REDIRECT_TO_ALL_DEPARTMENTS;
     }
     
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String remove(@PathVariable("id") int id) {
         departmentService.remove(id);
         return VIEW_REDIRECT_TO_ALL_DEPARTMENTS;

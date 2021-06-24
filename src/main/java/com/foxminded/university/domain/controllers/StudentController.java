@@ -19,7 +19,6 @@ import com.foxminded.university.domain.services.StudentService;
 
 @Controller
 @RequestMapping("/students")
-@Transactional
 public class StudentController {
 
     private final StudentService studentService;
@@ -71,13 +70,13 @@ public class StudentController {
         return VIEW_UPDATE_STUDENT;
     }
 
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/update")
     public String update(@ModelAttribute(MODEL_STUDENT) Student student) {
         studentService.update(student);
         return VIEW_REDIRECT_TO_STATUS;
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String remove(@PathVariable("id") int id) {
         studentService.remove(id);
         return VIEW_REDIRECT_TO_STATUS;

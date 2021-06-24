@@ -24,10 +24,11 @@ public class Teacher {
     @ManyToOne()
     private Department department;
     
-    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private Group group;
     
-    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Lesson> timetable;
 
@@ -153,5 +154,5 @@ public class Teacher {
         return "Teacher [id=" + id + ", name=" + name + ", lastName=" + lastName + ", department=" + department
                 + ", group=" + group + ", timetable=" + timetable + "]";
     }
-    
+
 }

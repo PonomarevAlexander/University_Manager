@@ -1,8 +1,6 @@
 package com.foxminded.university.domain.models;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import javax.persistence.*;
 
 @Entity
@@ -50,6 +48,10 @@ public class Lesson {
         this.group = group;
     }
 
+    public static String getFormat() {
+        return FORMAT;
+    }
+
     public int getId() {
         return id;
     }
@@ -58,8 +60,8 @@ public class Lesson {
         return name;
     }
 
-    public String getStartTime() {
-        return startTime.format(DateTimeFormatter.ofPattern(FORMAT));
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public int getLessonDurationSecond() {
@@ -152,5 +154,5 @@ public class Lesson {
         return "Lesson [id=" + id + ", name=" + name + ", startTime=" + startTime + ", lessonDurationSecond="
                 + lessonDurationSecond + ", teacher=" + teacher + ", group=" + group + "]";
     }
-    
+
 }

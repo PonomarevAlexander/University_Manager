@@ -2,7 +2,6 @@ package com.foxminded.university.domain.models;
 
 import java.util.List;
 import javax.persistence.*;
-
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -116,5 +115,5 @@ public class Department {
         return "Department [id=" + id + ", name=" + name + ", teacherList=" + teacherList + ", groupList=" + groupList
                 + "]";
     }
-
+    
 }
