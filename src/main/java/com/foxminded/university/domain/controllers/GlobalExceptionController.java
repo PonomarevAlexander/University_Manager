@@ -12,7 +12,7 @@ public class GlobalExceptionController {
     private static final String MODEL_MESSAGE = "message";
     private static final String VIEW_ERROR = "error";
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(NullPointerException.class)
     public String handleServiceException(Exception ex, Model model) {
         model.addAttribute(MODEL_MESSAGE, ex.getMessage());
         return VIEW_ERROR;

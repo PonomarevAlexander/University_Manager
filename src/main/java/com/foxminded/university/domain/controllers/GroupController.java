@@ -1,7 +1,5 @@
 package com.foxminded.university.domain.controllers;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +17,6 @@ import com.foxminded.university.domain.services.TeacherService;
 
 @Controller
 @RequestMapping("/groups")
-@Transactional
 public class GroupController {
 
     private final GroupService groupService;
@@ -83,13 +80,13 @@ public class GroupController {
         return VIEW_UPDATE_GROUP;
     }
 
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/update")
     public String update(@ModelAttribute(MODEL_GROUP) Group group, @PathVariable("id") int id) {
         groupService.update(group);
         return VIEW_REDIRECT_TO_ALL_GROUP;
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/delete")
     public String remove(@PathVariable("id") int id) {
         groupService.remove(id);
         return VIEW_REDIRECT_TO_ALL_GROUP;
