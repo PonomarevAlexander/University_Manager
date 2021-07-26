@@ -18,7 +18,6 @@ import com.foxminded.university.domain.services.DepartmentService;
 
 @Controller
 @RequestMapping("/departments")
-
 public class DepartmentsController {
 
     private final DepartmentService departmentService;
