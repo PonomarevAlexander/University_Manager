@@ -26,6 +26,7 @@ public class Teacher {
     private Department department;
     
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Lesson> timetable;
 
     public Teacher() {}

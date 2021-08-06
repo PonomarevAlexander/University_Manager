@@ -20,13 +20,11 @@ import com.foxminded.university.domain.services.TeacherService;
 public class GroupController {
 
     private final GroupService groupService;
-    private final TeacherService teacherService;
     private final DepartmentService departmentService;
 
     private static final String MODEL_GROUPS = "groups";
     private static final String MODEL_GROUP = "group";
     private static final String MODEL_DEPARTMENTS = "departments";
-    private static final String MODEL_TEACHERS = "teachers";
     private static final String MODEL_STUDENTS = "students";
     private static final String MODEL_TIMETABLE = "timetable";
     private static final String VIEW_ALL_GROUP = "group/all-groups";
@@ -36,9 +34,8 @@ public class GroupController {
     private static final String VIEW_REDIRECT_TO_ALL_GROUP = "redirect:/groups";
 
     @Autowired
-    public GroupController(GroupService groupService, TeacherService teachersService, DepartmentService departmentService) {
+    public GroupController(GroupService groupService, DepartmentService departmentService) {
         this.groupService = groupService;
-        this.teacherService = teachersService;
         this.departmentService = departmentService;
 
     }
@@ -61,7 +58,6 @@ public class GroupController {
     @GetMapping("/new")
     public String createGroupForm(Model model) {
         model.addAttribute(MODEL_GROUP, new Group());
-        model.addAttribute(MODEL_TEACHERS, teacherService.getAll());
         model.addAttribute(MODEL_DEPARTMENTS, departmentService.getAll());
         return VIEW_NEW_GROUP;
     }
@@ -75,7 +71,6 @@ public class GroupController {
     @GetMapping("/{id}/update")
     public String updateForm(@PathVariable("id") int id, Model model) {
         model.addAttribute(MODEL_GROUP, groupService.getById(id));
-        model.addAttribute(MODEL_TEACHERS, teacherService.getAll());
         model.addAttribute(MODEL_DEPARTMENTS, departmentService.getAll());
         return VIEW_UPDATE_GROUP;
     }
