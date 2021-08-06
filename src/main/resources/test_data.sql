@@ -6,9 +6,9 @@ insert into teachers(name, last_name, department_id) values('teacherName1', 'tea
 insert into teachers(name, last_name, department_id) values('teacherName2', 'teacherLastName2', 1);
 insert into teachers(name, last_name, department_id) values('teacherName3', 'teacherLastName3', 2);
 
-insert into groups(name, department_id, head) values('group1', 1, 1);
-insert into groups(name, department_id, head) values('group2', 1, 2);
-insert into groups(name, department_id, head) values('group3', 2, 3);
+insert into groups(name, department_id) values('group1', 1);
+insert into groups(name, department_id) values('group2', 1);
+insert into groups(name, department_id) values('group3', 2);
 
 insert into students(name, last_name, age, group_id) values('studentName1', 'studentLastName1', 11, 1);
 insert into students(name, last_name, age, group_id) values('studentName2', 'studentLastName2', 22, 1);

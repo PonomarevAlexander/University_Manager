@@ -51,7 +51,7 @@
 					<label for="lastName">Last name</label> 
 					<input type="text" class="form-control" aria-label="lastName" th:field="*{lastName}" id="lastName">
 					
-					<label for="departments">Select department</label> 
+					<label for="department">Select department</label>
 						<select class="form-select" aria-label="departments" th:field="*{department.id}" id="department">
 			            <option th:each="department :${departments}" th:value="${department.id}" th:text="${department.name}"></option></select>
 					

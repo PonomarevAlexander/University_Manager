@@ -17,11 +17,9 @@ public class Department {
     private String name;
     
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Teacher> teacherList;
     
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Group> groupList;
     
     public Department() {}

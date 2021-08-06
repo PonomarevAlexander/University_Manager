@@ -48,7 +48,6 @@
 			<p><small>Group id:</small> <strong th:text="${group.id}"></strong></p>
 			<p><small>Group name:</small> <strong th:text="${group.name}"></strong></p>
 			<p><small>Department:</small> <strong th:text="${group.department.name}"></strong></p>
-			<p><small>Teacher:</small> <strong th:text="${group.teacher.name + ' ' + group.teacher.lastName}"></strong></p>
 			<p><small>Timetable: </small></p>
 			<table class="table table-light table-bordered">
 					<thead>
@@ -82,7 +81,7 @@
 						<tr th:each="student : ${students}">
 							<td th:text="${student.id}"></td>
 							<td><a th:href="@{/students/{id}(id=${student.id})}" th:text="${student.name}"></a></td>
-							<td><a th:href="@{/students/{id}(id=${student.id})}" th:text="${student.LastName}"></a></td>
+							<td><a th:href="@{/students/{id}(id=${student.id})}" th:text="${student.lastName}"></a></td>
 						</tr>
 				</table>
 			</div>

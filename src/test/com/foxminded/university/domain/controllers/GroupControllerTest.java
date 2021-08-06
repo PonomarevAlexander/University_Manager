@@ -39,7 +39,7 @@ class GroupControllerTest {
     private static final String VIEW_UPDATE_GROUP = "group/update-group";
     private static final String VIEW_REDIRECT_TO_ALL_GROUP = "redirect:/groups";
     private static final String NAME = "name";
-    private final Group testGroup = new Group(1, NAME, null, null, null, null);
+    private final Group testGroup = new Group(1, NAME, null, null, null);
 
     @Mock
     private GroupService groupService;

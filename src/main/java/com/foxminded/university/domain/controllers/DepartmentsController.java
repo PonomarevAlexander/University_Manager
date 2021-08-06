@@ -1,6 +1,7 @@
 package com.foxminded.university.domain.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -38,6 +39,7 @@ public class DepartmentsController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('user:read')")
     public String getAll(Model model) {
         model.addAttribute(MODEL_ALL_DEPARTMENTS, departmentService.getAll());
         return VIEW_ALL_DEPARTMENTS;

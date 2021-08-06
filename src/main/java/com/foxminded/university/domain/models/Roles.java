@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 
 public enum Roles {
 
-    STUDENT(Set.of(Permission.USER_READ)),
-    TEACHER(Set.of(Permission.USER_READ, Permission.USER_WRITE));
+    STUDENT(Set.of(Permission.USER_READ, Permission.USER_WRITE));
 
     private final Set<Permission> permissions;
 
