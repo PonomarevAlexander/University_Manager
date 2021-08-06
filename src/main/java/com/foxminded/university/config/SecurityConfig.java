@@ -1,6 +1,5 @@
 package com.foxminded.university.config;
 
-import com.foxminded.university.domain.models.Permission;
 import com.foxminded.university.domain.models.Roles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/**").hasAuthority(Permission.USER_READ.getPermission())
-                .antMatchers(HttpMethod.POST, "/**").hasAuthority(Permission.USER_WRITE.getPermission())
+                .antMatchers(HttpMethod.GET, "/**").hasAnyRole(Roles.STUDENT.name(), Roles.TEACHER.name(), Roles.DEPARTMENT_HEAD.name())
+                .antMatchers(HttpMethod.POST, "/**").hasAnyRole(Roles.TEACHER.name(), Roles.DEPARTMENT_HEAD.name())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -36,8 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new InMemoryUserDetailsManager(
                 User.builder()
                         .username("student")
-                        .password(passwordEncoder().encode("admin"))
-                        .authorities(Roles.STUDENT.getAuthorities())
+                        .password(passwordEncoder().encode("student"))
+                        .roles(Roles.STUDENT.name())
+                        .build(),
+                User.builder()
+                        .username("teacher")
+                        .password(passwordEncoder().encode("teacher"))
+                        .roles(Roles.TEACHER.name())
                         .build());
 
     }
