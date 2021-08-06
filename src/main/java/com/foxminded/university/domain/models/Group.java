@@ -22,9 +22,11 @@ public class Group {
     private Department department;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Student> studentList;
     
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Lesson> timetable;
 
     public Group() {
@@ -34,7 +36,9 @@ public class Group {
         this.name = name;
     }
 
-    public Group(int id, String name, Department department, List<Student> studentList, List<Lesson> timetable) {
+    public Group(int id, String name, Teacher teacher, Department department, List<Student> studentList,
+            List<Lesson> timetable) {
+        super();
         this.id = id;
         this.name = name;
         this.department = department;

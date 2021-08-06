@@ -3,8 +3,6 @@ package com.foxminded.university.domain.controllers;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -19,10 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.foxminded.university.domain.models.Department;
 import com.foxminded.university.domain.models.Group;
-import com.foxminded.university.domain.models.Teacher;
 import com.foxminded.university.domain.services.DepartmentService;
 import com.foxminded.university.domain.services.GroupService;
-import com.foxminded.university.domain.services.TeacherService;
 
 @ExtendWith(MockitoExtension.class)
 class GroupControllerTest {
@@ -39,13 +35,10 @@ class GroupControllerTest {
     private static final String VIEW_UPDATE_GROUP = "group/update-group";
     private static final String VIEW_REDIRECT_TO_ALL_GROUP = "redirect:/groups";
     private static final String NAME = "name";
-    private final Group testGroup = new Group(1, NAME, null, null, null);
+    private final Group testGroup = new Group(1, NAME, null, null, null, null);
 
     @Mock
     private GroupService groupService;
-
-    @Mock
-    private TeacherService teacherService;
 
     @Mock
     private DepartmentService departmentService;
@@ -83,7 +76,6 @@ class GroupControllerTest {
         mockMvc.perform(get("/groups/new"))
                 .andExpect(view().name(VIEW_NEW_GROUP));
 
-        verify(teacherService).getAll();
         verify(departmentService).getAll();
     }
 
@@ -99,16 +91,13 @@ class GroupControllerTest {
     @Test
     void testShouldRenderGroupUpdatingPage() throws Exception {
         when(groupService.getById(1)).thenReturn(testGroup);
-        when(teacherService.getAll()).thenReturn(List.of(new Teacher()));
         when(departmentService.getAll()).thenReturn(List.of(new Department()));
 
         mockMvc.perform(get("/groups/1/update")).andExpect(view().name(VIEW_UPDATE_GROUP))
                 .andExpect(model().attribute(MODEL_GROUP, testGroup))
-                .andExpect(model().attribute(MODEL_TEACHERS, List.of(new Teacher())))
                 .andExpect(model().attribute(MODEL_DEPARTMENTS, List.of(new Department())));
 
         verify(groupService).getById(1);
-        verify(teacherService).getAll();
         verify(departmentService).getAll();
 
     }
