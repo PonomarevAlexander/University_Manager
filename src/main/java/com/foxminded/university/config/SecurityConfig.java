@@ -21,8 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/**").hasAnyRole(Roles.STUDENT.name(), Roles.TEACHER.name(), Roles.DEPARTMENT_HEAD.name())
-                .antMatchers(HttpMethod.POST, "/**").hasAnyRole(Roles.TEACHER.name(), Roles.DEPARTMENT_HEAD.name())
+                .antMatchers(HttpMethod.GET, "/**").hasAnyRole(Roles.STUDENT.name())
+                .antMatchers(HttpMethod.POST, "/**").hasAnyRole(Roles.STUDENT.name())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -37,11 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .username("student")
                         .password(passwordEncoder().encode("student"))
                         .roles(Roles.STUDENT.name())
-                        .build(),
-                User.builder()
-                        .username("teacher")
-                        .password(passwordEncoder().encode("teacher"))
-                        .roles(Roles.TEACHER.name())
                         .build());
 
     }
