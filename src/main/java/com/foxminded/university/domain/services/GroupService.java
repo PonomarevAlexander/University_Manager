@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.foxminded.university.domain.exceptions.ServiceException;
 import com.foxminded.university.domain.models.Group;
 import com.foxminded.university.persistence.GroupRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class GroupService implements UniversityService<Group> {
@@ -67,6 +68,7 @@ public class GroupService implements UniversityService<Group> {
     }
 
     @Override
+    @Transactional
     public void remove(int id) {
         try {
             groupRepository.deleteById(id);
@@ -78,9 +80,6 @@ public class GroupService implements UniversityService<Group> {
     private void validateEntity(Group group) {
         if (group.getName() == null) {
             throw new ServiceException(EXCEPTION_NOT_VALID_NAME);
-        }
-        if (group.getTeacher() == null) {
-            throw new ServiceException(EXCEPTION_NOT_VALID_TEACHER);
         }
     }
 

@@ -53,12 +53,6 @@
 					<select class="form-select" aria-label="departments" th:field="*{department.id}" id="department">
 			            <option th:each="department :${departments}" th:value="${department.id}" th:text="${department.name}"></option>
 					</select>
-					
-					<label for="teacher">Teacher</label> 
-						<select class="form-select" aria-label="teachers" th:field="*{teacher.id}" id="teacher">
-			            <option th:each="teacher :${teachers}" th:value="${teacher.id}" th:text="${teacher.getName()}"></option>
-					</select>
-					
 					<br/>
 					<div class="d-grid gap-2 col-6 mx-auto">
   						<button class="btn btn-primary" type="submit">Create</button>

@@ -14,7 +14,6 @@ create table teachers(
 create table groups(
 	id int primary key,
 	name varchar(255) not null,
-	head integer references teachers(id),
 	department_id integer references departments(id));
 	
 create table students(
